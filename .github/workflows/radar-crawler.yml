@@ -41,6 +41,7 @@ jobs:
         run: |
           python -c "from artradar.reporter import generate_index_html; from pathlib import Path; generate_index_html(Path('reports'))"
       - name: Auto-commit data updates
+        continue-on-error: true
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: update radar data [skip ci]"
