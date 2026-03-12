@@ -8,6 +8,7 @@ build/
 venv/
 .env
 data/raw/
+data/search_index.db
 reports/*.html
 !reports/.gitkeep
 *.log

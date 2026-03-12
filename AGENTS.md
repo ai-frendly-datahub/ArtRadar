@@ -25,7 +25,7 @@ ArtRadar/
 ├── config/
 │   ├── config.yaml               # database_path, report_dir, raw_data_dir, search_db_path
 │   ├── notifications.yaml        # optional notifications config
-│   └── categories/art.yaml       # RSS + API sources, art entities
+│   └── categories/               # art.yaml + artwork.yaml
 ├── data/                         # DuckDB, search_index.db, raw/ JSONL
 ├── reports/                      # generated HTML reports
 ├── tests/
@@ -47,8 +47,18 @@ ArtRadar/
 
 ## SOURCE MIX
 
-8개 소스:
+## CATEGORY SPLIT
+
+- `art`: 미술 뉴스/시장/전시/기관 변화 추적 (RSS + museum API 혼합)
+- `artwork`: 개별 작품/소장품/컬렉션 변화 추적 (museum API 중심)
+
+## SOURCE MIX
+
+`art` 8개 소스:
 - RSS: 월간미술, Artnet News, ARTnews, Artforum, ArtSelector
+- API: Metropolitan Museum, Art Institute of Chicago, Smithsonian
+
+`artwork` 3개 소스:
 - API: Metropolitan Museum, Art Institute of Chicago, Smithsonian
 
 ## DEVIATIONS FROM TEMPLATE
@@ -58,11 +68,13 @@ ArtRadar/
 - `exceptions.py`: `NetworkError`, `ParseError`, `SourceError` 계층 사용
 - Smithsonian API는 `SMITHSONIAN_API_KEY` 필요
 - `reporter.py`: 타임라인 + 날짜 필터 기반으로 날짜별 기사 확인 지원
+- GitHub Actions는 `art`와 `artwork` 두 카테고리를 매일 순차 수집
 
 ## COMMANDS
 
 ```bash
 python main.py --category art --recent-days 7 --keep-days 90 --generate-report
+python main.py --category artwork --recent-days 30 --keep-days 180 --generate-report
 pytest tests/unit -m unit
 pytest tests/integration -m integration
 ```
