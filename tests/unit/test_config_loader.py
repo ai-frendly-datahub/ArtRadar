@@ -78,3 +78,15 @@ def test_load_notification_config_missing_file_returns_disabled(tmp_path: Path) 
 
     assert config.enabled is False
     assert config.channels == []
+
+
+@pytest.mark.unit
+def test_load_project_artwork_category_config() -> None:
+    from artradar.config_loader import load_category_config
+
+    cfg = load_category_config("artwork")
+
+    assert cfg.category_name == "artwork"
+    assert cfg.display_name == "Artwork Radar"
+    assert len(cfg.sources) == 3
+    assert {source.type for source in cfg.sources} == {"met_museum", "aic", "smithsonian"}

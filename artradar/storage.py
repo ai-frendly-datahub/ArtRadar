@@ -32,6 +32,7 @@ class RadarStorage:
         self.conn.close()
 
     def _ensure_tables(self) -> None:
+        self._migrate_articles_table_if_needed()
         self.conn.execute("""
             CREATE SEQUENCE IF NOT EXISTS articles_id_seq START 1;
             CREATE TABLE IF NOT EXISTS articles (
@@ -39,16 +40,65 @@ class RadarStorage:
                 category TEXT NOT NULL,
                 source TEXT NOT NULL,
                 title TEXT NOT NULL,
-                link TEXT NOT NULL UNIQUE,
+                link TEXT NOT NULL,
                 summary TEXT,
                 published TIMESTAMP,
                 collected_at TIMESTAMP NOT NULL,
-                entities_json TEXT
+                entities_json TEXT,
+                UNIQUE(category, link)
             );
             """)
         self.conn.execute(
             "CREATE INDEX IF NOT EXISTS idx_articles_category_time ON articles (category, published, collected_at);"
         )
+
+    def _migrate_articles_table_if_needed(self) -> None:
+        existing = self.conn.execute(
+            "SELECT COUNT(*) FROM information_schema.tables WHERE table_name = 'articles'"
+        ).fetchone()
+        if not existing or existing[0] == 0:
+            return
+
+        unique_constraints = self.conn.execute("""
+            SELECT tc.constraint_name, string_agg(kcu.column_name, ',' ORDER BY kcu.ordinal_position)
+            FROM information_schema.table_constraints tc
+            JOIN information_schema.key_column_usage kcu
+              ON tc.constraint_name = kcu.constraint_name
+             AND tc.table_name = kcu.table_name
+            WHERE tc.table_name = 'articles' AND tc.constraint_type = 'UNIQUE'
+            GROUP BY tc.constraint_name
+            """).fetchall()
+
+        if any(str(row[1]) == "category,link" for row in unique_constraints):
+            return
+
+        columns = self.conn.execute("DESCRIBE articles").fetchall()
+        column_names = {str(row[0]) for row in columns}
+        if "entities_json" not in column_names:
+            return
+
+        self.conn.execute("DROP INDEX IF EXISTS idx_articles_category_time")
+        self.conn.execute("""
+            CREATE TABLE articles_new (
+                id BIGINT PRIMARY KEY DEFAULT nextval('articles_id_seq'),
+                category TEXT NOT NULL,
+                source TEXT NOT NULL,
+                title TEXT NOT NULL,
+                link TEXT NOT NULL,
+                summary TEXT,
+                published TIMESTAMP,
+                collected_at TIMESTAMP NOT NULL,
+                entities_json TEXT,
+                UNIQUE(category, link)
+            )
+        """)
+        self.conn.execute("""
+            INSERT INTO articles_new (id, category, source, title, link, summary, published, collected_at, entities_json)
+            SELECT id, category, source, title, link, summary, published, collected_at, entities_json
+            FROM articles
+            """)
+        self.conn.execute("DROP TABLE articles")
+        self.conn.execute("ALTER TABLE articles_new RENAME TO articles")
 
     def upsert_articles(self, articles: Iterable[Article]) -> None:
         """중복 링크는 덮어쓰고 최신 수집 시각을 기록."""
@@ -58,11 +108,14 @@ class RadarStorage:
             published = _utc_naive(article.published)
 
             # 단순화: 같은 링크는 삭제 후 삽입 (DuckDB MERGE 대신 안전한 방식으로)
-            self.conn.execute("DELETE FROM articles WHERE link = ?", [article.link])
+            self.conn.execute(
+                "DELETE FROM articles WHERE category = ? AND link = ?",
+                [article.category, article.link],
+            )
             self.conn.execute(
                 """
-                INSERT INTO articles (category, source, title, link, summary, published, collected_at, entities_json)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO articles (id, category, source, title, link, summary, published, collected_at, entities_json)
+                VALUES (nextval('articles_id_seq'), ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 [
                     article.category,
@@ -119,14 +172,16 @@ class RadarStorage:
             )
         return results
 
-    def delete_older_than(self, days: int) -> int:
+    def delete_older_than(self, category: str, days: int) -> int:
         """보존 기간 밖 데이터 삭제."""
         cutoff = _utc_naive(datetime.now(UTC) - timedelta(days=days))
         count_row = self.conn.execute(
-            "SELECT COUNT(*) FROM articles WHERE COALESCE(published, collected_at) < ?", [cutoff]
+            "SELECT COUNT(*) FROM articles WHERE category = ? AND COALESCE(published, collected_at) < ?",
+            [category, cutoff],
         ).fetchone()
         to_delete = count_row[0] if count_row else 0
         self.conn.execute(
-            "DELETE FROM articles WHERE COALESCE(published, collected_at) < ?", [cutoff]
+            "DELETE FROM articles WHERE category = ? AND COALESCE(published, collected_at) < ?",
+            [category, cutoff],
         )
         return to_delete

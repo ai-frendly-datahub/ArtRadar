@@ -130,7 +130,7 @@ def run(
 
     storage = RadarStorage(settings.database_path)
     storage.upsert_articles(validated_articles)
-    _ = storage.delete_older_than(keep_days)
+    _ = storage.delete_older_than(category_cfg.category_name, keep_days)
 
     with SearchIndex(settings.search_db_path) as search_idx:
         for article in validated_articles:

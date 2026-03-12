@@ -64,8 +64,7 @@ class TestRadarStorageUpsert:
         assert result[0] == 1
         storage.close()
 
-    def test_upsert_duplicate_link_overwrites(self, temp_db: Path) -> None:
-        """upsert_articles with duplicate link overwrites previous article."""
+    def test_upsert_duplicate_link_overwrites_same_category(self, temp_db: Path) -> None:
         storage = RadarStorage(temp_db)
         article1 = Article(
             title="Original Title",
@@ -89,10 +88,38 @@ class TestRadarStorageUpsert:
 
         # Verify only one article exists with updated title
         result = storage.conn.execute(
-            "SELECT title FROM articles WHERE link = ?",
-            ["https://example.com/art1"],
+            "SELECT title FROM articles WHERE category = ? AND link = ?",
+            ["art", "https://example.com/art1"],
         ).fetchone()
         assert result[0] == "Updated Title"
+        storage.close()
+
+    def test_upsert_same_link_keeps_separate_categories(self, temp_db: Path) -> None:
+        storage = RadarStorage(temp_db)
+        art_article = Article(
+            title="Art News",
+            link="https://example.com/shared",
+            summary="News summary",
+            published=datetime.now(UTC),
+            source="rss",
+            category="art",
+        )
+        artwork_article = Article(
+            title="Artwork Object",
+            link="https://example.com/shared",
+            summary="Artwork summary",
+            published=datetime.now(UTC),
+            source="museum",
+            category="artwork",
+        )
+
+        storage.upsert_articles([art_article, artwork_article])
+
+        result = storage.conn.execute(
+            "SELECT category, title FROM articles WHERE link = ? ORDER BY category",
+            ["https://example.com/shared"],
+        ).fetchall()
+        assert result == [("art", "Art News"), ("artwork", "Artwork Object")]
         storage.close()
 
     def test_upsert_multiple_articles(self, temp_db: Path) -> None:
@@ -218,7 +245,7 @@ class TestRadarStorageRetention:
         )
         storage.upsert_articles([recent_article, old_article])
 
-        deleted_count = storage.delete_older_than(days=90)
+        deleted_count = storage.delete_older_than("art", days=90)
         assert deleted_count == 1
 
         # Verify old article was deleted
@@ -244,8 +271,41 @@ class TestRadarStorageRetention:
         ]
         storage.upsert_articles(articles)
 
-        deleted_count = storage.delete_older_than(days=90)
+        deleted_count = storage.delete_older_than("art", days=90)
         assert deleted_count == 3
+        storage.close()
+
+    def test_delete_older_than_only_affects_requested_category(self, temp_db: Path) -> None:
+        storage = RadarStorage(temp_db)
+        now = datetime.now(UTC)
+        storage.upsert_articles(
+            [
+                Article(
+                    title="Old Art",
+                    link="https://example.com/old-art",
+                    summary="Old art summary",
+                    published=now - timedelta(days=100),
+                    source="rss",
+                    category="art",
+                ),
+                Article(
+                    title="Old Artwork",
+                    link="https://example.com/old-artwork",
+                    summary="Old artwork summary",
+                    published=now - timedelta(days=100),
+                    source="museum",
+                    category="artwork",
+                ),
+            ]
+        )
+
+        deleted = storage.delete_older_than("art", days=90)
+        assert deleted == 1
+        remaining_art = storage.recent_articles("art", days=365)
+        remaining_artwork = storage.recent_articles("artwork", days=365)
+        assert remaining_art == []
+        assert len(remaining_artwork) == 1
+        assert remaining_artwork[0].title == "Old Artwork"
         storage.close()
 
 
