@@ -34,7 +34,7 @@ def cleanup_date_directories(base_dir: Path, *, keep_days: int, today: date | No
         if not child.is_dir():
             continue
         try:
-            child_date = datetime.strptime(child.name, "%Y-%m-%d").date()
+            child_date = date.fromisoformat(child.name)
         except ValueError:
             continue
 
@@ -58,12 +58,12 @@ def cleanup_dated_reports(report_dir: Path, *, keep_days: int, today: date | Non
         stem = html_file.stem
         if len(stem) >= 8 and stem[-8:].isdigit():
             try:
-                stamp = datetime.strptime(stem[-8:], "%Y%m%d").date()
+                stamp = date.fromisoformat(f"{stem[-8:-4]}-{stem[-4:-2]}-{stem[-2:]}")
             except ValueError:
                 stamp = None
         elif len(stem) == 10:
             try:
-                stamp = datetime.strptime(stem, "%Y-%m-%d").date()
+                stamp = date.fromisoformat(stem)
             except ValueError:
                 stamp = None
 

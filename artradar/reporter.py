@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-import re
 import shutil
 import datetime as dt
 from datetime import datetime, timezone
 from collections import Counter
 from collections.abc import Iterable
-from datetime import timezone
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
