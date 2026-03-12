@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import datetime as dt
 import tempfile
-from datetime import UTC, datetime
+from datetime import timezone
 from pathlib import Path
 
 import pytest
@@ -23,10 +24,22 @@ def _make_article() -> Article:
         title="Test Artwork Report",
         link="https://example.com/artwork",
         summary="A test summary about painting and museum collections.",
-        published=datetime.now(UTC),
+        published=dt.datetime.now(timezone.utc),
         source="Artnet News",
         category="art",
         matched_entities={"genre": ["painting"]},
+    )
+
+
+def _make_article_for_date(title: str, published: dt.datetime | None) -> Article:
+    return Article(
+        title=title,
+        link=f"https://example.com/{title.lower().replace(' ', '-')}",
+        summary="Date-focused test article.",
+        published=published,
+        source="Artnet News",
+        category="art",
+        matched_entities={},
     )
 
 
@@ -56,7 +69,7 @@ def test_generate_report_contains_chartjs_443() -> None:
     with tempfile.TemporaryDirectory() as tmpdir:
         output_path = Path(tmpdir) / "report.html"
 
-        generate_report(
+        _ = generate_report(
             category=_make_category(),
             articles=[_make_article()],
             output_path=output_path,
@@ -75,7 +88,7 @@ def test_generate_report_contains_standard_charts() -> None:
     with tempfile.TemporaryDirectory() as tmpdir:
         output_path = Path(tmpdir) / "report.html"
 
-        generate_report(
+        _ = generate_report(
             category=_make_category(),
             articles=[_make_article()],
             output_path=output_path,
@@ -102,7 +115,7 @@ def test_generate_report_contains_error_section() -> None:
     with tempfile.TemporaryDirectory() as tmpdir:
         output_path = Path(tmpdir) / "report.html"
 
-        generate_report(
+        _ = generate_report(
             category=_make_category(),
             articles=[],
             output_path=output_path,
@@ -122,7 +135,7 @@ def test_generate_report_handles_empty_articles() -> None:
     with tempfile.TemporaryDirectory() as tmpdir:
         output_path = Path(tmpdir) / "report.html"
 
-        generate_report(
+        _ = generate_report(
             category=_make_category(),
             articles=[],
             output_path=output_path,
@@ -149,3 +162,55 @@ def test_generate_index_html_lists_reports() -> None:
         assert index_path.exists()
         assert "art_report.html" in content
         assert "market_report.html" in content
+
+
+@pytest.mark.unit
+def test_generate_report_contains_date_filter_controls() -> None:
+    from artradar.reporter import generate_report
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        output_path = Path(tmpdir) / "report.html"
+
+        _ = generate_report(
+            category=_make_category(),
+            articles=[
+                _make_article_for_date(
+                    "Dated One", dt.datetime(2026, 3, 12, 10, 0, tzinfo=timezone.utc)
+                ),
+                _make_article_for_date(
+                    "Dated Two", dt.datetime(2026, 3, 11, 10, 0, tzinfo=timezone.utc)
+                ),
+            ],
+            output_path=output_path,
+            stats={"sources": 1, "collected": 2, "matched": 0, "window_days": 7},
+            errors=[],
+        )
+
+        content = output_path.read_text(encoding="utf-8")
+        assert "Date-based review" in content
+        assert 'id="dateFilter"' in content
+
+
+@pytest.mark.unit
+def test_generate_report_contains_daily_summary_and_undated_bucket() -> None:
+    from artradar.reporter import generate_report
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        output_path = Path(tmpdir) / "report.html"
+
+        _ = generate_report(
+            category=_make_category(),
+            articles=[
+                _make_article_for_date(
+                    "Dated One", dt.datetime(2026, 3, 12, 10, 0, tzinfo=timezone.utc)
+                ),
+                _make_article_for_date("Undated", None),
+            ],
+            output_path=output_path,
+            stats={"sources": 1, "collected": 2, "matched": 0, "window_days": 7},
+            errors=[],
+        )
+
+        content = output_path.read_text(encoding="utf-8")
+        assert "Articles by day" in content
+        assert "Undated articles" in content

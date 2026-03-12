@@ -57,6 +57,7 @@ ArtRadar/
 - `resilience.py`: circuit breaker로 source 장애 격리
 - `exceptions.py`: `NetworkError`, `ParseError`, `SourceError` 계층 사용
 - Smithsonian API는 `SMITHSONIAN_API_KEY` 필요
+- `reporter.py`: 타임라인 + 날짜 필터 기반으로 날짜별 기사 확인 지원
 
 ## COMMANDS
 

@@ -25,6 +25,11 @@ pytest tests/integration -m integration
 
 매일 10:00 UTC (한국 19:00) 자동 수집 후 GitHub Pages 배포.
 
+## 날짜 기준 확인
+
+- 리포트의 `Article Timeline` 차트로 날짜별 수집량을 확인할 수 있습니다.
+- `Date-based review` 섹션의 날짜 필터로 특정 날짜 기사만 카드 목록에서 바로 확인할 수 있습니다.
+
 ## 참고
 
 - Smithsonian 소스는 `SMITHSONIAN_API_KEY` 환경변수가 있어야 활성 수집됩니다.

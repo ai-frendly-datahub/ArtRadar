@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import datetime as dt
 from collections import Counter
 from collections.abc import Iterable
-from datetime import UTC, datetime
+from datetime import timezone
 from pathlib import Path
 from typing import Protocol, cast
 
@@ -28,6 +29,7 @@ def generate_report(
 
     articles_list = list(articles)
     entity_counts = _count_entities(articles_list)
+    date_counts, undated_count = _count_articles_by_day(articles_list)
 
     articles_json: list[dict[str, object]] = []
     for article in articles_list:
@@ -52,9 +54,11 @@ def generate_report(
         category=category,
         articles=articles_list,
         articles_json=articles_json,
-        generated_at=datetime.now(UTC),
+        generated_at=dt.datetime.now(timezone.utc),
         stats=stats,
         entity_counts=entity_counts,
+        date_counts=date_counts,
+        undated_count=undated_count,
         errors=errors or [],
     )
     _ = output_path.write_text(rendered, encoding="utf-8")
@@ -69,6 +73,17 @@ def _count_entities(articles: Iterable[Article]) -> Counter[str]:
     return counter
 
 
+def _count_articles_by_day(articles: Iterable[Article]) -> tuple[list[tuple[str, int]], int]:
+    dated: Counter[str] = Counter()
+    undated = 0
+    for article in articles:
+        if article.published:
+            dated[article.published.date().isoformat()] += 1
+        else:
+            undated += 1
+    return sorted(dated.items(), reverse=True), undated
+
+
 def generate_index_html(report_dir: Path) -> Path:
     """Generate an index.html that lists all available report files."""
     report_dir.mkdir(parents=True, exist_ok=True)
@@ -78,7 +93,7 @@ def generate_index_html(report_dir: Path) -> Path:
         key=lambda p: p.name,
     )
 
-    reports = []
+    reports: list[dict[str, str]] = []
     for html_file in html_files:
         name = html_file.stem
         display_name = name.replace("_report", "").replace("_", " ").title()
@@ -87,7 +102,7 @@ def generate_index_html(report_dir: Path) -> Path:
     template = cast(_TemplateRenderer, Template(_INDEX_TEMPLATE))
     rendered = template.render(
         reports=reports,
-        generated_at=datetime.now(UTC),
+        generated_at=dt.datetime.now(timezone.utc),
     )
 
     index_path = report_dir / "index.html"
@@ -109,6 +124,8 @@ _REPORT_TEMPLATE = """<!doctype html>
     .muted { color: #475569; font-size: 13px; }
     .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #e0f2fe; color: #0369a1; font-size: 12px; margin-right: 6px; }
     .chip { display: inline-block; padding: 4px 8px; border-radius: 8px; background: #0ea5e9; color: white; font-size: 12px; margin: 4px 4px 0 0; }
+    .control { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 12px 0 16px 0; }
+    .control select { padding: 8px 10px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; color: #0f172a; }
     .articles { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; }
     a { color: #0f172a; text-decoration: none; }
     a:hover { text-decoration: underline; }
@@ -196,10 +213,37 @@ _REPORT_TEMPLATE = """<!doctype html>
   </div>
   {% endif %}
 
+  <h2>Date-based review</h2>
+  <div class="card">
+    <div class="control">
+      <label for="dateFilter"><strong>Date filter</strong></label>
+      <select id="dateFilter">
+        <option value="all">All dates</option>
+        {% for day, count in date_counts %}
+        <option value="{{ day }}">{{ day }} ({{ count }})</option>
+        {% endfor %}
+        {% if undated_count %}
+        <option value="undated">Undated articles ({{ undated_count }})</option>
+        {% endif %}
+      </select>
+      <span class="muted">Filter article cards by published date.</span>
+    </div>
+
+    <div class="muted" style="margin-bottom:8px;">Articles by day</div>
+    <div>
+      {% for day, count in date_counts %}
+      <span class="pill">{{ day }} · {{ count }}</span>
+      {% endfor %}
+      {% if undated_count %}
+      <span class="pill">Undated articles · {{ undated_count }}</span>
+      {% endif %}
+    </div>
+  </div>
+
   <h2>Recent articles</h2>
   <div class="articles">
     {% for article in articles %}
-    <div class="card">
+    <div class="card article-card" data-day="{{ article.published.date().isoformat() if article.published else 'undated' }}">
       <a href="{{ article.link }}" target="_blank" rel="noopener noreferrer"><strong>{{ article.title }}</strong></a>
       <div class="muted">{{ article.source }}{% if article.published %} · {{ article.published.date().isoformat() }}{% endif %}</div>
       <div class="muted">{{ article.summary[:220] }}{% if article.summary|length > 220 %}...{% endif %}</div>
@@ -329,6 +373,19 @@ _REPORT_TEMPLATE = """<!doctype html>
 
       const timeline = buildTimeline(articles);
       const sources = buildSources(articles);
+      const dateFilter = document.getElementById("dateFilter");
+      const articleCards = Array.from(document.querySelectorAll(".article-card"));
+
+      if (dateFilter) {
+        dateFilter.addEventListener("change", function () {
+          const selected = String(dateFilter.value || "all");
+          for (const card of articleCards) {
+            const day = String(card.getAttribute("data-day") || "undated");
+            const visible = selected === "all" || day === selected;
+            card.style.display = visible ? "block" : "none";
+          }
+        });
+      }
 
       const entityCanvas = document.getElementById("chartEntities");
       if (entityCanvas && entityPairs.length) {

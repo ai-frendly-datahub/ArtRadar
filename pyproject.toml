@@ -94,6 +94,7 @@ select = [
 ignore = [
     "E501",  # line too long (handled by black)
     "I001",
+    "UP017",
 ]
 extend-exclude = [
     ".git",
