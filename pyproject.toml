@@ -53,10 +53,10 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/<username>/ArtRadar"
-Documentation = "https://github.com/<username>/ArtRadar/tree/main/docs"
-Repository = "https://github.com/<username>/ArtRadar"
-Issues = "https://github.com/<username>/ArtRadar/issues"
+Homepage = "https://github.com/ai-frendly-datahub/ArtRadar"
+Documentation = "https://github.com/ai-frendly-datahub/ArtRadar/tree/main/docs"
+Repository = "https://github.com/ai-frendly-datahub/ArtRadar"
+Issues = "https://github.com/ai-frendly-datahub/ArtRadar/issues"
 
 # Black formatter configuration
 [tool.black]

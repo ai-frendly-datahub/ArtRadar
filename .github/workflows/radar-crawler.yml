@@ -59,6 +59,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: artradar-db-${{ github.run_number }}
-          path: data/radar_data.duckdb
+          path: data/art_data.duckdb
           retention-days: 30
           if-no-files-found: ignore
