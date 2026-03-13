@@ -2,16 +2,21 @@ from __future__ import annotations
 
 import html
 import os
+import threading
 import time
-from datetime import UTC, datetime
+from concurrent.futures import Future, ThreadPoolExecutor
+from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from time import struct_time
 from urllib.parse import urlsplit, urlunsplit
+from urllib.parse import urlparse
 
 import feedparser
 import requests
 from pybreaker import CircuitBreakerError
+from requests.adapters import HTTPAdapter
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+from urllib3.util.retry import Retry
 
 from .exceptions import NetworkError, ParseError, SourceError
 from .models import Article, Source
@@ -22,11 +27,58 @@ _DEFAULT_HEADERS: dict[str, str] = {
 }
 
 
+class RateLimiter:
+    def __init__(self, min_interval: float = 0.5):
+        self._min_interval: float = min_interval
+        self._last_request: float = 0.0
+        self._lock: threading.Lock = threading.Lock()
+
+    def acquire(self) -> None:
+        with self._lock:
+            now = time.monotonic()
+            elapsed = now - self._last_request
+            if elapsed < self._min_interval:
+                time.sleep(self._min_interval - elapsed)
+            self._last_request = time.monotonic()
+
+
+def _resolve_max_workers(max_workers: int | None = None) -> int:
+    if max_workers is None:
+        raw_value = os.environ.get("RADAR_MAX_WORKERS", "5")
+        try:
+            parsed = int(raw_value)
+        except ValueError:
+            parsed = 5
+    else:
+        parsed = max_workers
+
+    return max(1, min(parsed, 10))
+
+
+def _create_session() -> requests.Session:
+    session = requests.Session()
+    session.headers.update(_DEFAULT_HEADERS)
+
+    retry_strategy = Retry(
+        total=3,
+        backoff_factor=1,
+        status_forcelist=[429, 500, 502, 503, 504],
+        allowed_methods=frozenset(["GET"]),
+        raise_on_status=False,
+    )
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+
+    return session
+
+
 def _fetch_url_with_retry(
     url: str,
     timeout: int,
     headers: dict[str, str] | None = None,
     params: dict[str, str | int | bool] | None = None,
+    session: requests.Session | None = None,
 ) -> requests.Response:
     merged = {**_DEFAULT_HEADERS, **(headers or {})}
 
@@ -37,7 +89,10 @@ def _fetch_url_with_retry(
         reraise=True,
     )
     def _fetch() -> requests.Response:
-        response = requests.get(url, timeout=timeout, headers=merged, params=params)
+        if session is not None:
+            response = session.get(url, timeout=timeout, headers=merged, params=params)
+        else:
+            response = requests.get(url, timeout=timeout, headers=merged, params=params)
         response.raise_for_status()
         return response
 
@@ -50,74 +105,117 @@ def collect_sources(
     category: str,
     limit_per_source: int = 30,
     timeout: int = 15,
+    min_interval_per_host: float = 0.5,
+    max_workers: int | None = None,
 ) -> tuple[list[Article], list[str]]:
     articles: list[Article] = []
     errors: list[str] = []
     manager = get_circuit_breaker_manager()
 
-    for source in sources:
+    workers = _resolve_max_workers(max_workers)
+    source_hosts: dict[str, str] = {
+        source.name: (urlparse(source.url).netloc.lower() or source.name) for source in sources
+    }
+    rate_limiters: dict[str, RateLimiter] = {
+        host: RateLimiter(min_interval=min_interval_per_host) for host in set(source_hosts.values())
+    }
+    session = _create_session()
+
+    def _collect_for_source(source: Source) -> tuple[list[Article], list[str]]:
+        host = source_hosts[source.name]
+        rate_limiters[host].acquire()
+
         try:
             breaker = manager.get_breaker(source.name)
-            if source.type.lower() == "rss":
-                articles.extend(
-                    breaker.call(
-                        _collect_rss,
-                        source,
-                        category=category,
-                        limit=limit_per_source,
-                        timeout=timeout,
-                    )
-                )
-            elif source.type.lower() == "met_museum":
-                articles.extend(
-                    breaker.call(
-                        _collect_met_museum,
-                        source,
-                        category=category,
-                        limit=limit_per_source,
-                        timeout=timeout,
-                    )
-                )
-            elif source.type.lower() == "aic":
-                articles.extend(
-                    breaker.call(
-                        _collect_aic,
-                        source,
-                        category=category,
-                        limit=limit_per_source,
-                        timeout=timeout,
-                    )
-                )
-            elif source.type.lower() == "smithsonian":
-                articles.extend(
-                    breaker.call(
-                        _collect_smithsonian,
-                        source,
-                        category=category,
-                        limit=limit_per_source,
-                        timeout=timeout,
-                    )
-                )
-            else:
-                errors.append(f"{source.name}: Unsupported source type '{source.type}'")
+            result = breaker.call(
+                _collect_single,
+                source,
+                category=category,
+                limit=limit_per_source,
+                timeout=timeout,
+                session=session,
+            )
+            return result, []
         except CircuitBreakerError:
-            errors.append(f"{source.name}: Circuit breaker open (source unavailable)")
+            return [], [f"{source.name}: Circuit breaker open (source unavailable)"]
         except SourceError as exc:
-            errors.append(str(exc))
+            return [], [str(exc)]
         except (NetworkError, ParseError) as exc:
-            errors.append(f"{source.name}: {exc}")
+            return [], [f"{source.name}: {exc}"]
         except Exception as exc:
-            errors.append(f"{source.name}: Unexpected error - {type(exc).__name__}: {exc}")
+            return [], [f"{source.name}: Unexpected error - {type(exc).__name__}: {exc}"]
+
+    try:
+        if workers == 1:
+            for source in sources:
+                source_articles, source_errors = _collect_for_source(source)
+                articles.extend(source_articles)
+                errors.extend(source_errors)
+        else:
+            with ThreadPoolExecutor(max_workers=workers) as executor:
+                future_map: list[Future[tuple[list[Article], list[str]]]] = [
+                    executor.submit(_collect_for_source, source) for source in sources
+                ]
+
+                for future in future_map:
+                    source_articles, source_errors = future.result()
+                    articles.extend(source_articles)
+                    errors.extend(source_errors)
+    finally:
+        session.close()
 
     return articles, errors
 
 
-def _collect_rss(source: Source, *, category: str, limit: int, timeout: int) -> list[Article]:
+def _collect_single(
+    source: Source,
+    *,
+    category: str,
+    limit: int,
+    timeout: int,
+    session: requests.Session | None = None,
+) -> list[Article]:
+    source_type = source.type.lower()
+    if source_type == "rss":
+        return _collect_rss(
+            source, category=category, limit=limit, timeout=timeout, session=session
+        )
+    if source_type == "met_museum":
+        return _collect_met_museum(
+            source,
+            category=category,
+            limit=limit,
+            timeout=timeout,
+            session=session,
+        )
+    if source_type == "aic":
+        return _collect_aic(
+            source, category=category, limit=limit, timeout=timeout, session=session
+        )
+    if source_type == "smithsonian":
+        return _collect_smithsonian(
+            source,
+            category=category,
+            limit=limit,
+            timeout=timeout,
+            session=session,
+        )
+    raise SourceError(source.name, f"Unsupported source type '{source.type}'")
+
+
+def _collect_rss(
+    source: Source,
+    *,
+    category: str,
+    limit: int,
+    timeout: int,
+    session: requests.Session | None = None,
+) -> list[Article]:
     if source.type.lower() != "rss":
         raise SourceError(source.name, f"Unsupported source type '{source.type}'")
 
     try:
-        response = _fetch_url_with_retry(source.url, timeout)
+        response = _fetch_url_with_retry(source.url, timeout, session=session)
     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as exc:
         raise NetworkError(f"Network error fetching {source.name}: {exc}") from exc
     except requests.exceptions.RequestException as exc:
@@ -152,7 +250,12 @@ def _collect_rss(source: Source, *, category: str, limit: int, timeout: int) -> 
 
 
 def _collect_met_museum(
-    source: Source, *, category: str, limit: int, timeout: int
+    source: Source,
+    *,
+    category: str,
+    limit: int,
+    timeout: int,
+    session: requests.Session | None = None,
 ) -> list[Article]:
     search_url = _replace_path(source.url, "/public/collection/v1/search")
     try:
@@ -160,6 +263,7 @@ def _collect_met_museum(
             search_url,
             timeout,
             params={"q": "art", "hasImages": True},
+            session=session,
         )
         search_data = search_response.json()
         object_ids = list(search_data.get("objectIDs") or [])[:limit]
@@ -174,7 +278,7 @@ def _collect_met_museum(
     try:
         for object_id in object_ids:
             detail_response = _fetch_url_with_retry(
-                f"{source.url.rstrip('/')}/{object_id}", timeout
+                f"{source.url.rstrip('/')}/{object_id}", timeout, session=session
             )
             detail = detail_response.json()
             title = str(detail.get("title") or "Untitled").strip() or "Untitled"
@@ -204,7 +308,14 @@ def _collect_met_museum(
         raise ParseError(f"Failed to parse API response from {source.name}: {exc}") from exc
 
 
-def _collect_aic(source: Source, *, category: str, limit: int, timeout: int) -> list[Article]:
+def _collect_aic(
+    source: Source,
+    *,
+    category: str,
+    limit: int,
+    timeout: int,
+    session: requests.Session | None = None,
+) -> list[Article]:
     try:
         response = _fetch_url_with_retry(
             source.url,
@@ -213,6 +324,7 @@ def _collect_aic(source: Source, *, category: str, limit: int, timeout: int) -> 
                 "limit": limit,
                 "fields": "id,title,artist_display,date_display,medium_display,department_title",
             },
+            session=session,
         )
         data = response.json()
         rows = list(data.get("data") or [])
@@ -244,7 +356,12 @@ def _collect_aic(source: Source, *, category: str, limit: int, timeout: int) -> 
 
 
 def _collect_smithsonian(
-    source: Source, *, category: str, limit: int, timeout: int
+    source: Source,
+    *,
+    category: str,
+    limit: int,
+    timeout: int,
+    session: requests.Session | None = None,
 ) -> list[Article]:
     api_key = os.environ.get("SMITHSONIAN_API_KEY", "").strip()
     if not api_key:
@@ -264,6 +381,7 @@ def _collect_smithsonian(
                 "row_group": "objects",
                 "api_key": api_key,
             },
+            session=session,
         )
         data = response.json()
         rows = list((data.get("response") or {}).get("rows") or [])
@@ -308,17 +426,17 @@ def _collect_smithsonian(
 def _extract_datetime(entry: dict[str, object]) -> datetime | None:
     published_parsed = entry.get("published_parsed")
     if isinstance(published_parsed, struct_time):
-        return datetime.fromtimestamp(time.mktime(published_parsed), tz=UTC)
+        return datetime.fromtimestamp(time.mktime(published_parsed), tz=timezone.utc)
     updated_parsed = entry.get("updated_parsed")
     if isinstance(updated_parsed, struct_time):
-        return datetime.fromtimestamp(time.mktime(updated_parsed), tz=UTC)
+        return datetime.fromtimestamp(time.mktime(updated_parsed), tz=timezone.utc)
     for key in ("published", "updated", "date"):
         raw = entry.get(key)
         if raw:
             try:
                 parsed = parsedate_to_datetime(str(raw))
                 if parsed.tzinfo is None:
-                    parsed = parsed.replace(tzinfo=UTC)
+                    parsed = parsed.replace(tzinfo=timezone.utc)
                 return parsed
             except Exception:
                 continue
@@ -338,7 +456,7 @@ def _parse_unix_timestamp(value: object) -> datetime | None:
     if value is None:
         return None
     try:
-        return datetime.fromtimestamp(int(str(value)), tz=UTC)
+        return datetime.fromtimestamp(int(str(value)), tz=timezone.utc)
     except (TypeError, ValueError):
         return None
 

@@ -35,8 +35,8 @@ jobs:
           pip install -r requirements.txt
       - name: Run ArtRadar categories
         run: |
-          python main.py --category art --recent-days 7 --keep-days 90 --generate-report
-          python main.py --category artwork --recent-days 30 --keep-days 180 --generate-report
+          python main.py --category art --recent-days 7 --keep-days 90 --keep-raw-days 180 --keep-report-days 90 --snapshot-db --generate-report
+          python main.py --category artwork --recent-days 30 --keep-days 180 --keep-raw-days 180 --keep-report-days 90 --snapshot-db --generate-report
       - name: Generate index.html
         run: |
           python -c "from artradar.reporter import generate_index_html; from pathlib import Path; generate_index_html(Path('reports'))"
@@ -63,3 +63,16 @@ jobs:
           path: data/art_data.duckdb
           retention-days: 30
           if-no-files-found: ignore
+      - name: Notify on failure
+        if: failure()
+        run: |
+          curl -s -X POST "${{ secrets.NOTIFICATION_WEBHOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "repo": "${{ github.repository }}",
+              "workflow": "${{ github.workflow }}",
+              "run_id": "${{ github.run_id }}",
+              "run_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+              "status": "failure",
+              "timestamp": "${{ github.event.head_commit.timestamp }}"
+            }' || true

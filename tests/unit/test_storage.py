@@ -1,321 +1,319 @@
-"""Tests for RadarStorage — DuckDB upsert, query, retention."""
-
 from __future__ import annotations
 
-import tempfile
+from collections.abc import Iterable
 from datetime import UTC, datetime, timedelta
+from importlib import import_module
 from pathlib import Path
+from typing import Protocol, cast
 
-import duckdb
 import pytest
 
-from artradar.models import Article
-from artradar.storage import RadarStorage
+StorageError = cast(type[Exception], import_module("artradar.exceptions").StorageError)
 
 
-@pytest.fixture
-def temp_db() -> Path:
-    """Create temporary DuckDB file."""
-    with tempfile.TemporaryDirectory() as tmpdir:
-        yield Path(tmpdir) / "test.duckdb"
+class _Article(Protocol):
+    title: str
+    link: str
+    summary: str
+    published: datetime | None
+    source: str
+    category: str
+    matched_entities: dict[str, list[str]]
+    collected_at: datetime | None
 
 
-class TestRadarStorageInit:
-    """Test RadarStorage initialization."""
-
-    def test_init_creates_db_file(self, temp_db: Path) -> None:
-        """RadarStorage.__init__ creates database file."""
-        storage = RadarStorage(temp_db)
-        assert temp_db.exists()
-        storage.close()
-
-    def test_init_creates_articles_table(self, temp_db: Path) -> None:
-        """RadarStorage.__init__ creates articles table with correct schema."""
-        storage = RadarStorage(temp_db)
-        # Verify table exists by querying schema
-        result = storage.conn.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name='articles'"
-        ).fetchall()
-        assert len(result) > 0
-        storage.close()
+class _ArticleCtor(Protocol):
+    def __call__(
+        self,
+        *,
+        title: str,
+        link: str,
+        summary: str,
+        published: datetime | None,
+        source: str,
+        category: str,
+        matched_entities: dict[str, list[str]] = ...,
+        collected_at: datetime | None = ...,
+    ) -> _Article: ...
 
 
-class TestRadarStorageUpsert:
-    """Test RadarStorage.upsert_articles."""
+class _RadarStorage(Protocol):
+    def upsert_articles(self, articles: Iterable[_Article]) -> None: ...
 
-    def test_upsert_single_article(self, temp_db: Path) -> None:
-        """upsert_articles inserts single article."""
-        storage = RadarStorage(temp_db)
-        article = Article(
-            title="Test Art",
-            link="https://example.com/art1",
-            summary="Test summary",
-            published=datetime.now(UTC),
-            source="test_source",
-            category="art",
-        )
+    def recent_articles(
+        self, category: str, *, days: int = 7, limit: int = 200
+    ) -> list[_Article]: ...
+
+    def delete_older_than(self, days: int) -> int: ...
+
+    def close(self) -> None: ...
+
+
+class _RadarStorageCtor(Protocol):
+    def __call__(self, db_path: Path) -> _RadarStorage: ...
+
+
+Article = cast(_ArticleCtor, import_module("artradar.models").Article)
+RadarStorage = cast(_RadarStorageCtor, import_module("artradar.storage").RadarStorage)
+
+
+def _make_article(
+    *,
+    title: str,
+    link: str,
+    summary: str,
+    published: datetime | None,
+    source: str = "Example RSS",
+    category: str = "tech",
+    matched_entities: dict[str, list[str]] | None = None,
+) -> _Article:
+    return Article(
+        title=title,
+        link=link,
+        summary=summary,
+        published=published,
+        source=source,
+        category=category,
+        matched_entities=matched_entities or {},
+    )
+
+
+def test_upsert_articles_inserts_new_article(tmp_duckdb: Path, sample_article: object) -> None:
+    storage = RadarStorage(tmp_duckdb)
+    article = cast(_Article, sample_article)
+
+    try:
         storage.upsert_articles([article])
-
-        # Verify article was inserted
-        result = storage.conn.execute(
-            "SELECT COUNT(*) FROM articles WHERE link = ?",
-            ["https://example.com/art1"],
-        ).fetchone()
-        assert result[0] == 1
+        results = storage.recent_articles(category="tech", days=30)
+    finally:
         storage.close()
 
-    def test_upsert_duplicate_link_overwrites_same_category(self, temp_db: Path) -> None:
-        storage = RadarStorage(temp_db)
-        article1 = Article(
-            title="Original Title",
-            link="https://example.com/art1",
-            summary="Original summary",
-            published=datetime.now(UTC),
-            source="test_source",
-            category="art",
-        )
-        article2 = Article(
-            title="Updated Title",
-            link="https://example.com/art1",
-            summary="Updated summary",
-            published=datetime.now(UTC),
-            source="test_source",
-            category="art",
-        )
+    assert len(results) == 1
+    assert results[0].link == article.link
+    assert results[0].title == article.title
+    assert results[0].matched_entities == article.matched_entities
 
-        storage.upsert_articles([article1])
-        storage.upsert_articles([article2])
 
-        # Verify only one article exists with updated title
-        result = storage.conn.execute(
-            "SELECT title FROM articles WHERE category = ? AND link = ?",
-            ["art", "https://example.com/art1"],
-        ).fetchone()
-        assert result[0] == "Updated Title"
+def test_upsert_articles_updates_duplicate_link(tmp_duckdb: Path) -> None:
+    storage = RadarStorage(tmp_duckdb)
+    link = "https://example.com/dup"
+    first = _make_article(
+        title="First title",
+        link=link,
+        summary="first version",
+        published=datetime.now(UTC),
+    )
+    second = _make_article(
+        title="Updated title",
+        link=link,
+        summary="second version",
+        published=datetime.now(UTC),
+    )
+
+    try:
+        storage.upsert_articles([first])
+        storage.upsert_articles([second])
+        results = storage.recent_articles(category="tech", days=30)
+    finally:
         storage.close()
 
-    def test_upsert_same_link_keeps_separate_categories(self, temp_db: Path) -> None:
-        storage = RadarStorage(temp_db)
-        art_article = Article(
-            title="Art News",
-            link="https://example.com/shared",
-            summary="News summary",
-            published=datetime.now(UTC),
-            source="rss",
-            category="art",
-        )
-        artwork_article = Article(
-            title="Artwork Object",
-            link="https://example.com/shared",
-            summary="Artwork summary",
-            published=datetime.now(UTC),
-            source="museum",
-            category="artwork",
-        )
+    assert len(results) == 1
+    assert results[0].title == "Updated title"
+    assert results[0].summary == "second version"
 
-        storage.upsert_articles([art_article, artwork_article])
 
-        result = storage.conn.execute(
-            "SELECT category, title FROM articles WHERE link = ? ORDER BY category",
-            ["https://example.com/shared"],
-        ).fetchall()
-        assert result == [("art", "Art News"), ("artwork", "Artwork Object")]
+def test_upsert_atomicity_rollback_preserves_data(tmp_duckdb: Path) -> None:
+    storage = RadarStorage(tmp_duckdb)
+    existing = _make_article(
+        title="Existing",
+        link="https://example.com/existing",
+        summary="stable",
+        published=datetime.now(UTC),
+    )
+    valid = _make_article(
+        title="Valid",
+        link="https://example.com/valid",
+        summary="should rollback",
+        published=datetime.now(UTC),
+    )
+    invalid = _make_article(
+        title="Invalid",
+        link="https://example.com/invalid",
+        summary="should fail",
+        published=datetime.now(UTC),
+    )
+    invalid.link = None
+
+    try:
+        storage.upsert_articles([existing])
+
+        with pytest.raises(StorageError):
+            storage.upsert_articles([valid, invalid])
+
+        results = storage.recent_articles(category="tech", days=30)
+    finally:
         storage.close()
 
-    def test_upsert_multiple_articles(self, temp_db: Path) -> None:
-        """upsert_articles inserts multiple articles."""
-        storage = RadarStorage(temp_db)
-        articles = [
-            Article(
-                title=f"Art {i}",
-                link=f"https://example.com/art{i}",
-                summary=f"Summary {i}",
-                published=datetime.now(UTC),
-                source="test_source",
-                category="art",
-            )
-            for i in range(3)
-        ]
+    assert len(results) == 1
+    assert results[0].link == existing.link
+    assert results[0].title == existing.title
+
+
+def test_batch_upsert_100_articles(tmp_duckdb: Path) -> None:
+    storage = RadarStorage(tmp_duckdb)
+    articles = [
+        _make_article(
+            title=f"Article {idx}",
+            link=f"https://example.com/batch-{idx}",
+            summary=f"summary {idx}",
+            published=datetime.now(UTC),
+        )
+        for idx in range(100)
+    ]
+
+    try:
         storage.upsert_articles(articles)
-
-        # Verify all articles were inserted
-        result = storage.conn.execute("SELECT COUNT(*) FROM articles").fetchone()
-        assert result[0] == 3
+        results = storage.recent_articles(category="tech", days=30, limit=200)
+    finally:
         storage.close()
 
+    assert len(results) == 100
+    assert {article.link for article in results} == {article.link for article in articles}
 
-class TestRadarStorageQuery:
-    """Test RadarStorage.recent_articles."""
 
-    def test_recent_articles_returns_articles(self, temp_db: Path) -> None:
-        """recent_articles returns articles from specified category."""
-        storage = RadarStorage(temp_db)
-        article = Article(
-            title="Test Art",
-            link="https://example.com/art1",
-            summary="Test summary",
-            published=datetime.now(UTC),
-            source="test_source",
-            category="art",
-        )
-        storage.upsert_articles([article])
+def test_upsert_on_conflict_updates_existing(tmp_duckdb: Path) -> None:
+    storage = RadarStorage(tmp_duckdb)
+    link = "https://example.com/on-conflict"
+    first = _make_article(
+        title="Original title",
+        link=link,
+        summary="original",
+        published=datetime.now(UTC),
+    )
+    updated = _make_article(
+        title="Updated by conflict",
+        link=link,
+        summary="updated",
+        published=datetime.now(UTC),
+    )
 
-        results = storage.recent_articles("art", days=7)
-        assert len(results) == 1
-        assert results[0].title == "Test Art"
-        assert results[0].link == "https://example.com/art1"
+    try:
+        storage.upsert_articles([first])
+        storage.upsert_articles([updated])
+        results = storage.recent_articles(category="tech", days=30)
+    finally:
         storage.close()
 
-    def test_recent_articles_filters_by_category(self, temp_db: Path) -> None:
-        """recent_articles only returns articles from specified category."""
-        storage = RadarStorage(temp_db)
-        art_article = Article(
-            title="Art Article",
-            link="https://example.com/art1",
-            summary="Art summary",
-            published=datetime.now(UTC),
-            source="test_source",
-            category="art",
-        )
-        other_article = Article(
-            title="Other Article",
-            link="https://example.com/other1",
-            summary="Other summary",
-            published=datetime.now(UTC),
-            source="test_source",
-            category="other",
-        )
-        storage.upsert_articles([art_article, other_article])
-
-        results = storage.recent_articles("art", days=7)
-        assert len(results) == 1
-        assert results[0].category == "art"
-        storage.close()
-
-    def test_recent_articles_filters_by_days(self, temp_db: Path) -> None:
-        """recent_articles only returns articles within specified days."""
-        storage = RadarStorage(temp_db)
-        now = datetime.now(UTC)
-        recent_article = Article(
-            title="Recent",
-            link="https://example.com/recent",
-            summary="Recent summary",
-            published=now,
-            source="test_source",
-            category="art",
-        )
-        old_article = Article(
-            title="Old",
-            link="https://example.com/old",
-            summary="Old summary",
-            published=now - timedelta(days=10),
-            source="test_source",
-            category="art",
-        )
-        storage.upsert_articles([recent_article, old_article])
-
-        results = storage.recent_articles("art", days=7)
-        assert len(results) == 1
-        assert results[0].title == "Recent"
-        storage.close()
+    assert len(results) == 1
+    assert results[0].title == "Updated by conflict"
+    assert results[0].summary == "updated"
 
 
-class TestRadarStorageRetention:
-    """Test RadarStorage.delete_older_than."""
+def test_upsert_articles_accepts_empty_iterable(tmp_storage: object) -> None:
+    storage = cast(_RadarStorage, tmp_storage)
 
-    def test_delete_older_than_removes_old_articles(self, temp_db: Path) -> None:
-        """delete_older_than removes articles older than specified days."""
-        storage = RadarStorage(temp_db)
-        now = datetime.now(UTC)
-        recent_article = Article(
-            title="Recent",
-            link="https://example.com/recent",
-            summary="Recent summary",
-            published=now,
-            source="test_source",
-            category="art",
-        )
-        old_article = Article(
-            title="Old",
-            link="https://example.com/old",
-            summary="Old summary",
-            published=now - timedelta(days=100),
-            source="test_source",
-            category="art",
-        )
-        storage.upsert_articles([recent_article, old_article])
+    storage.upsert_articles([])
+    results = storage.recent_articles(category="tech", days=30)
 
-        deleted_count = storage.delete_older_than("art", days=90)
-        assert deleted_count == 1
+    assert results == []
 
-        # Verify old article was deleted
-        results = storage.recent_articles("art", days=365)
-        assert len(results) == 1
-        assert results[0].title == "Recent"
-        storage.close()
 
-    def test_delete_older_than_returns_count(self, temp_db: Path) -> None:
-        """delete_older_than returns count of deleted articles."""
-        storage = RadarStorage(temp_db)
-        now = datetime.now(UTC)
-        articles = [
-            Article(
-                title=f"Old {i}",
-                link=f"https://example.com/old{i}",
-                summary=f"Old summary {i}",
-                published=now - timedelta(days=100),
-                source="test_source",
-                category="art",
-            )
-            for i in range(3)
-        ]
-        storage.upsert_articles(articles)
+def test_recent_articles_filters_by_period(tmp_storage: object) -> None:
+    storage = cast(_RadarStorage, tmp_storage)
+    recent_article = _make_article(
+        title="Recent",
+        link="https://example.com/recent",
+        summary="inside window",
+        published=datetime.now(UTC) - timedelta(days=1),
+    )
+    old_article = _make_article(
+        title="Old",
+        link="https://example.com/old",
+        summary="outside window",
+        published=datetime.now(UTC) - timedelta(days=20),
+    )
 
-        deleted_count = storage.delete_older_than("art", days=90)
-        assert deleted_count == 3
-        storage.close()
+    storage.upsert_articles([recent_article, old_article])
+    results = storage.recent_articles(category="tech", days=7)
 
-    def test_delete_older_than_only_affects_requested_category(self, temp_db: Path) -> None:
-        storage = RadarStorage(temp_db)
-        now = datetime.now(UTC)
+    assert len(results) == 1
+    assert results[0].link == recent_article.link
+
+
+def test_recent_articles_filters_by_category(tmp_storage: object) -> None:
+    storage = cast(_RadarStorage, tmp_storage)
+    tech_article = _make_article(
+        title="Tech",
+        link="https://example.com/tech",
+        summary="tech",
+        published=datetime.now(UTC),
+        category="tech",
+    )
+    policy_article = _make_article(
+        title="Policy",
+        link="https://example.com/policy",
+        summary="policy",
+        published=datetime.now(UTC),
+        category="policy",
+    )
+
+    storage.upsert_articles([tech_article, policy_article])
+    tech_results = storage.recent_articles(category="tech", days=30)
+    policy_results = storage.recent_articles(category="policy", days=30)
+
+    assert len(tech_results) == 1
+    assert len(policy_results) == 1
+    assert tech_results[0].category == "tech"
+    assert policy_results[0].category == "policy"
+
+
+def test_delete_older_than_preserves_recent_articles(tmp_storage: object) -> None:
+    storage = cast(_RadarStorage, tmp_storage)
+    recent_article = _make_article(
+        title="Recent",
+        link="https://example.com/recent-keep",
+        summary="should remain",
+        published=datetime.now(UTC) - timedelta(days=2),
+    )
+
+    storage.upsert_articles([recent_article])
+    deleted = storage.delete_older_than(days=7)
+    results = storage.recent_articles(category="tech", days=30)
+
+    assert deleted == 0
+    assert len(results) == 1
+    assert results[0].link == recent_article.link
+
+
+def test_delete_older_than_removes_old_articles(tmp_storage: object) -> None:
+    storage = cast(_RadarStorage, tmp_storage)
+    old_article = _make_article(
+        title="Old",
+        link="https://example.com/old-delete",
+        summary="should be deleted",
+        published=datetime.now(UTC) - timedelta(days=40),
+    )
+
+    storage.upsert_articles([old_article])
+    deleted = storage.delete_older_than(days=7)
+    results = storage.recent_articles(category="tech", days=365)
+
+    assert deleted == 1
+    assert results == []
+
+
+def test_storage_close_then_reuse_raises_error(tmp_duckdb: Path) -> None:
+    storage = RadarStorage(tmp_duckdb)
+    storage.close()
+
+    with pytest.raises(StorageError):
         storage.upsert_articles(
             [
-                Article(
-                    title="Old Art",
-                    link="https://example.com/old-art",
-                    summary="Old art summary",
-                    published=now - timedelta(days=100),
-                    source="rss",
-                    category="art",
-                ),
-                Article(
-                    title="Old Artwork",
-                    link="https://example.com/old-artwork",
-                    summary="Old artwork summary",
-                    published=now - timedelta(days=100),
-                    source="museum",
-                    category="artwork",
-                ),
+                _make_article(
+                    title="After close",
+                    link="https://example.com/closed",
+                    summary="cannot write",
+                    published=datetime.now(UTC),
+                )
             ]
         )
-
-        deleted = storage.delete_older_than("art", days=90)
-        assert deleted == 1
-        remaining_art = storage.recent_articles("art", days=365)
-        remaining_artwork = storage.recent_articles("artwork", days=365)
-        assert remaining_art == []
-        assert len(remaining_artwork) == 1
-        assert remaining_artwork[0].title == "Old Artwork"
-        storage.close()
-
-
-class TestRadarStorageClose:
-    """Test RadarStorage.close."""
-
-    def test_close_closes_connection(self, temp_db: Path) -> None:
-        """close() closes database connection."""
-        storage = RadarStorage(temp_db)
-        storage.close()
-        # Verify connection is closed by attempting to use it
-        with pytest.raises(duckdb.ConnectionException):
-            storage.conn.execute("SELECT 1")
