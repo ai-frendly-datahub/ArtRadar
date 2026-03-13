@@ -3,7 +3,7 @@ from __future__ import annotations
 import threading
 
 import structlog
-from pybreaker import CircuitBreaker, CircuitBreakerListener, CircuitBreakerState, CircuitBreakerListener, CircuitBreakerState
+from pybreaker import CircuitBreaker, CircuitBreakerListener, CircuitBreakerState
 
 logger = structlog.get_logger(__name__)
 
