@@ -9,7 +9,6 @@ import requests
 
 from artradar.models import Source
 
-
 def _feed_entry(**overrides: object) -> dict[str, object]:
     entry: dict[str, object] = {
         "title": "Painting fair opens",

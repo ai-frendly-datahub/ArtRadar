@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import pytest
 
-
 @pytest.mark.unit
 def test_mcp_server_imports() -> None:
     from artradar.mcp_server.server import create_app

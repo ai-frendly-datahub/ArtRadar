@@ -13,7 +13,6 @@ from artradar.common.validators import (
 )
 from artradar.models import Article
 
-
 class TestNormalizeTitle:
     """Test title normalization."""
 

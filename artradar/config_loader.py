@@ -16,7 +16,6 @@ from .models import (
     TelegramSettings,
 )
 
-
 def _resolve_path(path_value: str, *, project_root: Path) -> Path:
     path = Path(path_value).expanduser()
     if path.is_absolute():

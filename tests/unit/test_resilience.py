@@ -13,7 +13,6 @@ from artradar.resilience import (
     get_circuit_breaker_manager,
 )
 
-
 class TestSourceCircuitBreakerListener:
     """Test SourceCircuitBreakerListener."""
 

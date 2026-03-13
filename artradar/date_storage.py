@@ -4,7 +4,6 @@ import shutil
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-
 def snapshot_database(
     db_path: Path,
     *,

@@ -5,7 +5,6 @@ from datetime import UTC, datetime
 from importlib import import_module
 from typing import Protocol, cast
 
-
 class _Article(Protocol):
     title: str
     link: str

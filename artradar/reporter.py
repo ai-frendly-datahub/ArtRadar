@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import shutil
 import datetime as dt
-from datetime import datetime, timezone
+import shutil
 from collections import Counter
 from collections.abc import Iterable
+from datetime import datetime, timezone
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader

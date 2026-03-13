@@ -9,7 +9,6 @@ import pytest
 
 from artradar.models import Article, CategoryConfig, Source
 
-
 def _make_category() -> CategoryConfig:
     return CategoryConfig(
         category_name="art",

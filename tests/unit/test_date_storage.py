@@ -10,7 +10,6 @@ from artradar.date_storage import (
     snapshot_database,
 )
 
-
 def test_snapshot_database_copies_duckdb_to_dated_dir(tmp_path: Path) -> None:
     db_path = tmp_path / "data" / "art_data.duckdb"
     db_path.parent.mkdir(parents=True)

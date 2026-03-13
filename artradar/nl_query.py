@@ -4,7 +4,6 @@ import re
 from collections.abc import Callable
 from dataclasses import dataclass
 
-
 @dataclass
 class ParsedQuery:
     search_text: str

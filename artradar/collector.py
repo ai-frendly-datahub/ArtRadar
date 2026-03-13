@@ -8,8 +8,7 @@ from concurrent.futures import Future, ThreadPoolExecutor
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from time import struct_time
-from urllib.parse import urlsplit, urlunsplit
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlsplit, urlunsplit
 
 import feedparser
 import requests
