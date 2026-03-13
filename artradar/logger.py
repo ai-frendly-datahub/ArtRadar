@@ -6,6 +6,7 @@ from typing import Any, cast
 
 import structlog
 
+
 def configure_logging(
     log_level: str | None = None,
     use_json: bool | None = None,

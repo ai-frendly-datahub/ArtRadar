@@ -9,6 +9,7 @@ from typing import cast
 
 import duckdb
 
+
 def _quote_identifier(identifier: str) -> str:
     return '"' + identifier.replace('"', '""') + '"'
 

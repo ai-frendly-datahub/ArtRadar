@@ -15,6 +15,7 @@ from urllib.parse import urlparse
 
 from artradar.models import Article
 
+
 def normalize_title(title: str) -> str:
     """
     Normalize article title by removing extra whitespace and special characters.

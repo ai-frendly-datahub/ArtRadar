@@ -11,6 +11,7 @@ from artradar.collector import RateLimiter, collect_sources
 from artradar.exceptions import NetworkError, SourceError
 from artradar.models import Article, Source
 
+
 def _build_sources(count: int) -> list[Source]:
     return [
         Source(name=f"source_{idx}", type="rss", url=f"https://example{idx}.com/feed")

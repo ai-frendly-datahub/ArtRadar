@@ -8,6 +8,7 @@ import requests
 
 from artradar.models import Source
 
+
 @pytest.mark.unit
 def test_collect_met_museum_parses_response() -> None:
     from artradar.collector import _collect_met_museum

@@ -6,6 +6,7 @@ from pathlib import Path
 from types import TracebackType
 from typing import cast
 
+
 @dataclass
 class SearchResult:
     link: str

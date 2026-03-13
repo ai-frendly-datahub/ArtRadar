@@ -15,6 +15,7 @@ from .tools import (
     handle_top_trends,
 )
 
+
 def _db_path() -> Path:
     return Path(os.getenv("RADAR_DB_PATH", "data/art_data.duckdb"))
 

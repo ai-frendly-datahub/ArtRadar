@@ -11,6 +11,7 @@ import yaml
 
 from artradar.models import Article
 
+
 def _load_main_module() -> ModuleType:
     main_path = Path(__file__).resolve().parents[2] / "main.py"
     spec = spec_from_file_location("artradar_main", main_path)
