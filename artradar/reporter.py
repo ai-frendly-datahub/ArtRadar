@@ -6,13 +6,13 @@ import datetime as dt
 from datetime import datetime, timezone
 from collections import Counter
 from collections.abc import Iterable
-from datetime import timezone
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
 
 from .models import Article, CategoryConfig
 
+_TEMPLATE_DIR = Path(__file__).parent / "templates"
 
 _TEMPLATE_DIR = Path(__file__).parent / "templates"
 

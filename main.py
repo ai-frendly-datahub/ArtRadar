@@ -18,6 +18,7 @@ raw_logger_module = import_module("artradar.raw_logger")
 reporter_module = import_module("artradar.reporter")
 search_index_module = import_module("artradar.search_index")
 storage_module = import_module("artradar.storage")
+date_storage_module = import_module("artradar.date_storage")
 
 load_settings = config_loader.load_settings
 load_category_config = config_loader.load_category_config
@@ -28,6 +29,7 @@ RawLogger = raw_logger_module.RawLogger
 generate_report = reporter_module.generate_report
 SearchIndex = search_index_module.SearchIndex
 RadarStorage = storage_module.RadarStorage
+apply_date_storage_policy = date_storage_module.apply_date_storage_policy
 
 
 def _send_notifications(
@@ -93,6 +95,9 @@ def run(
     recent_days: int = 7,
     timeout: int = 15,
     keep_days: int = 90,
+    keep_raw_days: int = 180,
+    keep_report_days: int = 90,
+    snapshot_db: bool = False,
 ) -> Path:
     settings = load_settings(config_path)
     category_cfg = load_category_config(category, categories_dir=categories_dir)
@@ -130,7 +135,7 @@ def run(
 
     storage = RadarStorage(settings.database_path)
     storage.upsert_articles(validated_articles)
-    _ = storage.delete_older_than(category_cfg.category_name, keep_days)
+    _ = storage.delete_older_than(keep_days)
 
     with SearchIndex(settings.search_db_path) as search_idx:
         for article in validated_articles:
@@ -155,7 +160,18 @@ def run(
         stats=stats,
         errors=errors,
     )
+    date_storage = apply_date_storage_policy(
+        database_path=settings.database_path,
+        raw_data_dir=settings.raw_data_dir,
+        report_dir=settings.report_dir,
+        keep_raw_days=keep_raw_days,
+        keep_report_days=keep_report_days,
+        snapshot_db=snapshot_db,
+    )
     print(f"[Radar] Report generated at {output_path}")
+    snapshot_path = date_storage.get("snapshot_path")
+    if isinstance(snapshot_path, str) and snapshot_path:
+        print(f"[Radar] Snapshot saved at {snapshot_path}")
     if errors:
         print(f"[Radar] {len(errors)} source(s) had issues. See report for details.")
 
@@ -195,6 +211,18 @@ def parse_args() -> argparse.Namespace:
         "--keep-days", type=int, default=90, help="Retention window for stored items"
     )
     _ = parser.add_argument(
+        "--keep-raw-days", type=int, default=180, help="Retention window for raw JSONL directories"
+    )
+    _ = parser.add_argument(
+        "--keep-report-days", type=int, default=90, help="Retention window for dated HTML reports"
+    )
+    _ = parser.add_argument(
+        "--snapshot-db",
+        action="store_true",
+        default=False,
+        help="Create a dated DuckDB snapshot after each run",
+    )
+    _ = parser.add_argument(
         "--generate-report",
         action="store_true",
         default=False,
@@ -232,4 +260,7 @@ if __name__ == "__main__":
         recent_days=_to_int(args.get("recent_days"), 7),
         timeout=_to_int(args.get("timeout"), 15),
         keep_days=_to_int(args.get("keep_days"), 90),
+        keep_raw_days=_to_int(args.get("keep_raw_days"), 180),
+        keep_report_days=_to_int(args.get("keep_report_days"), 90),
+        snapshot_db=bool(args.get("snapshot_db", False)),
     )
