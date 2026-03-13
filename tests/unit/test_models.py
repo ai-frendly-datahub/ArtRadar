@@ -16,6 +16,7 @@ from artradar.models import (
     TelegramSettings,
 )
 
+
 class TestSource:
     """Test Source dataclass."""
 

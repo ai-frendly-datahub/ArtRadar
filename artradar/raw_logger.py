@@ -7,6 +7,7 @@ from pathlib import Path
 
 from .models import Article
 
+
 class RawLogger:
     def __init__(self, raw_dir: Path):
         self.raw_dir: Path = raw_dir

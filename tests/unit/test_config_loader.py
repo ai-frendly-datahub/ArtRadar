@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 
+
 @pytest.mark.unit
 def test_load_settings_defaults(tmp_path: Path) -> None:
     from artradar.config_loader import load_settings

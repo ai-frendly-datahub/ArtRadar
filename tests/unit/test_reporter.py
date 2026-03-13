@@ -8,6 +8,7 @@ import pytest
 
 from artradar.models import Article, CategoryConfig, Source
 
+
 def _make_category() -> CategoryConfig:
     return CategoryConfig(
         category_name="art",
@@ -172,12 +173,8 @@ def test_generate_report_contains_date_filter_controls() -> None:
         _ = generate_report(
             category=_make_category(),
             articles=[
-                _make_article_for_date(
-                    "Dated One", dt.datetime(2026, 3, 12, 10, 0, tzinfo=dt.UTC)
-                ),
-                _make_article_for_date(
-                    "Dated Two", dt.datetime(2026, 3, 11, 10, 0, tzinfo=dt.UTC)
-                ),
+                _make_article_for_date("Dated One", dt.datetime(2026, 3, 12, 10, 0, tzinfo=dt.UTC)),
+                _make_article_for_date("Dated Two", dt.datetime(2026, 3, 11, 10, 0, tzinfo=dt.UTC)),
             ],
             output_path=output_path,
             stats={"sources": 1, "collected": 2, "matched": 0, "window_days": 7},
@@ -199,9 +196,7 @@ def test_generate_report_contains_daily_summary_and_undated_bucket() -> None:
         _ = generate_report(
             category=_make_category(),
             articles=[
-                _make_article_for_date(
-                    "Dated One", dt.datetime(2026, 3, 12, 10, 0, tzinfo=dt.UTC)
-                ),
+                _make_article_for_date("Dated One", dt.datetime(2026, 3, 12, 10, 0, tzinfo=dt.UTC)),
                 _make_article_for_date("Undated", None),
             ],
             output_path=output_path,

@@ -8,6 +8,7 @@ from typing import Protocol, cast
 
 from .models import Article, EntityDefinition
 
+
 class _KoreanAnalyzerLike(Protocol):
     _kiwi: object | None
 

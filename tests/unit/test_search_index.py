@@ -10,6 +10,7 @@ import pytest
 
 from artradar.search_index import SearchIndex, SearchResult
 
+
 @pytest.fixture
 def temp_search_db() -> Path:
     """Create temporary SQLite search index file."""

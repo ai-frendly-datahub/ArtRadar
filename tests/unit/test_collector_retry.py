@@ -11,6 +11,7 @@ from artradar.collector import RateLimiter, _collect_single, collect_sources
 from artradar.exceptions import NetworkError, SourceError
 from artradar.models import Article, Source
 
+
 class TestCollectorRetryLogic:
     """Test HTTP retry logic with exponential backoff."""
 

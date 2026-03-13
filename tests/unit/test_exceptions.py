@@ -17,6 +17,7 @@ from artradar.exceptions import (
     StorageError,
 )
 
+
 class TestRadarErrorHierarchy:
     """Test exception hierarchy."""
 

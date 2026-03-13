@@ -11,6 +11,7 @@ import duckdb
 from .exceptions import StorageError
 from .models import Article
 
+
 def _utc_naive(dt: datetime | None) -> datetime | None:
     """Convert tz-aware datetime to UTC naive for DuckDB."""
     if dt is None:
