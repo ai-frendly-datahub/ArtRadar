@@ -30,10 +30,12 @@ _TIME_PATTERNS: tuple[_PatternSpec, ...] = (
     (re.compile(r"(최근|지난)\s*(\d+)\s*개월"), _to_days(30)),
     (
         re.compile(r"\blast\s+(\d+)\s*(day|days|week|weeks|month|months)\b", re.IGNORECASE),
-        lambda match: int(match.group(1))
-        * {"day": 1, "days": 1, "week": 7, "weeks": 7, "month": 30, "months": 30}[
-            match.group(2).lower()
-        ],
+        lambda match: (
+            int(match.group(1))
+            * {"day": 1, "days": 1, "week": 7, "weeks": 7, "month": 30, "months": 30}[
+                match.group(2).lower()
+            ]
+        ),
     ),
 )
 
