@@ -29,8 +29,8 @@ sources:
     type: "aic"
     url: "https://api.artic.edu/api/v1/artworks"
   - name: "Smithsonian"
-    type: "smithsonian"
-    url: "https://api.si.edu/openaccess/api/v1.0/search"
+    type: "rss"
+    url: "https://feeds.feedburner.com/SmithsonianMagazine"
 
 entities:
   - name: "Genre"
