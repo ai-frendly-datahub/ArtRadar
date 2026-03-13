@@ -5,7 +5,7 @@ import os
 import threading
 import time
 from concurrent.futures import Future, ThreadPoolExecutor
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
 from time import struct_time
 from urllib.parse import urlparse, urlsplit, urlunsplit
@@ -61,7 +61,7 @@ def _create_session() -> requests.Session:
     retry_strategy = Retry(
         total=3,
         backoff_factor=1,
-        status_forcelist=[429, 500, 502, 503, 504],
+        status_forcelist=[408, 429, 500, 502, 503, 504, 522, 524],
         allowed_methods=frozenset(["GET"]),
         raise_on_status=False,
     )
@@ -233,10 +233,15 @@ def _collect_rss(
                     first_item = content_items[0]
                     if isinstance(first_item, dict):
                         summary = str(first_item.get("value") or "")
+            title = html.unescape(_entry_string(entry, "title").strip()) or "(no title)"
+            link = _entry_string(entry, "link").strip()
+            # Data validation: skip entries without title or link
+            if not title or title == "(no title)" or not link:
+                continue
             items.append(
                 Article(
-                    title=html.unescape(_entry_string(entry, "title").strip()) or "(no title)",
-                    link=_entry_string(entry, "link").strip(),
+                    title=title,
+                    link=link,
                     summary=html.unescape(summary.strip()),
                     published=_extract_datetime(entry),
                     source=source.name,
@@ -425,17 +430,17 @@ def _collect_smithsonian(
 def _extract_datetime(entry: dict[str, object]) -> datetime | None:
     published_parsed = entry.get("published_parsed")
     if isinstance(published_parsed, struct_time):
-        return datetime.fromtimestamp(time.mktime(published_parsed), tz=timezone.utc)
+        return datetime.fromtimestamp(time.mktime(published_parsed), tz=UTC)
     updated_parsed = entry.get("updated_parsed")
     if isinstance(updated_parsed, struct_time):
-        return datetime.fromtimestamp(time.mktime(updated_parsed), tz=timezone.utc)
+        return datetime.fromtimestamp(time.mktime(updated_parsed), tz=UTC)
     for key in ("published", "updated", "date"):
         raw = entry.get(key)
         if raw:
             try:
                 parsed = parsedate_to_datetime(str(raw))
                 if parsed.tzinfo is None:
-                    parsed = parsed.replace(tzinfo=timezone.utc)
+                    parsed = parsed.replace(tzinfo=UTC)
                 return parsed
             except Exception:
                 continue
@@ -455,7 +460,7 @@ def _parse_unix_timestamp(value: object) -> datetime | None:
     if value is None:
         return None
     try:
-        return datetime.fromtimestamp(int(str(value)), tz=timezone.utc)
+        return datetime.fromtimestamp(int(str(value)), tz=UTC)
     except (TypeError, ValueError):
         return None
 

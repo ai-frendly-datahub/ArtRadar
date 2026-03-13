@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import datetime as dt
 import tempfile
-from datetime import timezone
 from pathlib import Path
 
 import pytest
@@ -23,7 +22,7 @@ def _make_article() -> Article:
         title="Test Artwork Report",
         link="https://example.com/artwork",
         summary="A test summary about painting and museum collections.",
-        published=dt.datetime.now(timezone.utc),
+        published=dt.datetime.now(dt.UTC),
         source="Artnet News",
         category="art",
         matched_entities={"genre": ["painting"]},
@@ -174,10 +173,10 @@ def test_generate_report_contains_date_filter_controls() -> None:
             category=_make_category(),
             articles=[
                 _make_article_for_date(
-                    "Dated One", dt.datetime(2026, 3, 12, 10, 0, tzinfo=timezone.utc)
+                    "Dated One", dt.datetime(2026, 3, 12, 10, 0, tzinfo=dt.UTC)
                 ),
                 _make_article_for_date(
-                    "Dated Two", dt.datetime(2026, 3, 11, 10, 0, tzinfo=timezone.utc)
+                    "Dated Two", dt.datetime(2026, 3, 11, 10, 0, tzinfo=dt.UTC)
                 ),
             ],
             output_path=output_path,
@@ -201,7 +200,7 @@ def test_generate_report_contains_daily_summary_and_undated_bucket() -> None:
             category=_make_category(),
             articles=[
                 _make_article_for_date(
-                    "Dated One", dt.datetime(2026, 3, 12, 10, 0, tzinfo=timezone.utc)
+                    "Dated One", dt.datetime(2026, 3, 12, 10, 0, tzinfo=dt.UTC)
                 ),
                 _make_article_for_date("Undated", None),
             ],
