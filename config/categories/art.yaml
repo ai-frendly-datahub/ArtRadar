@@ -35,6 +35,17 @@ sources:
     type: "rss"
     url: "https://feeds.feedburner.com/SmithsonianMagazine"
 
+  # === JavaScript-rendered sources (Playwright) ===
+  - name: "MMCA 전시"
+    type: "javascript"
+    url: "https://www.mmca.go.kr/exhibitions/progressList.do"
+  - name: "서울시립미술관"
+    type: "javascript"
+    url: "https://sema.seoul.go.kr/kr/whatson/exhibition/list"
+  - name: "아르코미술관"
+    type: "javascript"
+    url: "https://www.arko.or.kr/artcenter/program/exhibit/"
+
 entities:
   - name: "Genre"
     display_name: "미술 장르"

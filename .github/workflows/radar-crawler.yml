@@ -34,6 +34,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install "radar-core @ git+https://github.com/ai-frendly-datahub/radar-core.git@main"
           pip install -r requirements.txt
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+      - name: Install Playwright browsers
+        run: python -m playwright install --with-deps chromium
       - name: Run ArtRadar categories
         run: |
           python main.py --category art --recent-days 7 --keep-days 90 --keep-raw-days 180 --keep-report-days 90 --snapshot-db --generate-report
