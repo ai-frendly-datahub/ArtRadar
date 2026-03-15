@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import html
+import logging
 import os
 import threading
 import time
@@ -12,6 +13,7 @@ from urllib.parse import urlparse, urlsplit, urlunsplit
 
 import feedparser
 import requests
+import structlog
 from pybreaker import CircuitBreakerError
 from requests.adapters import HTTPAdapter
 from radar_core import AdaptiveThrottler, CrawlHealthStore
@@ -20,6 +22,9 @@ from urllib3.util.retry import Retry
 from .exceptions import NetworkError, ParseError, SourceError
 from .models import Article, Source
 from .resilience import get_circuit_breaker_manager
+
+logger = structlog.get_logger(__name__)
+_log = logging.getLogger(__name__)
 
 _DEFAULT_HEADERS: dict[str, str] = {
     "User-Agent": "Mozilla/5.0 (compatible; ArtRadarBot/1.0; +https://github.com/zzragida/ai-frendly-datahub)",
@@ -200,6 +205,12 @@ def collect_sources(
 
     def _collect_for_source(source: Source) -> tuple[list[Article], list[str]]:
         if health_store.is_disabled(source.name):
+            logger.warning(
+                "source_disabled",
+                source=source.name,
+                source_type=source.type,
+                reason="crawl health threshold reached",
+            )
             return [], [f"{source.name}: Source disabled (crawl health threshold reached)"]
 
         host = source_hosts[source.name]
@@ -215,14 +226,45 @@ def collect_sources(
                 timeout=timeout,
                 session=session,
             )
+            logger.info(
+                "source_collection_success",
+                source=source.name,
+                source_type=source.type,
+                article_count=len(result),
+            )
             return result, []
         except CircuitBreakerError:
+            logger.warning(
+                "circuit_breaker_open",
+                source=source.name,
+                source_type=source.type,
+            )
             return [], [f"{source.name}: Circuit breaker open (source unavailable)"]
         except SourceError as exc:
+            logger.warning(
+                "source_error",
+                source=source.name,
+                source_type=source.type,
+                error=str(exc),
+            )
             return [], [str(exc)]
         except (NetworkError, ParseError) as exc:
+            logger.warning(
+                "collection_error",
+                source=source.name,
+                source_type=source.type,
+                error_type=type(exc).__name__,
+                error=str(exc),
+            )
             return [], [f"{source.name}: {exc}"]
         except Exception as exc:
+            logger.error(
+                "unexpected_source_error",
+                source=source.name,
+                source_type=source.type,
+                error_type=type(exc).__name__,
+                error=str(exc),
+            )
             return [], [f"{source.name}: Unexpected error - {type(exc).__name__}: {exc}"]
 
     try:
@@ -258,30 +300,65 @@ def _collect_single(
     session: requests.Session | None = None,
 ) -> list[Article]:
     source_type = source.type.lower()
-    if source_type == "rss":
-        return _collect_rss(
-            source, category=category, limit=limit, timeout=timeout, session=session
+
+    _SOURCE_HANDLERS: dict[str, type | None] = {
+        "rss": None,
+        "met_museum": None,
+        "aic": None,
+        "smithsonian": None,
+    }
+
+    if source_type not in _SOURCE_HANDLERS:
+        logger.error(
+            "unsupported_source_type",
+            source=source.name,
+            source_type=source.type,
+            supported_types=list(_SOURCE_HANDLERS.keys()),
         )
-    if source_type == "met_museum":
-        return _collect_met_museum(
-            source,
-            category=category,
-            limit=limit,
-            timeout=timeout,
-            session=session,
+        raise SourceError(source.name, f"Unsupported source type '{source.type}'")
+
+    try:
+        if source_type == "rss":
+            return _collect_rss(
+                source, category=category, limit=limit, timeout=timeout, session=session
+            )
+        if source_type == "met_museum":
+            return _collect_met_museum(
+                source,
+                category=category,
+                limit=limit,
+                timeout=timeout,
+                session=session,
+            )
+        if source_type == "aic":
+            return _collect_aic(
+                source, category=category, limit=limit, timeout=timeout, session=session
+            )
+        if source_type == "smithsonian":
+            return _collect_smithsonian(
+                source,
+                category=category,
+                limit=limit,
+                timeout=timeout,
+                session=session,
+            )
+    except (NetworkError, ParseError, SourceError):
+        raise
+    except Exception as exc:
+        logger.error(
+            "source_dispatch_error",
+            source=source.name,
+            source_type=source_type,
+            error_type=type(exc).__name__,
+            error_message=str(exc),
         )
-    if source_type == "aic":
-        return _collect_aic(
-            source, category=category, limit=limit, timeout=timeout, session=session
-        )
-    if source_type == "smithsonian":
-        return _collect_smithsonian(
-            source,
-            category=category,
-            limit=limit,
-            timeout=timeout,
-            session=session,
-        )
+        raise SourceError(
+            source.name,
+            f"Dispatch error for '{source_type}': {type(exc).__name__}: {exc}",
+            exc,
+        ) from exc
+
+    # Unreachable but satisfies type checker
     raise SourceError(source.name, f"Unsupported source type '{source.type}'")
 
 
@@ -368,32 +445,70 @@ def _collect_met_museum(
         raise ParseError(f"Failed to parse API response from {source.name}: {exc}") from exc
 
     items: list[Article] = []
+    skipped = 0
     try:
         for object_id in object_ids:
-            detail_response = _fetch_url_with_retry(
-                f"{source.url.rstrip('/')}/{object_id}",
-                timeout,
-                session=session,
-                source_name=source.name,
-            )
-            detail = detail_response.json()
-            title = str(detail.get("title") or "Untitled").strip() or "Untitled"
-            artist = str(detail.get("artistDisplayName") or "Unknown artist").strip()
-            object_date = str(detail.get("objectDate") or "").strip()
-            medium = str(detail.get("medium") or "").strip()
-            summary_parts = [part for part in (artist, object_date, medium) if part]
-            items.append(
-                Article(
-                    title=title,
-                    link=str(
-                        detail.get("objectURL")
-                        or f"https://www.metmuseum.org/art/collection/search/{object_id}"
-                    ),
-                    summary=". ".join(summary_parts) or "No description available",
-                    published=_parse_iso_datetime(detail.get("metadataDate")),
-                    source=source.name,
-                    category=category,
+            try:
+                detail_response = _fetch_url_with_retry(
+                    f"{source.url.rstrip('/')}/{object_id}",
+                    timeout,
+                    session=session,
+                    source_name=source.name,
                 )
+                detail = detail_response.json()
+                if not isinstance(detail, dict):
+                    logger.warning(
+                        "invalid_api_response_format",
+                        source=source.name,
+                        object_id=object_id,
+                        response_type=type(detail).__name__,
+                    )
+                    skipped += 1
+                    continue
+                title = str(detail.get("title") or "Untitled").strip() or "Untitled"
+                artist = str(detail.get("artistDisplayName") or "Unknown artist").strip()
+                object_date = str(detail.get("objectDate") or "").strip()
+                medium = str(detail.get("medium") or "").strip()
+                summary_parts = [part for part in (artist, object_date, medium) if part]
+                items.append(
+                    Article(
+                        title=title,
+                        link=str(
+                            detail.get("objectURL")
+                            or f"https://www.metmuseum.org/art/collection/search/{object_id}"
+                        ),
+                        summary=". ".join(summary_parts) or "No description available",
+                        published=_parse_iso_datetime(detail.get("metadataDate")),
+                        source=source.name,
+                        category=category,
+                    )
+                )
+            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as exc:
+                logger.warning(
+                    "met_museum_object_fetch_failed",
+                    source=source.name,
+                    object_id=object_id,
+                    error=str(exc),
+                )
+                skipped += 1
+                continue
+            except Exception as exc:
+                logger.warning(
+                    "met_museum_object_parse_failed",
+                    source=source.name,
+                    object_id=object_id,
+                    error=str(exc),
+                )
+                skipped += 1
+                continue
+
+        if skipped > 0:
+            logger.warning(
+                "met_museum_objects_skipped",
+                source=source.name,
+                skipped=skipped,
+                total=len(object_ids),
+                collected=len(items),
             )
         return items
     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as exc:
