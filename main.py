@@ -27,6 +27,7 @@ apply_entity_rules = analyzer_module.apply_entity_rules
 validate_article = validators_module.validate_article
 RawLogger = raw_logger_module.RawLogger
 generate_report = reporter_module.generate_report
+generate_index_html = reporter_module.generate_index_html
 SearchIndex = search_index_module.SearchIndex
 RadarStorage = storage_module.RadarStorage
 apply_date_storage_policy = date_storage_module.apply_date_storage_policy
@@ -160,6 +161,7 @@ def run(
         stats=stats,
         errors=errors,
     )
+    generate_index_html(settings.report_dir)
     date_storage = apply_date_storage_policy(
         database_path=settings.database_path,
         raw_data_dir=settings.raw_data_dir,
