@@ -309,7 +309,22 @@ def collect_sources(
         health_store.close()
         _clear_collection_controls()
 
-    return articles, errors
+    # --- Deduplicate by link (museum APIs may return overlapping results) ---
+    seen_links: set[str] = set()
+    unique_articles: list[Article] = []
+    for article in articles:
+        if article.link not in seen_links:
+            seen_links.add(article.link)
+            unique_articles.append(article)
+    if len(articles) != len(unique_articles):
+        logger.info(
+            "deduplicated_articles",
+            original=len(articles),
+            unique=len(unique_articles),
+            removed=len(articles) - len(unique_articles),
+        )
+
+    return unique_articles, errors
 
 
 def _collect_single(
