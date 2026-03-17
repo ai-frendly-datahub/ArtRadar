@@ -12,6 +12,16 @@ sources:
     type: "rss"
     url: "https://www.thisiscolossal.com/feed/"
 
+  # Hyperallergic - 아트 비평/뉴스 전문 매체
+  - name: "Hyperallergic"
+    type: "rss"
+    url: "https://hyperallergic.com/feed/"
+
+  # Artnet News - 글로벌 아트 뉴스
+  - name: "Artnet News"
+    type: "rss"
+    url: "https://news.artnet.com/feed"
+
 entities:
   - name: "Medium"
     display_name: "작품 매체"
