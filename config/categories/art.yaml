@@ -31,9 +31,7 @@ sources:
   - name: "Art Institute of Chicago"
     type: "aic"
     url: "https://api.artic.edu/api/v1/artworks"
-  - name: "Smithsonian"
-    type: "rss"
-    url: "https://feeds.feedburner.com/SmithsonianMagazine"
+
 
   # === JavaScript-rendered sources (Playwright) ===
   - name: "MMCA 전시"
