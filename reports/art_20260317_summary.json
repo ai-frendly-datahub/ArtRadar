@@ -1,13 +1,13 @@
 {
   "date": "2026-03-17",
   "category": "art",
-  "article_count": 140,
-  "source_count": 10,
-  "matched_count": 38,
+  "article_count": 141,
+  "source_count": 11,
+  "matched_count": 37,
   "top_entities": [
     {
       "name": "Institution",
-      "count": 47
+      "count": 48
     },
     {
       "name": "Genre",
@@ -23,7 +23,7 @@
     },
     {
       "name": "Topic",
-      "count": 2
+      "count": 1
     }
   ],
   "sources": {
@@ -31,12 +31,13 @@
     "아르코미술관": 1,
     "서울시립미술관": 1,
     "MMCA 전시": 1,
-    "데일리아트": 30,
-    "Hyperallergic": 15,
+    "Metropolitan Museum": 1,
     "ARTnews": 10,
+    "Hyperallergic": 15,
+    "데일리아트": 30,
     "Artnet News": 10,
     "Artforum": 12,
     "The Art Newspaper": 30
   },
-  "generated_at": "2026-03-17T17:29:39.116005+09:00"
+  "generated_at": "2026-03-17T19:58:37.608011+09:00"
 }
