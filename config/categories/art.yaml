@@ -23,6 +23,15 @@ sources:
   - name: "ArtSelector"
     type: "rss"
     url: "https://www.artselector.com/feed/"
+  - name: "Hyperallergic"
+    type: "rss"
+    url: "https://hyperallergic.com/feed/"
+  - name: "The Art Newspaper"
+    type: "rss"
+    url: "https://www.theartnewspaper.com/rss"
+  - name: "e-flux"
+    type: "rss"
+    url: "https://www.e-flux.com/rss/"
   
   # === 미술관 API ===
   - name: "Metropolitan Museum"
