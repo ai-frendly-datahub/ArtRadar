@@ -1,13 +1,13 @@
 {
   "date": "2026-03-17",
   "category": "artwork",
-  "article_count": 40,
-  "source_count": 2,
-  "matched_count": 36,
+  "article_count": 55,
+  "source_count": 3,
+  "matched_count": 39,
   "top_entities": [
     {
       "name": "Artist",
-      "count": 56
+      "count": 59
     },
     {
       "name": "ArtworkType",
@@ -27,8 +27,9 @@
     }
   ],
   "sources": {
+    "Hyperallergic": 15,
     "Artsy Editorial": 30,
     "Colossal Art": 10
   },
-  "generated_at": "2026-03-17T10:17:21.410990+09:00"
+  "generated_at": "2026-03-17T12:36:24.743631+09:00"
 }
