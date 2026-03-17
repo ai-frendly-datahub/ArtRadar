@@ -6,7 +6,7 @@ import os
 import threading
 import time
 from concurrent.futures import Future, ThreadPoolExecutor
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from email.utils import parsedate_to_datetime
 from time import struct_time
 from urllib.parse import urlparse, urlsplit, urlunsplit
@@ -184,6 +184,7 @@ def collect_sources(
     min_interval_per_host: float = 0.5,
     max_workers: int | None = None,
     health_db_path: str | None = None,
+    max_age_days: int | None = None,
 ) -> tuple[list[Article], list[str]]:
     """Fetch items from all configured sources, returning articles and errors."""
     articles: list[Article] = []
@@ -323,6 +324,15 @@ def collect_sources(
             unique=len(unique_articles),
             removed=len(articles) - len(unique_articles),
         )
+
+    # Filter out articles older than max_age_days (freshness gate)
+    if max_age_days is not None:
+        cutoff = datetime.now(UTC) - timedelta(days=max_age_days)
+        before = len(unique_articles)
+        unique_articles = [a for a in unique_articles if a.published is None or a.published >= cutoff]
+        filtered = before - len(unique_articles)
+        if filtered > 0:
+            logger.info("freshness_filter", removed=filtered, max_age_days=max_age_days, remaining=len(unique_articles))
 
     return unique_articles, errors
 
