@@ -1,29 +1,25 @@
 {
   "date": "2026-03-17",
   "category": "art",
-  "article_count": 94,
-  "source_count": 7,
-  "matched_count": 19,
+  "article_count": 109,
+  "source_count": 8,
+  "matched_count": 24,
   "top_entities": [
     {
       "name": "Institution",
-      "count": 25
+      "count": 33
     },
     {
       "name": "Genre",
       "count": 6
     },
     {
-      "name": "Period",
-      "count": 1
-    },
-    {
       "name": "Market",
-      "count": 1
+      "count": 4
     },
     {
       "name": "Topic",
-      "count": 1
+      "count": 2
     }
   ],
   "sources": {
@@ -31,9 +27,10 @@
     "아르코미술관": 1,
     "서울시립미술관": 1,
     "데일리아트": 30,
+    "Hyperallergic": 15,
     "ARTnews": 10,
     "Artnet News": 10,
     "Artforum": 12
   },
-  "generated_at": "2026-03-17T14:02:23.723809+09:00"
+  "generated_at": "2026-03-17T14:45:37.973727+09:00"
 }
