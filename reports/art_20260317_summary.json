@@ -1,25 +1,25 @@
 {
   "date": "2026-03-17",
   "category": "art",
-  "article_count": 88,
+  "article_count": 94,
   "source_count": 8,
   "matched_count": 20,
   "top_entities": [
     {
       "name": "Institution",
-      "count": 22
-    },
-    {
-      "name": "Period",
-      "count": 4
-    },
-    {
-      "name": "Market",
-      "count": 3
+      "count": 26
     },
     {
       "name": "Genre",
-      "count": 3
+      "count": 6
+    },
+    {
+      "name": "Period",
+      "count": 2
+    },
+    {
+      "name": "Market",
+      "count": 1
     },
     {
       "name": "Topic",
@@ -31,10 +31,10 @@
     "아르코미술관": 1,
     "서울시립미술관": 1,
     "MMCA 전시": 1,
-    "데일리아트": 23,
+    "데일리아트": 29,
     "ARTnews": 10,
     "Artnet News": 10,
     "Artforum": 12
   },
-  "generated_at": "2026-03-17T00:49:46.057013+09:00"
+  "generated_at": "2026-03-17T10:17:16.474512+09:00"
 }
