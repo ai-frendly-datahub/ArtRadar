@@ -1,0 +1,34 @@
+{
+  "date": "2026-03-19",
+  "category": "artwork",
+  "article_count": 40,
+  "source_count": 2,
+  "matched_count": 34,
+  "top_entities": [
+    {
+      "name": "Artist",
+      "count": 59
+    },
+    {
+      "name": "ArtworkType",
+      "count": 47
+    },
+    {
+      "name": "Period",
+      "count": 41
+    },
+    {
+      "name": "Medium",
+      "count": 32
+    },
+    {
+      "name": "CollectionChange",
+      "count": 31
+    }
+  ],
+  "sources": {
+    "Artsy Editorial": 30,
+    "Colossal Art": 10
+  },
+  "generated_at": "2026-03-19T19:52:23.064906+09:00"
+}
