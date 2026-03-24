@@ -354,19 +354,19 @@ def _collect_single(
 ) -> list[Article]:
     source_type = source.type.lower()
 
-    _SOURCE_HANDLERS: dict[str, type | None] = {
+    _source_handlers: dict[str, type | None] = {
         "rss": None,
         "met_museum": None,
         "aic": None,
         "smithsonian": None,
     }
 
-    if source_type not in _SOURCE_HANDLERS:
+    if source_type not in _source_handlers:
         logger.error(
             "unsupported_source_type",
             source=source.name,
             source_type=source.type,
-            supported_types=list(_SOURCE_HANDLERS.keys()),
+            supported_types=list(_source_handlers.keys()),
         )
         raise SourceError(source.name, f"Unsupported source type '{source.type}'")
 
