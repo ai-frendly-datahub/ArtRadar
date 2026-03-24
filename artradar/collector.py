@@ -329,10 +329,17 @@ def collect_sources(
     if max_age_days is not None:
         cutoff = datetime.now(UTC) - timedelta(days=max_age_days)
         before = len(unique_articles)
-        unique_articles = [a for a in unique_articles if a.published is None or a.published >= cutoff]
+        unique_articles = [
+            a for a in unique_articles if a.published is None or a.published >= cutoff
+        ]
         filtered = before - len(unique_articles)
         if filtered > 0:
-            logger.info("freshness_filter", removed=filtered, max_age_days=max_age_days, remaining=len(unique_articles))
+            logger.info(
+                "freshness_filter",
+                removed=filtered,
+                max_age_days=max_age_days,
+                remaining=len(unique_articles),
+            )
 
     return unique_articles, errors
 
