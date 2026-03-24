@@ -26,6 +26,7 @@ data/search_index.db
 data/search_index.db-wal
 data/search_index.db-shm
 data/*.duckdb
+!data/snapshots/**/*.duckdb
 reports/*.html
 !reports/.gitkeep
 docs/reports/*.html
