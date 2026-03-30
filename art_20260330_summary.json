@@ -1,0 +1,38 @@
+{
+  "date": "2026-03-30",
+  "category": "art",
+  "article_count": 128,
+  "source_count": 10,
+  "matched_count": 44,
+  "top_entities": [
+    {
+      "name": "Institution",
+      "count": 53
+    },
+    {
+      "name": "Market",
+      "count": 13
+    },
+    {
+      "name": "Period",
+      "count": 7
+    },
+    {
+      "name": "Genre",
+      "count": 6
+    }
+  ],
+  "sources": {
+    "Art Institute of Chicago": 30,
+    "아르코미술관": 1,
+    "서울시립미술관": 1,
+    "MMCA 전시": 1,
+    "The Art Newspaper": 30,
+    "데일리아트": 18,
+    "Hyperallergic": 15,
+    "Artnet News": 10,
+    "ARTnews": 10,
+    "Artforum": 12
+  },
+  "generated_at": "2026-03-30T20:10:49.319806+09:00"
+}
