@@ -60,6 +60,14 @@ sources:
     type: "rss"
     url: "https://www.frieze.com/rss"
 
+  - name: "Colossal"
+    type: "rss"
+    url: "https://www.thisiscolossal.com/feed/"
+
+  - name: "ArtDaily"
+    type: "rss"
+    url: "https://artdaily.com/rss.xml"
+
   # === 미술관 API ===
   - name: "Metropolitan Museum"
     type: "met_museum"
