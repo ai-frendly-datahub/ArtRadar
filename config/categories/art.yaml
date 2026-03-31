@@ -127,6 +127,61 @@ sources:
     config:
       wait_for: ".auction_content"
 
+  # === Reddit 미술 커뮤니티 ===
+  - name: "r/Art"
+    type: "rss"
+    url: "https://www.reddit.com/r/Art/.rss"
+
+  - name: "r/ArtHistory"
+    type: "rss"
+    url: "https://www.reddit.com/r/ArtHistory/.rss"
+
+  - name: "r/museum"
+    type: "rss"
+    url: "https://www.reddit.com/r/museum/.rss"
+
+  - name: "r/ContemporaryArt"
+    type: "rss"
+    url: "https://www.reddit.com/r/ContemporaryArt/.rss"
+
+  - name: "r/ArtCollecting"
+    type: "rss"
+    url: "https://www.reddit.com/r/ArtCollecting/.rss"
+
+  - name: "r/korea"
+    type: "rss"
+    url: "https://www.reddit.com/r/korea/.rss"
+
+  # === Art YouTube Channels ===
+  - name: "The Art Assignment"
+    type: "rss"
+    url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCmQThz1OLYt8mb2PU540LOA"
+
+  - name: "Nerdwriter1"
+    type: "rss"
+    url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCJkMlOu7faDgqh4PfzbpLdg"
+
+  - name: "Smarthistory"
+    type: "rss"
+    url: "https://www.youtube.com/feeds/videos.xml?channel_id=UC07nFYY2UdQ7pZsMJV9_hNQ"
+
+  # === 국제 미술관/기관 ===
+  - name: "Tate Blog"
+    type: "rss"
+    url: "https://www.tate.org.uk/context-comment/blogs/rss"
+
+  - name: "MoMA Magazine"
+    type: "rss"
+    url: "https://www.moma.org/magazine/feed"
+
+  - name: "Guggenheim"
+    type: "rss"
+    url: "https://www.guggenheim.org/feed"
+
+  - name: "Apollo Magazine"
+    type: "rss"
+    url: "https://www.apollo-magazine.com/feed/"
+
 entities:
   - name: "Genre"
     display_name: "미술 장르"
