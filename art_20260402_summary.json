@@ -1,0 +1,58 @@
+{
+  "date": "2026-04-02",
+  "category": "art",
+  "article_count": 200,
+  "source_count": 22,
+  "matched_count": 96,
+  "top_entities": [
+    {
+      "name": "Institution",
+      "count": 91
+    },
+    {
+      "name": "Market",
+      "count": 33
+    },
+    {
+      "name": "Artist",
+      "count": 27
+    },
+    {
+      "name": "Genre",
+      "count": 24
+    },
+    {
+      "name": "Topic",
+      "count": 14
+    },
+    {
+      "name": "Period",
+      "count": 10
+    }
+  ],
+  "sources": {
+    "Art Institute of Chicago": 30,
+    "서울옥션": 1,
+    "대림미술관": 1,
+    "리움미술관": 1,
+    "아르코미술관": 1,
+    "서울시립미술관": 1,
+    "국립현대미술관": 1,
+    "네오룩": 1,
+    "데일리아트": 11,
+    "r/korea": 21,
+    "r/Art": 24,
+    "Hyperallergic": 15,
+    "The Art Newspaper": 13,
+    "r/museum": 25,
+    "Artnet News": 10,
+    "r/ArtHistory": 14,
+    "ARTnews": 9,
+    "Artsy": 3,
+    "Artforum": 11,
+    "r/ArtCollecting": 1,
+    "r/ContemporaryArt": 4,
+    "Colossal": 2
+  },
+  "generated_at": "2026-04-02T20:01:06.428909+09:00"
+}
