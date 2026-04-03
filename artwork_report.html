@@ -663,10 +663,10 @@
             </p>
 
             <div class="meta" aria-label="Key facts">
-              <span><span class="mono muted">articles</span><span class="mono ok">0</span></span>
-              <span><span class="mono muted">entities</span><span class="mono accent">0</span></span>
+              <span><span class="mono muted">articles</span><span class="mono ok">1</span></span>
+              <span><span class="mono muted">entities</span><span class="mono accent">3</span></span>
               <span><span class="mono muted">errors</span><span class="mono bad">1</span></span>
-              <span title="Generated time"><span class="mono muted">Generated at</span><span class="mono">2026-04-02 11:01 UTC</span></span>
+              <span title="Generated time"><span class="mono muted">Generated at</span><span class="mono">2026-04-03 10:54 UTC</span></span>
             </div>
           </div>
         </div>
@@ -684,7 +684,7 @@
           </div>
           <div class="stat">
             <div class="label">MATCHED</div>
-            <div class="value">42</div>
+            <div class="value">47</div>
             <div class="hint">Entity matches found</div>
           </div>
           <div class="stat">
@@ -848,9 +848,24 @@
 
         <div class="entity-section">
           
-          <p class="muted" style="margin:0; font-size:13px; line-height:1.6">
-            No entity counts available for this run.
-          </p>
+          <div class="entity-pills" aria-label="Entity count list">
+            
+            <span class="entity-pill" data-entity="Artist" role="button" tabindex="0">
+              Artist
+              <span class="count">2</span>
+            </span>
+            
+            <span class="entity-pill" data-entity="ArtworkType" role="button" tabindex="0">
+              ArtworkType
+              <span class="count">1</span>
+            </span>
+            
+            <span class="entity-pill" data-entity="Period" role="button" tabindex="0">
+              Period
+              <span class="count">1</span>
+            </span>
+            
+          </div>
           
         </div>
       </section>
@@ -871,13 +886,39 @@
               <p class="panel-title">Reading List</p>
               <p class="panel-sub">Click through to the original source</p>
             </div>
-            <div class="pill" aria-hidden="true">0</div>
+            <div class="pill" aria-hidden="true">1</div>
           </header>
           <div class="panel-bd">
             
-            <p class="muted" style="margin:0; font-size:13px; line-height:1.6">
-              No articles were collected for this run.
-            </p>
+            <div class="articles" id="articles-list" aria-label="Article list">
+              
+              <div class="card" role="article" aria-label="Article: Irving Penn’s portraits of Picasso, Botero, and more head to auction." data-entities="["ArtworkType", "Artist", "Period"]">
+                <div class="left">
+                  <p class="title">
+                    <a href="https://www.artsy.net/article/artsy-editorial-irving-penns-portraits-picasso-botero-head-auction" target="_blank" rel="noopener noreferrer">Irving Penn’s portraits of Picasso, Botero, and more head to auction.</a>
+                  </p>
+
+                  
+                  <p class="desc">&lt;img alt=&#34;&#34; height=&#34;631&#34; src=&#34;https://d7hftxdivxxvm.cloudfront.net?height=631&amp;quality=80&amp;resize_to=fit&amp;src=https%3A%2F%2Fartsy-media-uploads.s3.amazonaws.com%2FDTxWWJJ1oGwiXXNPNRHl0w%252FIRVING%2BPENN%252C%2BIsamu%2BNogu...</p>
+                  
+
+                  <div class="row" aria-label="Article metadata">
+                    <span class="chip"><strong>source</strong> Artsy Editorial</span>
+                    
+                    <span class="chip"><strong>date</strong> <span class="mono">2026-03-20</span></span>
+                    
+                    
+                    <span class="chip brand"><strong>entities</strong> 3</span>
+                    
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <a class="btn primary" href="https://www.artsy.net/article/artsy-editorial-irving-penns-portraits-picasso-botero-head-auction" target="_blank" rel="noopener noreferrer" aria-label="Open article">Open</a>
+                </div>
+              </div>
+              
+            </div>
             
           </div>
         </article>
@@ -889,7 +930,7 @@
           <span class="muted">/</span>
           <span>Artwork Radar</span>
           <span class="muted">·</span>
-          <span class="mono">2026-04-02 11:01 UTC</span>
+          <span class="mono">2026-04-03 10:54 UTC</span>
         </div>
         <div class="footer-actions">
           <a href="#content" class="mono" aria-label="Back to top">back to top</a>
@@ -904,8 +945,8 @@
         </div>
       </footer>
 
-      <script id="articles-data" type="application/json">[]</script>
-      <script id="entities-data" type="application/json">{}</script>
+      <script id="articles-data" type="application/json">[{"collected_at": "2026-04-03T10:54:22.568733", "link": "https://www.artsy.net/article/artsy-editorial-irving-penns-portraits-picasso-botero-head-auction", "matched_entities": {"Artist": ["artist", "sculptor"], "ArtworkType": ["print"], "Period": ["20th century"]}, "published_at": "2026-03-20T09:19:39", "source": "Artsy Editorial", "summary": "\u003cimg alt=\"\" height=\"631\" src=\"https://d7hftxdivxxvm.cloudfront.net?height=631\u0026quality=80\u0026resize_to=fit\u0026src=https%3A%2F%2Fartsy-media-uploads.s3.amazonaws.com%2FDTxWWJJ1oGwiXXNPNRHl0w%252FIRVING%2BPENN%252C%2BIsamu%2BNoguchi%252C%2BNew%2BYork%252C%2B1947.jpg\u0026width=500\" width=\"500\" /\u003e\n            \n          \n        \n      \n        \n          \u003cp\u003eA series of photographs by American photographer \u003ca href=\"https://www.artsy.net/artist/irving-penn\"\u003eIrving Penn\u003c/a\u003e will appear at auction at Christie\u2019s next month. Included in the sale are a selection of portraits featuring some of the most prominent artists and cultural figures of the 20th century, including \u003ca href=\"https://www.artsy.net/artist/pablo-picasso\"\u003ePablo Picasso\u003c/a\u003e, sculptor \u003ca href=\"https://www.artsy.net/artist/isamu-noguchi\"\u003eIsamu Noguchi\u003c/a\u003e, writer Joan Didion, and artist \u003ca href=\"https://www.artsy.net/artist/salvador-dali\"\u003eSalvador Dal\u00ed\u003c/a\u003e. The portraits will be offered at Christie\u2019s in New York on April 3rd, as part of their spring photography auction, which continues online through the 17th.\u003c/p\u003e\u003cp\u003e\u201c[Irving Penn] is one of the most lauded and influential photographers of the 20th century, with a broad output of striking still-lifes, highly-saturated dye transfer prints that intensify the quotidian, iconic fashion images for Cond\u00e9 Nast, sensitive studies of the people and cultures he encountered all over the world, among other memorable series,\u201d Rebecca Jones, Christie\u2019s head of photography, told \u003cem\u003eArtsy\u003c/em\u003e.\u003c/p\u003e\n        \n      \n        \n          \n            \n              \u003cimg alt=\"\" height=\"524\" src=\"https://d7hftxdivxxvm.cloudfront.net?height=524\u0026quality=80\u0026resize_to=fit\u0026src=https%3A%2F%2Fartsy-media-uploads.s3.amazonaws.com%2FIz47ePgJNWneqt6s0VuRqw%252FIRVING%2BPENN%252C%2BFernando%2BBotero%252C%2BNew%2BYork%252C%2B1985.jpg\u0026width=500\" width=\"500\" /\u003e\n            \n          \n        \n      \n        \n          \u003cp\u003ePenn is considered one of the icons of 20th-century photography. Born in 1917, he is celebrated for his arresting images, which are pared-back yet elegant. He began his career at \u003cem\u003eVogue, \u003c/em\u003ewhere he created some of the most iconic portraits, still lifes, and fashion images of our time. He worked primarily in black-and-white and used a series of 19th-century printing techniques, including platinum and palladium printing. Penn\u2019s photographs are included in major institutional collections, including the \u003ca href=\"https://www.artsy.net/partner/the-metropolitan-museum-of-art\"\u003eMetropolitan Museum of Art\u003c/a\u003e, the \u003ca href=\"https://www.artsy.net/partner/victoria-and-albert-museum-v-and-a\"\u003eVictoria \u0026 Albert Museum\u003c/a\u003e, and the \u003ca href=\"https://www.artsy.net/partner/centre-pompidou\"\u003eCentre Pompidou\u003c/a\u003e. \u003c/p\u003e\u003cp\u003ePenn\u2019s auction record was set in October 2025, when \u003cem\u003eGingko Leaves, New York\u003c/em\u003e (1990) sold for $567,600 at Phillips. The record sale was part of the Phillips \u201cVisual Language: The Art of Irving Penn\u201d auction, which totaled $4.98 million. \u003c/p\u003e\n        \n      \n        \n          \n            \n              \u003cimg alt=\"\" height=\"585\" src=\"https://d7hftxdivxxvm.cloudfront.net?height=585\u0026quality=80\u0026resize_to=fit\u0026src=https%3A%2F%2Fartsy-media-uploads.s3.amazonaws.com%2FKdAdPZB7yxzsh4NpDRGERw%252FIRVING%2BPENN%252C%2BGinkgo%2BLeaves%252C%2BNew%2BYork%252C%2B1990.jpg\u0026width=500\" width=\"500\" /\u003e\n            \n          \n        \n      \n        \n          \u003cp\u003e \u201cThe high esteem for his work continues to be evidenced in the marketplace: a record price for the artist was achieved just last year, and around 80% of the lots by Penn offered last year sold, which is a strong showing considering the high volume of work by the artist that comes to market,\u201d Jones told \u003cem\u003eArtsy.\u003c/em\u003e \u201cBy presenting a mix of highly recognizable and coveted images, alongside more rarely-seen gems, we expect to generate much enthusiasm for this exceptional offering of works by Irving Penn.\u201d\u003c/p\u003e\u003cp\u003eHighlights in the sale include Penn\u2019s \u003cem\u003eGirl Behind Bottle Jean Patchett, New York\u003c/em\u003e (1949); the dye-transfer print Ginkgo Leaves, New York (1990); and portraits of \u003ca href=\"https://www.artsy.net/\"\u003eWillem de Kooning\u003c/a\u003e,\u003ca href=\"https://www.artsy.net/artist/francis-bacon\"\u003e Francis Bacon\u003c/a\u003e, \u003ca href=\"https://www.artsy.net/artist/max-ernst\"\u003eMax Ernst\u003c/a\u003e, and \u003ca href=\"https://www.artsy.net/artist/dorothea-tanning\"\u003eDorothea Tanning\u003c/a\u003e. In addition to these works by Penn, the sale brings together more than 250 lots spanning the medium. \u003c/p\u003e", "title": "Irving Penn\u2019s portraits of Picasso, Botero, and more head to auction."}]</script>
+      <script id="entities-data" type="application/json">{"Artist": 2, "ArtworkType": 1, "Period": 1}</script>
       
       
       <script src="static/chart.min.js"></script>
