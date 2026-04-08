@@ -1,0 +1,33 @@
+{
+  "date": "2026-04-08",
+  "category": "artwork",
+  "article_count": 5,
+  "source_count": 1,
+  "matched_count": 5,
+  "top_entities": [
+    {
+      "name": "ArtworkType",
+      "count": 10
+    },
+    {
+      "name": "Artist",
+      "count": 7
+    },
+    {
+      "name": "Medium",
+      "count": 6
+    },
+    {
+      "name": "Period",
+      "count": 5
+    },
+    {
+      "name": "CollectionChange",
+      "count": 3
+    }
+  ],
+  "sources": {
+    "Artsy Editorial": 5
+  },
+  "generated_at": "2026-04-08T20:08:14.769867+09:00"
+}
