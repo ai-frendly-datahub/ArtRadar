@@ -6,6 +6,11 @@ sources:
   - name: "월간미술"
     type: "rss"
     url: "https://monthlyart.com/feed/"
+    language: "ko"
+    country: "KR"
+    trust_tier: "T3_professional"
+    collection_tier: "C1_rss"
+    content_type: "news"
 
   # NOTE: 2026-04-02 RSS 404 → JavaScript 변환하여 복구
   - name: "데일리아트"
@@ -13,6 +18,11 @@ sources:
     url: "https://www.d-art.co.kr/news/articleList.html?sc_section_code=S1N1"
     config:
       wait_for: ".list-block"
+    language: "ko"
+    country: "KR"
+    trust_tier: "T3_professional"
+    collection_tier: "C2_javascript"
+    content_type: "news"
 
   # NOTE: 2026-04-02 품질점검 - Connection Error
   # - name: "아트인사이트"
@@ -24,6 +34,11 @@ sources:
     url: "https://neolook.com/archives/review"
     config:
       wait_for: ".entry-list"
+    language: "ko"
+    country: "KR"
+    trust_tier: "T3_professional"
+    collection_tier: "C2_javascript"
+    content_type: "review"
 
   # NOTE: 2026-04-02 품질점검 - Connection Error
   # - name: "아트앤컬쳐"
@@ -36,22 +51,47 @@ sources:
   - name: "Artnet News"
     type: "rss"
     url: "https://news.artnet.com/feed"
+    language: "en"
+    country: "US"
+    trust_tier: "T2_institutional"
+    collection_tier: "C1_rss"
+    content_type: "news"
 
   - name: "ARTnews"
     type: "rss"
     url: "https://www.artnews.com/feed/"
+    language: "en"
+    country: "US"
+    trust_tier: "T2_institutional"
+    collection_tier: "C1_rss"
+    content_type: "news"
 
   - name: "Artforum"
     type: "rss"
     url: "https://www.artforum.com/feed/"
+    language: "en"
+    country: "US"
+    trust_tier: "T2_institutional"
+    collection_tier: "C1_rss"
+    content_type: "review"
 
   - name: "Hyperallergic"
     type: "rss"
     url: "https://hyperallergic.com/feed/"
+    language: "en"
+    country: "US"
+    trust_tier: "T3_professional"
+    collection_tier: "C1_rss"
+    content_type: "news"
 
   - name: "The Art Newspaper"
     type: "rss"
     url: "https://www.theartnewspaper.com/rss.xml"
+    language: "en"
+    country: "UK"
+    trust_tier: "T2_institutional"
+    collection_tier: "C1_rss"
+    content_type: "news"
 
   # NOTE: 2026-04-02 품질점검 - 404 Not Found
   # - name: "e-flux"
@@ -61,6 +101,11 @@ sources:
   - name: "Artsy"
     type: "rss"
     url: "https://www.artsy.net/rss/news"
+    language: "en"
+    country: "US"
+    trust_tier: "T2_institutional"
+    collection_tier: "C1_rss"
+    content_type: "news"
 
   # NOTE: 2026-04-02 RSS 403 → JavaScript 변환하여 시도
   - name: "Frieze"
@@ -68,24 +113,49 @@ sources:
     url: "https://www.frieze.com/"
     config:
       wait_for: "article"
+    language: "en"
+    country: "UK"
+    trust_tier: "T2_institutional"
+    collection_tier: "C2_javascript"
+    content_type: "review"
 
   - name: "Colossal"
     type: "rss"
     url: "https://www.thisiscolossal.com/feed/"
+    language: "en"
+    country: "US"
+    trust_tier: "T3_professional"
+    collection_tier: "C1_rss"
+    content_type: "news"
 
   # NOTE: 2026-04-02 RSS URL 수정 (rss.xml → rss.asp)
   - name: "ArtDaily"
     type: "rss"
     url: "https://artdaily.com/rss.asp"
+    language: "en"
+    country: "US"
+    trust_tier: "T3_professional"
+    collection_tier: "C1_rss"
+    content_type: "news"
 
   # === 미술관 API ===
   - name: "Metropolitan Museum"
     type: "met_museum"
     url: "https://collectionapi.metmuseum.org/public/collection/v1/objects"
+    language: "en"
+    country: "US"
+    trust_tier: "T1_official"
+    collection_tier: "C3_api"
+    content_type: "collection"
 
   - name: "Art Institute of Chicago"
     type: "aic"
     url: "https://api.artic.edu/api/v1/artworks"
+    language: "en"
+    country: "US"
+    trust_tier: "T1_official"
+    collection_tier: "C3_api"
+    content_type: "collection"
 
   # === 한국 미술관/갤러리 (Playwright) ===
   # NOTE: 2026-04-02 브라우저 UA로 접근 성공, 재활성화
@@ -94,18 +164,33 @@ sources:
     url: "https://www.mmca.go.kr/exhibitions/progressList.do"
     config:
       wait_for: ".exhibitionList"
+    language: "ko"
+    country: "KR"
+    trust_tier: "T1_official"
+    collection_tier: "C2_javascript"
+    content_type: "exhibition"
 
   - name: "서울시립미술관"
     type: "javascript"
     url: "https://sema.seoul.go.kr/kr/whatson/exhibition/list"
     config:
       wait_for: ".list_wrap"
+    language: "ko"
+    country: "KR"
+    trust_tier: "T1_official"
+    collection_tier: "C2_javascript"
+    content_type: "exhibition"
 
   - name: "아르코미술관"
     type: "javascript"
     url: "https://www.arko.or.kr/artcenter/program/exhibit/"
     config:
       wait_for: ".list_area"
+    language: "ko"
+    country: "KR"
+    trust_tier: "T1_official"
+    collection_tier: "C2_javascript"
+    content_type: "exhibition"
 
   # NOTE: 2026-04-03 URL 도메인 변경 (leeum.org → leeumhoam.org)
   - name: "리움미술관"
@@ -113,6 +198,11 @@ sources:
     url: "https://www.leeumhoam.org/exhibition"
     config:
       wait_for: ".exhibition-list"
+    language: "ko"
+    country: "KR"
+    trust_tier: "T1_official"
+    collection_tier: "C2_javascript"
+    content_type: "exhibition"
 
   # NOTE: 2026-04-02 URL 경로 변경하여 복구
   - name: "국립중앙박물관"
@@ -120,12 +210,22 @@ sources:
     url: "https://www.museum.go.kr/MUSEUM/main/index.do"
     config:
       wait_for: ".main-content"
+    language: "ko"
+    country: "KR"
+    trust_tier: "T1_official"
+    collection_tier: "C2_javascript"
+    content_type: "exhibition"
 
   - name: "대림미술관"
     type: "javascript"
     url: "https://www.daelimmuseum.org/exhibition/"
     config:
       wait_for: ".exhi_list"
+    language: "ko"
+    country: "KR"
+    trust_tier: "T2_institutional"
+    collection_tier: "C2_javascript"
+    content_type: "exhibition"
 
   # === 경매/아트마켓 ===
   - name: "서울옥션"
@@ -133,51 +233,106 @@ sources:
     url: "https://www.seoulauction.com/main/auction"
     config:
       wait_for: ".auction_list"
+    language: "ko"
+    country: "KR"
+    trust_tier: "T2_institutional"
+    collection_tier: "C2_javascript"
+    content_type: "auction"
 
   - name: "케이옥션"
     type: "javascript"
     url: "https://www.k-auction.com/Auction/Major"
     config:
       wait_for: ".auction_content"
+    language: "ko"
+    country: "KR"
+    trust_tier: "T2_institutional"
+    collection_tier: "C2_javascript"
+    content_type: "auction"
 
   # === Reddit 미술 커뮤니티 ===
   # NOTE: 2026-04-02 Reddit RSS 403 차단 → reddit type으로 변환
   - name: "r/Art"
     type: reddit
     url: "https://www.reddit.com/r/Art/"
+    language: "en"
+    country: "US"
+    trust_tier: "T4_community"
+    collection_tier: "C3_api"
+    content_type: "community"
 
   - name: "r/ArtHistory"
     type: reddit
     url: "https://www.reddit.com/r/ArtHistory/"
+    language: "en"
+    country: "US"
+    trust_tier: "T4_community"
+    collection_tier: "C3_api"
+    content_type: "community"
 
   - name: "r/museum"
     type: reddit
     url: "https://www.reddit.com/r/museum/"
+    language: "en"
+    country: "US"
+    trust_tier: "T4_community"
+    collection_tier: "C3_api"
+    content_type: "community"
 
   - name: "r/ContemporaryArt"
     type: reddit
     url: "https://www.reddit.com/r/ContemporaryArt/"
+    language: "en"
+    country: "US"
+    trust_tier: "T4_community"
+    collection_tier: "C3_api"
+    content_type: "community"
 
   - name: "r/ArtCollecting"
     type: reddit
     url: "https://www.reddit.com/r/ArtCollecting/"
+    language: "en"
+    country: "US"
+    trust_tier: "T4_community"
+    collection_tier: "C3_api"
+    content_type: "community"
 
   - name: "r/korea"
     type: reddit
     url: "https://www.reddit.com/r/korea/"
+    language: "en"
+    country: "KR"
+    trust_tier: "T4_community"
+    collection_tier: "C3_api"
+    content_type: "community"
 
   # === Art YouTube Channels ===
   - name: "The Art Assignment"
     type: "rss"
     url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCmQThz1OLYt8mb2PU540LOA"
+    language: "en"
+    country: "US"
+    trust_tier: "T3_professional"
+    collection_tier: "C1_rss"
+    content_type: "video"
 
   - name: "Nerdwriter1"
     type: "rss"
     url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCJkMlOu7faDgqh4PfzbpLdg"
+    language: "en"
+    country: "US"
+    trust_tier: "T3_professional"
+    collection_tier: "C1_rss"
+    content_type: "video"
 
   - name: "Smarthistory"
     type: "rss"
     url: "https://www.youtube.com/feeds/videos.xml?channel_id=UC07nFYY2UdQ7pZsMJV9_hNQ"
+    language: "en"
+    country: "US"
+    trust_tier: "T2_institutional"
+    collection_tier: "C1_rss"
+    content_type: "video"
 
   # === 국제 미술관/기관 ===
   # NOTE: 2026-04-02 URL 변경 (/whats-on)하여 JavaScript로 복구
@@ -186,6 +341,11 @@ sources:
     url: "https://www.tate.org.uk/whats-on"
     config:
       wait_for: ".card--event"
+    language: "en"
+    country: "UK"
+    trust_tier: "T1_official"
+    collection_tier: "C2_javascript"
+    content_type: "exhibition"
 
   # NOTE: 2026-04-02 JavaScript로 변환하여 복구
   - name: "MoMA Magazine"
@@ -193,6 +353,11 @@ sources:
     url: "https://www.moma.org/magazine/"
     config:
       wait_for: "article"
+    language: "en"
+    country: "US"
+    trust_tier: "T1_official"
+    collection_tier: "C2_javascript"
+    content_type: "news"
 
   # NOTE: 2026-04-02 JavaScript로 변환하여 복구
   - name: "e-flux"
@@ -200,14 +365,29 @@ sources:
     url: "https://www.e-flux.com/announcements/"
     config:
       wait_for: ".featured-projects__cell--announcements"
+    language: "en"
+    country: "US"
+    trust_tier: "T2_institutional"
+    collection_tier: "C2_javascript"
+    content_type: "news"
 
   - name: "Guggenheim"
     type: "rss"
     url: "https://www.guggenheim.org/feed"
+    language: "en"
+    country: "US"
+    trust_tier: "T1_official"
+    collection_tier: "C1_rss"
+    content_type: "news"
 
   - name: "Apollo Magazine"
     type: "rss"
     url: "https://www.apollo-magazine.com/feed/"
+    language: "en"
+    country: "UK"
+    trust_tier: "T3_professional"
+    collection_tier: "C1_rss"
+    content_type: "review"
 
 entities:
   - name: "Genre"
