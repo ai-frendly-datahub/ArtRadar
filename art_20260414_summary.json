@@ -7,11 +7,11 @@
   "top_entities": [
     {
       "name": "ArtGeneral",
-      "count": 4779
+      "count": 4765
     },
     {
       "name": "Topic",
-      "count": 281
+      "count": 279
     },
     {
       "name": "Institution",
@@ -23,7 +23,7 @@
     },
     {
       "name": "Market",
-      "count": 51
+      "count": 50
     },
     {
       "name": "Artist",
@@ -31,7 +31,7 @@
     },
     {
       "name": "Period",
-      "count": 25
+      "count": 24
     }
   ],
   "sources": {
@@ -53,12 +53,12 @@
     "데일리아트": 1,
     "The Art Newspaper": 30,
     "Hyperallergic": 15,
-    "Artsy": 13,
     "Artnet News": 10,
+    "Artsy": 13,
     "Artforum": 12,
     "Guggenheim": 2,
     "ARTnews": 10,
     "Colossal": 9
   },
-  "generated_at": "2026-04-14T20:56:32.441476+09:00"
+  "generated_at": "2026-04-14T21:20:38.501597+09:00"
 }
