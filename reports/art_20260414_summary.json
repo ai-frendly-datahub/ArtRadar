@@ -7,19 +7,19 @@
   "top_entities": [
     {
       "name": "ArtGeneral",
-      "count": 4803
+      "count": 4779
     },
     {
       "name": "Topic",
-      "count": 282
+      "count": 281
     },
     {
       "name": "Institution",
-      "count": 118
+      "count": 119
     },
     {
       "name": "Genre",
-      "count": 63
+      "count": 62
     },
     {
       "name": "Market",
@@ -27,7 +27,7 @@
     },
     {
       "name": "Artist",
-      "count": 50
+      "count": 48
     },
     {
       "name": "Period",
@@ -60,5 +60,5 @@
     "ARTnews": 10,
     "Colossal": 9
   },
-  "generated_at": "2026-04-14T20:12:36.327513+09:00"
+  "generated_at": "2026-04-14T20:56:32.441476+09:00"
 }
