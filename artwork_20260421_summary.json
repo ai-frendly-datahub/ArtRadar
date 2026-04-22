@@ -1,5 +1,5 @@
 {
-  "date": "2026-04-22",
+  "date": "2026-04-21",
   "category": "artwork",
   "article_count": 4,
   "source_count": 1,
@@ -7,27 +7,27 @@
   "top_entities": [
     {
       "name": "ArtworkType",
-      "count": 5
+      "count": 9
     },
     {
       "name": "Artist",
       "count": 5
     },
     {
-      "name": "Period",
-      "count": 4
-    },
-    {
       "name": "CollectionChange",
       "count": 3
     },
     {
-      "name": "Medium",
+      "name": "Period",
       "count": 2
+    },
+    {
+      "name": "Medium",
+      "count": 1
     }
   ],
   "sources": {
     "Artsy Editorial": 4
   },
-  "generated_at": "2026-04-22T20:16:13.375874+09:00"
+  "generated_at": "2026-04-21T20:17:33.893475+09:00"
 }
