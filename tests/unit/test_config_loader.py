@@ -34,6 +34,12 @@ def test_load_category_config(tmp_path: Path) -> None:
             "  - name: TestArt\n"
             "    type: rss\n"
             "    url: https://example.com/feed\n"
+            "    language: ko\n"
+            "    trust_tier: T1_official\n"
+            "    content_type: exhibition\n"
+            "    collection_tier: C2_javascript\n"
+            "    config:\n"
+            "      event_model: exhibition_ticket_signal\n"
             "entities:\n"
             "  - name: genre\n"
             "    display_name: Genre\n"
@@ -49,6 +55,38 @@ def test_load_category_config(tmp_path: Path) -> None:
     assert len(cfg.sources) == 1
     assert len(cfg.entities) == 1
     assert cfg.sources[0].url == "https://example.com/feed"
+    assert cfg.sources[0].language == "ko"
+    assert cfg.sources[0].trust_tier == "T1_official"
+    assert cfg.sources[0].content_type == "exhibition"
+    assert cfg.sources[0].collection_tier == "C2_javascript"
+    assert cfg.sources[0].config == {"event_model": "exhibition_ticket_signal"}
+
+
+@pytest.mark.unit
+def test_load_category_quality_config_preserves_quality_overlay(tmp_path: Path) -> None:
+    from artradar.config_loader import load_category_quality_config
+
+    cat_dir = tmp_path / "categories"
+    cat_dir.mkdir()
+    _ = (cat_dir / "art.yaml").write_text(
+        (
+            "category_name: art\n"
+            "data_quality:\n"
+            "  priority: P2\n"
+            "  quality_outputs:\n"
+            "    tracked_event_models:\n"
+            "      - auction_result\n"
+            "source_backlog:\n"
+            "  operational_candidates:\n"
+            "    - id: auction_results\n"
+        ),
+        encoding="utf-8",
+    )
+
+    quality = load_category_quality_config("art", categories_dir=cat_dir)
+
+    assert quality["data_quality"]["priority"] == "P2"
+    assert quality["source_backlog"]["operational_candidates"][0]["id"] == "auction_results"
 
 
 @pytest.mark.unit
@@ -88,5 +126,12 @@ def test_load_project_artwork_category_config() -> None:
 
     assert cfg.category_name == "artwork"
     assert cfg.display_name == "Artwork Radar"
-    assert len(cfg.sources) == 3
-    assert {source.type for source in cfg.sources} == {"met_museum", "aic", "smithsonian"}
+    assert len(cfg.sources) == 5
+    assert {source.type for source in cfg.sources} == {"rss"}
+    assert {source.name for source in cfg.sources} == {
+        "Google Arts & Culture",
+        "Artsy Editorial",
+        "Colossal Art",
+        "Hyperallergic",
+        "Artnet News",
+    }

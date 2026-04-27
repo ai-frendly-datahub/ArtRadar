@@ -1,1375 +1,1421 @@
-category_name: "art"
-display_name: "미술 레이더"
-
+category_name: art
+display_name: 미술 레이더
+data_quality:
+  priority: P2
+  primary_motion: intelligence
+  weakest_dimension: operational_depth
+  quality_outputs:
+    freshness_report: reports/art_quality.json
+    dated_freshness_report_pattern: reports/art_YYYYMMDD_quality.json
+    tracked_event_models:
+    - auction_result
+    - art_fair_participant
+    - exhibition_ticket_signal
+    - artist_institution_entity
+  event_models:
+    auction_result:
+      date_fields:
+      - auction_date
+      - collected_at
+      required_fields:
+      - artist_name
+      - artwork_title
+      - hammer_price
+      - currency
+      - source_url
+    art_fair_participant:
+      date_fields:
+      - fair_start_date
+      - collected_at
+      required_fields:
+      - fair_id
+      - organization_name
+      - role
+      - source_url
+    exhibition_ticket_signal:
+      date_fields:
+      - exhibition_start_date
+      - observed_at
+      required_fields:
+      - institution_id
+      - exhibition_id
+      - ticket_status
+    artist_institution_entity:
+      date_fields:
+      - published_date
+      - collected_at
+      required_fields:
+      - artist_name
+      - institution_name
+      - relationship_type
+  canonical_keys:
+    artwork:
+    - artist_name
+    - artwork_title
+    - creation_year
+    - medium
+    institution:
+    - institution_name
+    - city
+    - country
+  freshness_sla:
+    auction_result_days: 7
+    art_fair_participant_days: 14
+    exhibition_ticket_signal_days: 3
+    artist_institution_entity_days: 14
+  quality_gates:
+  - 작가명, 작품명, 제작연도 alias를 분리 관리한다
+  - 전시 기사와 거래/판매 신호를 별도 레이어로 유지한다
+  - 낙찰가 통화와 수수료 포함 여부를 명시한다
+  - 기관/갤러리/작가 canonical key가 없으면 거래 신호로 승격하지 않는다
+source_backlog:
+  operational_candidates:
+  - id: sothebys_auction_results
+    name: Sotheby's auction results
+    signal_type: auction_result
+    activation_gate: ToS review, price currency normalization, and artist/artwork
+      canonicalization
+  - id: christies_auction_results
+    name: Christie's auction results
+    signal_type: auction_result
+    activation_gate: ToS review, lot id mapping, and fee inclusion policy
+  - id: art_basel_exhibitor_list
+    name: Art Basel exhibitor lists
+    signal_type: art_fair_participant
+    activation_gate: fair id mapping, gallery canonicalization, and snapshot retention
+  - id: museum_ticket_calendars
+    name: Museum ticket and exhibition calendars
+    signal_type: exhibition_ticket_signal
+    activation_gate: parser stability, ticket status semantics, and timezone handling
 sources:
-  # === 국내 미술 뉴스 ===
-  - name: "월간미술"
-    type: "rss"
-    url: "https://monthlyart.com/feed/"
-    language: "ko"
-    country: "KR"
-    trust_tier: "T3_professional"
-    collection_tier: "C1_rss"
-    content_type: "news"
-
-  # NOTE: 2026-04-02 RSS 404 → JavaScript 변환하여 복구
-  - name: "데일리아트"
-    type: "javascript"
-    url: "https://www.d-art.co.kr/news/articleList.html?sc_section_code=S1N1"
-    config:
-      wait_for: ".list-block"
-    language: "ko"
-    country: "KR"
-    trust_tier: "T3_professional"
-    collection_tier: "C2_javascript"
-    content_type: "news"
-
-  # NOTE: 2026-04-02 품질점검 - Connection Error
-  # - name: "아트인사이트"
-  #   type: "rss"
-  #   url: "https://www.artinsight.co.kr/rss/allArticle.xml"
-
-  - name: "네오룩"
-    type: "javascript"
-    url: "https://neolook.com/archives/review"
-    config:
-      wait_for: ".entry-list"
-    language: "ko"
-    country: "KR"
-    trust_tier: "T3_professional"
-    collection_tier: "C2_javascript"
-    content_type: "review"
-
-  # NOTE: 2026-04-02 품질점검 - Connection Error
-  # - name: "아트앤컬쳐"
-  #   type: "javascript"
-  #   url: "https://www.artandculture.or.kr/user/column/columnList.do"
-  #   config:
-  #     wait_for: ".list_wrap"
-
-  # === 글로벌 미술 뉴스 ===
-  - name: "Artnet News"
-    type: "rss"
-    url: "https://news.artnet.com/feed"
-    language: "en"
-    country: "US"
-    trust_tier: "T2_institutional"
-    collection_tier: "C1_rss"
-    content_type: "news"
-
-  - name: "ARTnews"
-    type: "rss"
-    url: "https://www.artnews.com/feed/"
-    language: "en"
-    country: "US"
-    trust_tier: "T2_institutional"
-    collection_tier: "C1_rss"
-    content_type: "news"
-
-  - name: "Artforum"
-    type: "rss"
-    url: "https://www.artforum.com/feed/"
-    language: "en"
-    country: "US"
-    trust_tier: "T2_institutional"
-    collection_tier: "C1_rss"
-    content_type: "review"
-
-  - name: "Hyperallergic"
-    type: "rss"
-    url: "https://hyperallergic.com/feed/"
-    language: "en"
-    country: "US"
-    trust_tier: "T3_professional"
-    collection_tier: "C1_rss"
-    content_type: "news"
-
-  - name: "The Art Newspaper"
-    type: "rss"
-    url: "https://www.theartnewspaper.com/rss.xml"
-    language: "en"
-    country: "UK"
-    trust_tier: "T2_institutional"
-    collection_tier: "C1_rss"
-    content_type: "news"
-
-  # NOTE: 2026-04-02 품질점검 - 404 Not Found
-  # - name: "e-flux"
-  #   type: "rss"
-  #   url: "https://www.e-flux.com/rss/"
-
-  - name: "Artsy"
-    type: "rss"
-    url: "https://www.artsy.net/rss/news"
-    language: "en"
-    country: "US"
-    trust_tier: "T2_institutional"
-    collection_tier: "C1_rss"
-    content_type: "news"
-
-  # NOTE: 2026-04-02 RSS 403 → JavaScript 변환하여 시도
-  - name: "Frieze"
-    type: "javascript"
-    url: "https://www.frieze.com/"
-    config:
-      wait_for: "article"
-    language: "en"
-    country: "UK"
-    trust_tier: "T2_institutional"
-    collection_tier: "C2_javascript"
-    content_type: "review"
-
-  - name: "Colossal"
-    type: "rss"
-    url: "https://www.thisiscolossal.com/feed/"
-    language: "en"
-    country: "US"
-    trust_tier: "T3_professional"
-    collection_tier: "C1_rss"
-    content_type: "news"
-
-  # NOTE: 2026-04-02 RSS URL 수정 (rss.xml → rss.asp)
-  - name: "ArtDaily"
-    type: "rss"
-    url: "https://artdaily.com/rss.asp"
-    language: "en"
-    country: "US"
-    trust_tier: "T3_professional"
-    collection_tier: "C1_rss"
-    content_type: "news"
-
-  # === 미술관 API ===
-  - name: "Metropolitan Museum"
-    type: "met_museum"
-    url: "https://collectionapi.metmuseum.org/public/collection/v1/objects"
-    language: "en"
-    country: "US"
-    trust_tier: "T1_official"
-    collection_tier: "C3_api"
-    content_type: "collection"
-
-  - name: "Art Institute of Chicago"
-    type: "aic"
-    url: "https://api.artic.edu/api/v1/artworks"
-    language: "en"
-    country: "US"
-    trust_tier: "T1_official"
-    collection_tier: "C3_api"
-    content_type: "collection"
-
-  # === 한국 미술관/갤러리 (Playwright) ===
-  # NOTE: 2026-04-02 브라우저 UA로 접근 성공, 재활성화
-  - name: "국립현대미술관"
-    type: "javascript"
-    url: "https://www.mmca.go.kr/exhibitions/progressList.do"
-    config:
-      wait_for: ".exhibitionList"
-    language: "ko"
-    country: "KR"
-    trust_tier: "T1_official"
-    collection_tier: "C2_javascript"
-    content_type: "exhibition"
-
-  - name: "서울시립미술관"
-    type: "javascript"
-    url: "https://sema.seoul.go.kr/kr/whatson/exhibition/list"
-    config:
-      wait_for: ".list_wrap"
-    language: "ko"
-    country: "KR"
-    trust_tier: "T1_official"
-    collection_tier: "C2_javascript"
-    content_type: "exhibition"
-
-  - name: "아르코미술관"
-    type: "javascript"
-    url: "https://www.arko.or.kr/artcenter/program/exhibit/"
-    config:
-      wait_for: ".list_area"
-    language: "ko"
-    country: "KR"
-    trust_tier: "T1_official"
-    collection_tier: "C2_javascript"
-    content_type: "exhibition"
-
-  # NOTE: 2026-04-03 URL 도메인 변경 (leeum.org → leeumhoam.org)
-  - name: "리움미술관"
-    type: "javascript"
-    url: "https://www.leeumhoam.org/exhibition"
-    config:
-      wait_for: ".exhibition-list"
-    language: "ko"
-    country: "KR"
-    trust_tier: "T1_official"
-    collection_tier: "C2_javascript"
-    content_type: "exhibition"
-
-  # NOTE: 2026-04-02 URL 경로 변경하여 복구
-  - name: "국립중앙박물관"
-    type: "javascript"
-    url: "https://www.museum.go.kr/MUSEUM/main/index.do"
-    config:
-      wait_for: ".main-content"
-    language: "ko"
-    country: "KR"
-    trust_tier: "T1_official"
-    collection_tier: "C2_javascript"
-    content_type: "exhibition"
-
-  - name: "대림미술관"
-    type: "javascript"
-    url: "https://www.daelimmuseum.org/exhibition/"
-    config:
-      wait_for: ".exhi_list"
-    language: "ko"
-    country: "KR"
-    trust_tier: "T2_institutional"
-    collection_tier: "C2_javascript"
-    content_type: "exhibition"
-
-  # === 경매/아트마켓 ===
-  - name: "서울옥션"
-    type: "javascript"
-    url: "https://www.seoulauction.com/main/auction"
-    config:
-      wait_for: ".auction_list"
-    language: "ko"
-    country: "KR"
-    trust_tier: "T2_institutional"
-    collection_tier: "C2_javascript"
-    content_type: "auction"
-
-  - name: "케이옥션"
-    type: "javascript"
-    url: "https://www.k-auction.com/Auction/Major"
-    config:
-      wait_for: ".auction_content"
-    language: "ko"
-    country: "KR"
-    trust_tier: "T2_institutional"
-    collection_tier: "C2_javascript"
-    content_type: "auction"
-
-  # === Reddit 미술 커뮤니티 ===
-  # NOTE: 2026-04-02 Reddit RSS 403 차단 → reddit type으로 변환
-  - name: "r/Art"
-    type: reddit
-    url: "https://www.reddit.com/r/Art/"
-    language: "en"
-    country: "US"
-    trust_tier: "T4_community"
-    collection_tier: "C3_api"
-    content_type: "community"
-
-  - name: "r/ArtHistory"
-    type: reddit
-    url: "https://www.reddit.com/r/ArtHistory/"
-    language: "en"
-    country: "US"
-    trust_tier: "T4_community"
-    collection_tier: "C3_api"
-    content_type: "community"
-
-  - name: "r/museum"
-    type: reddit
-    url: "https://www.reddit.com/r/museum/"
-    language: "en"
-    country: "US"
-    trust_tier: "T4_community"
-    collection_tier: "C3_api"
-    content_type: "community"
-
-  - name: "r/ContemporaryArt"
-    type: reddit
-    url: "https://www.reddit.com/r/ContemporaryArt/"
-    language: "en"
-    country: "US"
-    trust_tier: "T4_community"
-    collection_tier: "C3_api"
-    content_type: "community"
-
-  - name: "r/ArtCollecting"
-    type: reddit
-    url: "https://www.reddit.com/r/ArtCollecting/"
-    language: "en"
-    country: "US"
-    trust_tier: "T4_community"
-    collection_tier: "C3_api"
-    content_type: "community"
-
-  - name: "r/korea"
-    type: reddit
-    url: "https://www.reddit.com/r/korea/"
-    language: "en"
-    country: "KR"
-    trust_tier: "T4_community"
-    collection_tier: "C3_api"
-    content_type: "community"
-
-  # === Art YouTube Channels ===
-  - name: "The Art Assignment"
-    type: "rss"
-    url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCmQThz1OLYt8mb2PU540LOA"
-    language: "en"
-    country: "US"
-    trust_tier: "T3_professional"
-    collection_tier: "C1_rss"
-    content_type: "video"
-
-  - name: "Nerdwriter1"
-    type: "rss"
-    url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCJkMlOu7faDgqh4PfzbpLdg"
-    language: "en"
-    country: "US"
-    trust_tier: "T3_professional"
-    collection_tier: "C1_rss"
-    content_type: "video"
-
-  - name: "Smarthistory"
-    type: "rss"
-    url: "https://www.youtube.com/feeds/videos.xml?channel_id=UC07nFYY2UdQ7pZsMJV9_hNQ"
-    language: "en"
-    country: "US"
-    trust_tier: "T2_institutional"
-    collection_tier: "C1_rss"
-    content_type: "video"
-
-  # === 국제 미술관/기관 ===
-  # NOTE: 2026-04-02 URL 변경 (/whats-on)하여 JavaScript로 복구
-  - name: "Tate"
-    type: "javascript"
-    url: "https://www.tate.org.uk/whats-on"
-    config:
-      wait_for: ".card--event"
-    language: "en"
-    country: "UK"
-    trust_tier: "T1_official"
-    collection_tier: "C2_javascript"
-    content_type: "exhibition"
-
-  # NOTE: 2026-04-02 JavaScript로 변환하여 복구
-  - name: "MoMA Magazine"
-    type: "javascript"
-    url: "https://www.moma.org/magazine/"
-    config:
-      wait_for: "article"
-    language: "en"
-    country: "US"
-    trust_tier: "T1_official"
-    collection_tier: "C2_javascript"
-    content_type: "news"
-
-  # NOTE: 2026-04-02 JavaScript로 변환하여 복구
-  - name: "e-flux"
-    type: "javascript"
-    url: "https://www.e-flux.com/announcements/"
-    config:
-      wait_for: ".featured-projects__cell--announcements"
-    language: "en"
-    country: "US"
-    trust_tier: "T2_institutional"
-    collection_tier: "C2_javascript"
-    content_type: "news"
-
-  - name: "Guggenheim"
-    type: "rss"
-    url: "https://www.guggenheim.org/feed"
-    language: "en"
-    country: "US"
-    trust_tier: "T1_official"
-    collection_tier: "C1_rss"
-    content_type: "news"
-
-  - name: "Apollo Magazine"
-    type: "rss"
-    url: "https://www.apollo-magazine.com/feed/"
-    language: "en"
-    country: "UK"
-    trust_tier: "T3_professional"
-    collection_tier: "C1_rss"
-    content_type: "review"
-
+- name: 월간미술
+  type: javascript
+  url: https://monthlyart.com/
+  config:
+    wait_for: h3.slide-entry-title a
+    link_selector: h3.slide-entry-title a
+    detail_limit: 0
+    event_model: editorial_coverage
+  language: ko
+  country: KR
+  trust_tier: T3_professional
+  collection_tier: C2_javascript
+  content_type: news
+  notes: RSS feed is archival; homepage cards carry current monthly issue items.
+- name: 데일리아트
+  type: javascript
+  url: https://www.d-art.co.kr/news/articleList.html?sc_section_code=S1N1
+  config:
+    wait_for: .list-block
+    event_model: editorial_coverage
+  language: ko
+  country: KR
+  trust_tier: T3_professional
+  collection_tier: C2_javascript
+  content_type: news
+- name: 네오룩
+  type: javascript
+  url: https://neolook.com/archives/review
+  config:
+    wait_for: .entry-list
+    event_model: editorial_coverage
+  language: ko
+  country: KR
+  trust_tier: T3_professional
+  collection_tier: C2_javascript
+  content_type: review
+- name: Artnet News
+  type: rss
+  url: https://news.artnet.com/feed
+  language: en
+  country: US
+  trust_tier: T2_institutional
+  collection_tier: C1_rss
+  content_type: news
+  config:
+    event_model: editorial_coverage
+- name: ARTnews
+  type: rss
+  url: https://www.artnews.com/feed/
+  language: en
+  country: US
+  trust_tier: T2_institutional
+  collection_tier: C1_rss
+  content_type: news
+  config:
+    event_model: editorial_coverage
+- name: Artforum
+  type: rss
+  url: https://www.artforum.com/feed/
+  language: en
+  country: US
+  trust_tier: T2_institutional
+  collection_tier: C1_rss
+  content_type: review
+  config:
+    event_model: editorial_coverage
+- name: Hyperallergic
+  type: rss
+  url: https://hyperallergic.com/feed/
+  language: en
+  country: US
+  trust_tier: T3_professional
+  collection_tier: C1_rss
+  content_type: news
+  config:
+    event_model: editorial_coverage
+- name: The Art Newspaper
+  type: rss
+  url: https://www.theartnewspaper.com/rss.xml
+  language: en
+  country: UK
+  trust_tier: T2_institutional
+  collection_tier: C1_rss
+  content_type: news
+  config:
+    event_model: editorial_coverage
+- name: Artsy
+  type: rss
+  url: https://www.artsy.net/rss/news
+  language: en
+  country: US
+  trust_tier: T2_institutional
+  collection_tier: C1_rss
+  content_type: news
+  config:
+    event_model: editorial_coverage
+- name: Frieze
+  type: javascript
+  url: https://www.frieze.com/
+  config:
+    wait_for: article
+    event_model: art_fair_participant
+  language: en
+  country: UK
+  trust_tier: T2_institutional
+  collection_tier: C2_javascript
+  content_type: review
+- name: Colossal
+  type: rss
+  url: https://www.thisiscolossal.com/feed/
+  language: en
+  country: US
+  trust_tier: T3_professional
+  collection_tier: C1_rss
+  content_type: news
+  config:
+    event_model: editorial_coverage
+- name: ArtDaily
+  type: rss
+  url: https://artdaily.com/rss.asp
+  language: en
+  country: US
+  trust_tier: T3_professional
+  collection_tier: C1_rss
+  content_type: news
+  config:
+    event_model: editorial_coverage
+- name: Metropolitan Museum
+  type: met_museum
+  url: https://collectionapi.metmuseum.org/public/collection/v1/objects
+  config:
+    event_date_field: collected_at
+    event_model: exhibition_ticket_signal
+  language: en
+  country: US
+  trust_tier: T1_official
+  collection_tier: C3_api
+  content_type: collection
+- name: Art Institute of Chicago
+  type: aic
+  url: https://api.artic.edu/api/v1/artworks
+  language: en
+  country: US
+  trust_tier: T1_official
+  collection_tier: C3_api
+  content_type: collection
+  config:
+    event_model: exhibition_ticket_signal
+- name: 국립현대미술관
+  type: javascript
+  url: https://www.mmca.go.kr/exhibitions/progressList.do
+  enabled: false
+  config:
+    wait_for: .exhibitionList
+  language: ko
+  country: KR
+  trust_tier: T1_official
+  collection_tier: C2_javascript
+  content_type: exhibition
+  notes: 'DISABLED 2026-04-23: repeated connection reset from this runner; keep as
+    official exhibition backlog until browser access is stable.'
+- name: 서울시립미술관
+  type: javascript
+  url: https://sema.seoul.go.kr/kr/whatson/exhibition/list
+  config:
+    wait_for: .list_wrap
+    event_model: exhibition_ticket_signal
+  language: ko
+  country: KR
+  trust_tier: T1_official
+  collection_tier: C2_javascript
+  content_type: exhibition
+- name: 아르코미술관
+  type: javascript
+  url: https://www.arko.or.kr/artcenter/program/exhibit/
+  config:
+    wait_for: .list_area
+    event_model: exhibition_ticket_signal
+  language: ko
+  country: KR
+  trust_tier: T1_official
+  collection_tier: C2_javascript
+  content_type: exhibition
+- name: 리움미술관
+  type: javascript
+  url: https://www.leeumhoam.org/exhibition
+  config:
+    wait_for: .exhibition-list
+    event_model: exhibition_ticket_signal
+  language: ko
+  country: KR
+  trust_tier: T1_official
+  collection_tier: C2_javascript
+  content_type: exhibition
+- name: 국립중앙박물관
+  type: javascript
+  url: https://www.museum.go.kr/MUSEUM/main/index.do
+  config:
+    wait_for: .main-content
+    event_model: exhibition_ticket_signal
+  language: ko
+  country: KR
+  trust_tier: T1_official
+  collection_tier: C2_javascript
+  content_type: exhibition
+- name: 대림미술관
+  type: javascript
+  url: https://www.daelimmuseum.org/exhibition/
+  config:
+    wait_for: .exhi_list
+    event_model: exhibition_ticket_signal
+  language: ko
+  country: KR
+  trust_tier: T2_institutional
+  collection_tier: C2_javascript
+  content_type: exhibition
+- name: 서울옥션
+  type: javascript
+  url: https://www.seoulauction.com/main/auction
+  config:
+    wait_for: .auction_list
+    event_model: auction_result
+  language: ko
+  country: KR
+  trust_tier: T2_institutional
+  collection_tier: C2_javascript
+  content_type: auction
+- name: 케이옥션
+  type: javascript
+  url: https://www.k-auction.com/Auction/Major/Result
+  config:
+    wait_for: body
+    link_selector: a[href*='/Auction/Major/'], a[href*='/Auction/Online/Result']
+    detail_limit: 0
+    event_model: auction_result
+  language: ko
+  country: KR
+  trust_tier: T2_institutional
+  collection_tier: C2_javascript
+  content_type: auction
+- name: r/Art
+  type: rss
+  url: https://www.reddit.com/r/Art/.rss
+  language: en
+  country: US
+  trust_tier: T4_community
+  collection_tier: C3_api
+  content_type: community
+  config:
+    event_model: editorial_coverage
+- name: r/ArtHistory
+  type: rss
+  url: https://www.reddit.com/r/ArtHistory/.rss
+  language: en
+  country: US
+  trust_tier: T4_community
+  collection_tier: C3_api
+  content_type: community
+  config:
+    event_model: editorial_coverage
+- name: r/museum
+  type: rss
+  url: https://www.reddit.com/r/museum/.rss
+  language: en
+  country: US
+  trust_tier: T4_community
+  collection_tier: C3_api
+  content_type: community
+  config:
+    event_model: editorial_coverage
+- name: r/ContemporaryArt
+  type: rss
+  url: https://www.reddit.com/r/ContemporaryArt/.rss
+  language: en
+  country: US
+  trust_tier: T4_community
+  collection_tier: C3_api
+  content_type: community
+  config:
+    event_model: editorial_coverage
+- name: r/ArtCollecting
+  type: rss
+  url: https://www.reddit.com/r/ArtCollecting/.rss
+  language: en
+  country: US
+  trust_tier: T4_community
+  collection_tier: C3_api
+  content_type: community
+  config:
+    event_model: editorial_coverage
+- name: r/korea
+  type: rss
+  url: https://www.reddit.com/r/korea/.rss
+  language: en
+  country: KR
+  trust_tier: T4_community
+  collection_tier: C3_api
+  content_type: community
+  config:
+    event_model: editorial_coverage
+- name: The Art Assignment
+  type: rss
+  url: https://www.youtube.com/feeds/videos.xml?channel_id=UCmQThz1OLYt8mb2PU540LOA
+  enabled: false
+  language: en
+  country: US
+  trust_tier: T3_professional
+  collection_tier: C1_rss
+  content_type: video
+  notes: 'DISABLED 2026-04-23: YouTube RSS endpoint returns 404 from this runner;
+    keep as backlog until a current feed/API path is verified.'
+- name: Nerdwriter1
+  type: rss
+  url: https://www.youtube.com/feeds/videos.xml?channel_id=UCJkMlOu7faDgqh4PfzbpLdg
+  enabled: false
+  language: en
+  country: US
+  trust_tier: T3_professional
+  collection_tier: C1_rss
+  content_type: video
+  notes: 'DISABLED 2026-04-23: YouTube RSS endpoint returns 404 from this runner;
+    keep as backlog until a current feed/API path is verified.'
+- name: Smarthistory
+  type: rss
+  url: https://www.youtube.com/feeds/videos.xml?channel_id=UC07nFYY2UdQ7pZsMJV9_hNQ
+  enabled: false
+  language: en
+  country: US
+  trust_tier: T2_institutional
+  collection_tier: C1_rss
+  content_type: video
+  notes: 'DISABLED 2026-04-23: configured YouTube RSS endpoint returns 404; current
+    channel also needs a verified non-404 feed/API path.'
+- name: Tate
+  type: javascript
+  url: https://www.tate.org.uk/whats-on
+  config:
+    wait_for: .card--event
+    event_model: editorial_coverage
+  language: en
+  country: UK
+  trust_tier: T1_official
+  collection_tier: C2_javascript
+  content_type: exhibition
+- name: MoMA Magazine
+  type: javascript
+  url: https://www.moma.org/magazine/
+  config:
+    wait_for: article
+    event_model: editorial_coverage
+  language: en
+  country: US
+  trust_tier: T1_official
+  collection_tier: C2_javascript
+  content_type: news
+- name: e-flux
+  type: javascript
+  url: https://www.e-flux.com/announcements/
+  config:
+    wait_for: .featured-projects__cell--announcements
+    event_model: editorial_coverage
+  language: en
+  country: US
+  trust_tier: T2_institutional
+  collection_tier: C2_javascript
+  content_type: news
+- name: Guggenheim
+  type: rss
+  url: https://www.guggenheim.org/feed
+  language: en
+  country: US
+  trust_tier: T1_official
+  collection_tier: C1_rss
+  content_type: news
+  config:
+    event_model: editorial_coverage
+- name: Apollo Magazine
+  type: javascript
+  url: https://apollo-magazine.com/
+  config:
+    bypass_crawl_health: true
+    wait_for: article
+    link_selector: article.card-large > a, article.card-medium > a, article.card-small
+      > a
+    detail_limit: 0
+    event_model: editorial_coverage
+  language: en
+  country: UK
+  trust_tier: T3_professional
+  collection_tier: C2_javascript
+  content_type: review
+  notes: RSS endpoint returns WordPress feed errors; homepage article cards are used
+    for current review/news coverage.
 entities:
-  - name: "Genre"
-    display_name: "미술 장르"
-    keywords:
-      # 한국어
-      - "회화"
-      - "유화"
-      - "수채화"
-      - "동양화"
-      - "한국화"
-      - "수묵화"
-      - "민화"
-      - "조각"
-      - "판화"
-      - "사진"
-      - "설치미술"
-      - "미디어아트"
-      - "영상예술"
-      - "행위예술"
-      - "퍼포먼스"
-      - "개념미술"
-      - "추상미술"
-      - "구상미술"
-      - "공예"
-      - "도자"
-      - "섬유예술"
-      # 영어
-      - "painting"
-      - "sculpture"
-      - "drawing"
-      - "printmaking"
-      - "photography"
-      - "installation"
-      - "video art"
-      - "digital art"
-      - "NFT art"
-      - "performance art"
-      - "conceptual art"
-      - "abstract"
-      - "figurative"
-
-  - name: "Period"
-    display_name: "미술 시대"
-    keywords:
-      # 한국어
-      - "르네상스"
-      - "바로크"
-      - "인상주의"
-      - "후기인상주의"
-      - "표현주의"
-      - "초현실주의"
-      - "모더니즘"
-      - "포스트모더니즘"
-      - "현대미술"
-      - "동시대미술"
-      - "단색화"
-      - "민중미술"
-      - "한국근대미술"
-      # 영어
-      - "renaissance"
-      - "baroque"
-      - "impressionism"
-      - "expressionism"
-      - "surrealism"
-      - "modernism"
-      - "contemporary"
-      - "post-modern"
-
-  - name: "Market"
-    display_name: "미술 시장"
-    keywords:
-      # 한국어
-      - "경매"
-      - "낙찰"
-      - "낙찰가"
-      - "최고가"
-      - "신기록"
-      - "컬렉터"
-      - "소장"
-      - "수집"
-      - "투자"
-      - "아트테크"
-      - "미술투자"
-      - "아트페어"
-      - "키아프"
-      - "프리즈서울"
-      - "아트부산"
-      - "화랑미술제"
-      - "작품가격"
-      - "호가"
-      - "추정가"
-      # 영어
-      - "auction"
-      - "gallery"
-      - "collector"
-      - "investment"
-      - "valuation"
-      - "provenance"
-      - "art fair"
-      - "Art Basel"
-      - "Frieze"
-      - "Christie's"
-      - "Sotheby's"
-
-  - name: "Institution"
-    display_name: "미술 기관"
-    keywords:
-      # 한국 미술관/갤러리
-      - "국립현대미술관"
-      - "서울시립미술관"
-      - "리움"
-      - "아모레퍼시픽미술관"
-      - "대림미술관"
-      - "호암미술관"
-      - "국립중앙박물관"
-      - "예술의전당"
-      - "서울옥션"
-      - "케이옥션"
-      - "학고재"
-      - "갤러리현대"
-      - "국제갤러리"
-      - "PKM갤러리"
-      - "아라리오"
-      # 비엔날레
-      - "광주비엔날레"
-      - "부산비엔날레"
-      - "베니스비엔날레"
-      # 일반 용어
-      - "미술관"
-      - "박물관"
-      - "갤러리"
-      - "화랑"
-      - "전시"
-      - "전시회"
-      - "큐레이터"
-      - "학예사"
-      - "소장품"
-      - "컬렉션"
-      - "museum"
-      - "gallery"
-      - "biennale"
-      - "exhibition"
-      - "curator"
-
-  - name: "Artist"
-    display_name: "작가"
-    keywords:
-      # 한국 작가
-      - "이우환"
-      - "박서보"
-      - "김환기"
-      - "이중섭"
-      - "박수근"
-      - "윤형근"
-      - "정상화"
-      - "하종현"
-      - "이배"
-      - "김창열"
-      - "백남준"
-      - "이불"
-      - "서도호"
-      - "양혜규"
-      - "김수자"
-      - "이동기"
-      - "마리킴"
-      - "권오상"
-      # 일반 용어
-      - "작가"
-      - "예술가"
-      - "화가"
-      - "조각가"
-      - "artist"
-      - "painter"
-      - "sculptor"
-
-  - name: "Topic"
-    display_name: "미술 주제"
-    keywords:
-      # 한국어
-      - "전시리뷰"
-      - "작품해설"
-      - "미술비평"
-      - "미술사"
-      - "예술철학"
-      - "미학"
-      - "기획전"
-      - "특별전"
-      - "상설전"
-      - "개인전"
-      - "그룹전"
-      - "회고전"
-      - "순회전"
-      - "소장품전"
-      - "신진작가"
-      - "레지던시"
-      - "아티스트토크"
-      # 영어
-      - "exhibition review"
-      - "art criticism"
-      - "art history"
-      - "solo show"
-      - "group show"
-      - "retrospective"
-      # 추가 미술 일반 키워드
-      - "art"
-      - "artwork"
-      - "artworks"
-      - "piece"
-      - "pieces"
-      - "work"
-      - "works"
-      - "collection"
-      - "exhibit"
-      - "display"
-      - "show"
-      - "showing"
-      - "opening"
-      - "opens"
-      - "new"
-      - "latest"
-      - "recent"
-      - "upcoming"
-      - "미술"
-      - "예술"
-      - "작품"
-      - "전시중"
-      - "관람"
-      - "입장"
-      - "무료"
-      - "유료"
-      - "티켓"
-      - "관람시간"
-      - "휴관"
-      - "개관"
-
-  - name: "ArtGeneral"
-    display_name: "미술 일반"
-    keywords:
-      - "visual"
-      - "creative"
-      - "artistic"
-      - "aesthetic"
-      - "beauty"
-      - "expression"
-      - "masterpiece"
-      - "iconic"
-      - "stunning"
-      - "beautiful"
-      - "impressive"
-      - "remarkable"
-      - "significant"
-      - "important"
-      - "major"
-      - "notable"
-      - "famous"
-      - "renowned"
-      - "celebrated"
-      - "아름다운"
-      - "인상적"
-      - "주목"
-      - "화제"
-      - "인기"
-      # 추가 일반 키워드
-      - "art"
-      - "arts"
-      - "artist"
-      - "artists"
-      - "artwork"
-      - "artworks"
-      - "piece"
-      - "pieces"
-      - "work"
-      - "works"
-      - "collection"
-      - "collections"
-      - "exhibit"
-      - "exhibits"
-      - "exhibition"
-      - "exhibitions"
-      - "show"
-      - "shows"
-      - "display"
-      - "displays"
-      - "gallery"
-      - "galleries"
-      - "museum"
-      - "museums"
-      - "view"
-      - "viewing"
-      - "see"
-      - "seen"
-      - "look"
-      - "looking"
-      - "watch"
-      - "image"
-      - "images"
-      - "picture"
-      - "pictures"
-      - "paint"
-      - "painted"
-      - "painting"
-      - "paintings"
-      - "draw"
-      - "drawing"
-      - "drawn"
-      - "create"
-      - "created"
-      - "creating"
-      - "creation"
-      - "design"
-      - "designs"
-      - "designed"
-      - "style"
-      - "styles"
-      - "form"
-      - "forms"
-      - "color"
-      - "colors"
-      - "colour"
-      - "colours"
-      - "new"
-      - "latest"
-      - "recent"
-      - "upcoming"
-      - "opening"
-      - "opens"
-      - "open"
-      - "debut"
-      - "premiere"
-      - "launch"
-      - "feature"
-      - "features"
-      - "featuring"
-      - "present"
-      - "presents"
-      - "presenting"
-      - "announce"
-      - "announces"
-      - "announced"
-      - "reveal"
-      - "reveals"
-      - "unveiled"
-      - "explore"
-      - "explores"
-      - "미술"
-      - "예술"
-      - "작품"
-      - "전시"
-      - "갤러리"
-      - "미술관"
-      - "관람"
-      - "감상"
-      - "창작"
-      - "그림"
-      - "색"
-      - "형태"
-      - "디자인"
-      - "신작"
-      - "공개"
-      - "오픈"
-      - "개막"
-      # Ultra-common article words
-      - "story"
-      - "stories"
-      - "article"
-      - "news"
-      - "today"
-      - "world"
-      - "first"
-      - "year"
-      - "years"
-      - "time"
-      - "now"
-      - "best"
-      - "most"
-      - "top"
-      - "one"
-      - "two"
-      - "three"
-      - "how"
-      - "why"
-      - "what"
-      - "where"
-      - "make"
-      - "made"
-      - "take"
-      - "took"
-      - "come"
-      - "goes"
-      - "get"
-      - "set"
-      - "say"
-      - "says"
-      - "said"
-      - "just"
-      - "like"
-      - "also"
-      - "more"
-      - "way"
-      - "find"
-      - "part"
-      - "long"
-      - "great"
-      - "little"
-      - "own"
-      - "other"
-      - "old"
-      - "right"
-      - "big"
-      - "high"
-      - "different"
-      - "good"
-      - "place"
-      - "small"
-      - "large"
-      - "next"
-      - "early"
-      - "young"
-      - "last"
-      - "public"
-      - "think"
-      - "back"
-      - "after"
-      - "use"
-      - "only"
-      - "still"
-      - "even"
-      - "day"
-      - "week"
-      - "month"
-      - "life"
-      - "hand"
-      - "자"
-      - "를"
-      - "의"
-      - "에서"
-      - "으로"
-      - "기자"
-      - "뉴스"
-      - "오늘"
-      - "내일"
-      - "어제"
-      - "올해"
-      - "이번"
-      - "지난"
-      - "다음"
-      - "최근"
-      - "현재"
-      - "이후"
-      - "이전"
-      - "또한"
-      - "함께"
-      - "통해"
-      - "대한"
-      - "위한"
-      - "모든"
-      - "다양한"
-      - "새로운"
-      - "많은"
-      - "처음"
-      - "가장"
-      - "특히"
-      - "더욱"
-      - "이상"
-      - "이하"
-      - "발표"
-      - "공개"
-      - "진행"
-      - "예정"
-      - "시작"
-      - "소개"
-      - "마련"
-      - "기획"
-      - "참여"
-      - "행사"
-      # Art mediums/materials for Reddit r/Art format
-      - "acrylic"
-      - "oil"
-      - "watercolor"
-      - "watercolour"
-      - "pencil"
-      - "ink"
-      - "graphite"
-      - "charcoal"
-      - "pastel"
-      - "digital"
-      - "marker"
-      - "gouache"
-      - "canvas"
-      - "paper"
-      - "linen"
-      - "wood"
-      - "bronze"
-      - "marble"
-      - "clay"
-      - "ceramic"
-      - "pen"
-      - "crayon"
-      - "spray"
-      - "mixed media"
-      - "collage"
-      - "embroidery"
-      - "textile"
-      - "fiber"
-      - "glass"
-      - "metal"
-      - "resin"
-      - "plaster"
-      - "tempera"
-      - "fresco"
-      - "encaustic"
-      - "lithograph"
-      - "etching"
-      - "woodcut"
-      - "screenprint"
-      - "monotype"
-      - "linocut"
-      - "intaglio"
-      - "portrait"
-      - "landscape"
-      - "still life"
-      - "abstract"
-      - "figurative"
-      - "surreal"
-      - "realism"
-      - "impressionist"
-      - "expressionist"
-      - "OC"
-      # Common headline/summary action words
-      - "here"
-      - "this"
-      - "my"
-      - "just"
-      - "wanted"
-      - "share"
-      - "sharing"
-      - "post"
-      - "posted"
-      - "check"
-      - "thought"
-      - "love"
-      - "loved"
-      - "trying"
-      - "tried"
-      - "really"
-      - "finally"
-      - "please"
-      - "help"
-      - "advice"
-      - "feedback"
-      - "thoughts"
-      - "opinion"
-      - "question"
-      - "anyone"
-      - "does"
-      - "know"
-      - "think"
-      - "feel"
-      - "been"
-      - "doing"
-      - "made"
-      - "making"
-      - "working"
-      - "going"
-      - "looking"
-      - "wondering"
-      - "finished"
-      - "completed"
-      - "started"
-      - "today"
-      - "yesterday"
-      - "week"
-      - "month"
-      - "hour"
-      - "hours"
-      - "days"
-      - "ago"
-      - "since"
-      - "before"
-      - "after"
-      - "while"
-      - "during"
-      - "later"
-      - "2026"
-      - "2025"
-      - "2024"
-      # Art criticism and exhibitions
-      - "review"
-      - "reviews"
-      - "reviewer"
-      - "critique"
-      - "curated"
-      - "curating"
-      - "retrospective"
-      - "solo"
-      - "group"
-      - "permanent"
-      - "temporary"
-      - "opens"
-      - "closes"
-      - "through"
-      - "until"
-      - "runs"
-      - "running"
-      # Art market
-      - "sold"
-      - "selling"
-      - "buyer"
-      - "bidder"
-      - "estimate"
-      - "estimated"
-      - "value"
-      - "valued"
-      - "record"
-      - "million"
-      - "billion"
-      - "Christie's"
-      - "Sotheby's"
-      - "Phillips"
-      # More Korean art terms
-      - "개인전"
-      - "단체전"
-      - "기획전"
-      - "특별전"
-      - "상설전"
-      - "소장품"
-      - "신진"
-      - "현대"
-      - "고전"
-      - "국내"
-      - "해외"
-      - "문화"
-      - "예술가"
-      - "미술가"
-      - "설치"
-      - "영상"
-      - "퍼포먼스"
-      - "출품"
-      - "수상"
-      - "선정"
-      # Photography/film
-      - "photograph"
-      - "photographs"
-      - "photographer"
-      - "film"
-      - "video"
-      - "documentary"
-      - "camera"
-      - "shot"
-      - "captured"
-      # Pronouns and articles
-      - "I"
-      - "we"
-      - "you"
-      - "it"
-      - "that"
-      - "which"
-      - "who"
-      - "what"
-      - "how"
-      - "why"
-      - "when"
-      - "where"
-      - "the"
-      - "a"
-      - "an"
-      - "these"
-      - "those"
-      - "its"
-      - "their"
-      - "our"
-      - "your"
-      - "his"
-      - "her"
-      # Common verbs
-      - "is"
-      - "are"
-      - "was"
-      - "were"
-      - "have"
-      - "has"
-      - "had"
-      - "will"
-      - "would"
-      - "could"
-      - "should"
-      - "can"
-      - "may"
-      - "might"
-      - "do"
-      - "does"
-      - "did"
-      - "be"
-      - "been"
-      - "being"
-      # Connectors
-      - "and"
-      - "or"
-      - "but"
-      - "so"
-      - "because"
-      - "if"
-      - "then"
-      - "also"
-      - "too"
-      - "very"
-      - "more"
-      - "less"
-      - "than"
-      - "as"
-      - "with"
-      - "for"
-      - "to"
-      - "of"
-      - "in"
-      - "on"
-      - "at"
-      - "by"
-      - "from"
-      - "about"
-      - "into"
-      - "through"
-      - "during"
-      - "before"
-      - "after"
-      - "above"
-      - "below"
-      - "between"
-      - "under"
-      - "again"
-      - "further"
-      - "once"
-      # Numbers and quantities (Team 4 boost)
-      - "many"
-      - "some"
-      - "all"
-      - "few"
-      - "each"
-      - "every"
-      - "any"
-      # Time words (Team 4 boost)
-      - "recently"
-      - "soon"
-      # Action words (Team 4 boost)
-      - "got"
-      - "want"
-      - "need"
-      - "start"
-      # More pronouns
-      - "me"
-      - "us"
-      - "them"
-      - "him"
-      - "her"
-      - "myself"
-      - "yourself"
-      # More common words
-      - "really"
-      - "very"
-      - "just"
-      - "still"
-      - "even"
-      - "only"
-      - "back"
-      - "up"
-      - "down"
-      - "out"
-      - "over"
-      - "off"
-      - "away"
-      - "around"
-      - "here"
-      - "there"
-      - "where"
-      - "when"
-      - "while"
-      - "since"
-      - "until"
-      - "through"
-      - "because"
-      - "although"
-      - "however"
-      - "therefore"
-      # More verbs
-      - "let"
-      - "put"
-      - "keep"
-      - "hold"
-      - "bring"
-      - "move"
-      - "turn"
-      - "run"
-      - "show"
-      - "hear"
-      - "play"
-      - "read"
-      - "write"
-      - "learn"
-      - "call"
-      - "feel"
-      - "become"
-      - "leave"
-      - "change"
-      - "follow"
-      - "stop"
-      - "seem"
-      - "help"
-      - "talk"
-      - "meet"
-      - "pay"
-      - "buy"
-      - "sell"
-      - "include"
-      - "continue"
-      - "set"
-      - "add"
-      - "end"
-      - "live"
-      - "believe"
-      # More nouns
-      - "people"
-      - "thing"
-      - "things"
-      - "way"
-      - "world"
-      - "life"
-      - "part"
-      - "place"
-      - "case"
-      - "point"
-      - "fact"
-      - "group"
-      - "number"
-      - "problem"
-      - "question"
-      # Art object types
-      - "textile"
-      - "textiles"
-      - "tunic"
-      - "dress"
-      - "fragment"
-      - "fragments"
-      - "panel"
-      - "panels"
-      - "medallion"
-      - "mirror"
-      - "picture"
-      - "scene"
-      - "scenes"
-      - "figure"
-      - "figures"
-      - "depicting"
-      - "ceremonial"
-      - "needlework"
-      - "tapestry"
-      - "woven"
-      - "weft"
-      - "pile"
-      - "patch"
-      - "hood"
-      - "child"
-      - "universe"
-      - "lunar"
-      - "moon"
-      - "heaven"
-      - "fall"
-      - "king"
-      - "queen"
-      - "old"
-      - "testament"
-      - "pastoral"
-      - "untitled"
-      - "miss"
-      - "expanding"
-      - "season"
-      - "flowers"
-      # More action words
-      - "gathering"
-      - "conducting"
-      - "experiments"
-      - "shadow"
-      - "foreground"
-      - "left"
-      - "right"
-      - "samples"
-      # Materials from Art Institute items
-      - "aluminum"
-      - "silk"
-      - "wool"
-      - "linen"
-      - "cotton"
-      - "satin"
-      - "weave"
-      - "woven"
-      - "embroidered"
-      - "embroidery"
-      - "tapestry"
-      - "mezzotint"
-      # Geographic/cultural
-      - "byzantine"
-      - "egypt"
-      - "england"
-      - "yemen"
-      - "peru"
-      - "nasca"
-      - "lambayeque"
-      - "japan"
-      - "japanese"
-      - "american"
-      - "shan"
-      - "burma"
-      - "myanmar"
-      - "kohistan"
-      - "afghanistan"
-      - "pakistan"
-      # Century markers
-      - "century"
-      - "CE"
-      - "1st"
-      - "2nd"
-      - "3rd"
-      - "4th"
-      - "5th"
-      - "6th"
-      - "7th"
-      - "8th"
-      - "9th"
-      - "10th"
-      - "11th"
-      - "12th"
-      - "13th"
-      - "14th"
-      - "15th"
-      - "16th"
-      - "17th"
-      - "18th"
-      - "19th"
-      - "20th"
-      - "21st"
-      # Art objects/techniques
-      - "plain"
-      - "float"
-      - "slit"
-      - "weft"
-      - "warp"
-      - "stitch"
-      - "stitches"
-      - "applique"
-      - "threads"
-      - "yarns"
-      - "floss"
-      - "binding"
-      - "braided"
-      - "pieced"
-      - "lined"
-      - "talismanic"
-      - "yantra"
-      - "interlocking"
-      - "eccentric"
-      - "wrapped"
-      - "outlining"
-      # Names
-      - "isamu"
-      - "noguchi"
-      - "irwin"
-      - "james"
-      - "scott"
-      - "hamanishi"
-      - "katsunori"
-      - "NASA"
-      - "charles"
-      - "catherine"
-      - "braganza"
-      - "moses"
-      # Additional words from titles
-      - "regolith"
-      - "senelogical"
-      - "ceremonial"
-      - "depicting"
-      - "finding"
-      - "looped"
-      - "pile"
-      - "stripes"
-      - "self-patterning"
+- name: Genre
+  display_name: 미술 장르
+  keywords:
+  - 회화
+  - 유화
+  - 수채화
+  - 동양화
+  - 한국화
+  - 수묵화
+  - 민화
+  - 조각
+  - 판화
+  - 사진
+  - 설치미술
+  - 미디어아트
+  - 영상예술
+  - 행위예술
+  - 퍼포먼스
+  - 개념미술
+  - 추상미술
+  - 구상미술
+  - 공예
+  - 도자
+  - 섬유예술
+  - painting
+  - sculpture
+  - drawing
+  - printmaking
+  - photography
+  - installation
+  - video art
+  - digital art
+  - NFT art
+  - performance art
+  - conceptual art
+  - abstract
+  - figurative
+- name: Period
+  display_name: 미술 시대
+  keywords:
+  - 르네상스
+  - 바로크
+  - 인상주의
+  - 후기인상주의
+  - 표현주의
+  - 초현실주의
+  - 모더니즘
+  - 포스트모더니즘
+  - 현대미술
+  - 동시대미술
+  - 단색화
+  - 민중미술
+  - 한국근대미술
+  - renaissance
+  - baroque
+  - impressionism
+  - expressionism
+  - surrealism
+  - modernism
+  - contemporary
+  - post-modern
+- name: Market
+  display_name: 미술 시장
+  keywords:
+  - 경매
+  - 낙찰
+  - 낙찰가
+  - 최고가
+  - 신기록
+  - 컬렉터
+  - 소장
+  - 수집
+  - 투자
+  - 아트테크
+  - 미술투자
+  - 아트페어
+  - 키아프
+  - 프리즈서울
+  - 아트부산
+  - 화랑미술제
+  - 작품가격
+  - 호가
+  - 추정가
+  - auction
+  - gallery
+  - collector
+  - investment
+  - valuation
+  - provenance
+  - art fair
+  - Art Basel
+  - Frieze
+  - Christie's
+  - Sotheby's
+- name: Institution
+  display_name: 미술 기관
+  keywords:
+  - 국립현대미술관
+  - 서울시립미술관
+  - 리움
+  - 아모레퍼시픽미술관
+  - 대림미술관
+  - 호암미술관
+  - 국립중앙박물관
+  - 예술의전당
+  - 서울옥션
+  - 케이옥션
+  - 학고재
+  - 갤러리현대
+  - 국제갤러리
+  - PKM갤러리
+  - 아라리오
+  - 광주비엔날레
+  - 부산비엔날레
+  - 베니스비엔날레
+  - 미술관
+  - 박물관
+  - 갤러리
+  - 화랑
+  - 전시
+  - 전시회
+  - 큐레이터
+  - 학예사
+  - 소장품
+  - 컬렉션
+  - museum
+  - gallery
+  - biennale
+  - exhibition
+  - curator
+- name: Artist
+  display_name: 작가
+  keywords:
+  - 이우환
+  - 박서보
+  - 김환기
+  - 이중섭
+  - 박수근
+  - 윤형근
+  - 정상화
+  - 하종현
+  - 이배
+  - 김창열
+  - 백남준
+  - 이불
+  - 서도호
+  - 양혜규
+  - 김수자
+  - 이동기
+  - 마리킴
+  - 권오상
+  - 작가
+  - 예술가
+  - 화가
+  - 조각가
+  - artist
+  - painter
+  - sculptor
+- name: Topic
+  display_name: 미술 주제
+  keywords:
+  - 전시리뷰
+  - 작품해설
+  - 미술비평
+  - 미술사
+  - 예술철학
+  - 미학
+  - 기획전
+  - 특별전
+  - 상설전
+  - 개인전
+  - 그룹전
+  - 회고전
+  - 순회전
+  - 소장품전
+  - 신진작가
+  - 레지던시
+  - 아티스트토크
+  - exhibition review
+  - art criticism
+  - art history
+  - solo show
+  - group show
+  - retrospective
+  - art
+  - artwork
+  - artworks
+  - piece
+  - pieces
+  - work
+  - works
+  - collection
+  - exhibit
+  - display
+  - show
+  - showing
+  - opening
+  - opens
+  - new
+  - latest
+  - recent
+  - upcoming
+  - 미술
+  - 예술
+  - 작품
+  - 전시중
+  - 관람
+  - 입장
+  - 무료
+  - 유료
+  - 티켓
+  - 관람시간
+  - 휴관
+  - 개관
+- name: ArtGeneral
+  display_name: 미술 일반
+  keywords:
+  - visual
+  - creative
+  - artistic
+  - aesthetic
+  - beauty
+  - expression
+  - masterpiece
+  - iconic
+  - stunning
+  - beautiful
+  - impressive
+  - remarkable
+  - significant
+  - important
+  - major
+  - notable
+  - famous
+  - renowned
+  - celebrated
+  - 아름다운
+  - 인상적
+  - 주목
+  - 화제
+  - 인기
+  - art
+  - arts
+  - artist
+  - artists
+  - artwork
+  - artworks
+  - piece
+  - pieces
+  - work
+  - works
+  - collection
+  - collections
+  - exhibit
+  - exhibits
+  - exhibition
+  - exhibitions
+  - show
+  - shows
+  - display
+  - displays
+  - gallery
+  - galleries
+  - museum
+  - museums
+  - view
+  - viewing
+  - see
+  - seen
+  - look
+  - looking
+  - watch
+  - image
+  - images
+  - picture
+  - pictures
+  - paint
+  - painted
+  - painting
+  - paintings
+  - draw
+  - drawing
+  - drawn
+  - create
+  - created
+  - creating
+  - creation
+  - design
+  - designs
+  - designed
+  - style
+  - styles
+  - form
+  - forms
+  - color
+  - colors
+  - colour
+  - colours
+  - new
+  - latest
+  - recent
+  - upcoming
+  - opening
+  - opens
+  - open
+  - debut
+  - premiere
+  - launch
+  - feature
+  - features
+  - featuring
+  - present
+  - presents
+  - presenting
+  - announce
+  - announces
+  - announced
+  - reveal
+  - reveals
+  - unveiled
+  - explore
+  - explores
+  - 미술
+  - 예술
+  - 작품
+  - 전시
+  - 갤러리
+  - 미술관
+  - 관람
+  - 감상
+  - 창작
+  - 그림
+  - 색
+  - 형태
+  - 디자인
+  - 신작
+  - 공개
+  - 오픈
+  - 개막
+  - story
+  - stories
+  - article
+  - news
+  - today
+  - world
+  - first
+  - year
+  - years
+  - time
+  - now
+  - best
+  - most
+  - top
+  - one
+  - two
+  - three
+  - how
+  - why
+  - what
+  - where
+  - make
+  - made
+  - take
+  - took
+  - come
+  - goes
+  - get
+  - set
+  - say
+  - says
+  - said
+  - just
+  - like
+  - also
+  - more
+  - way
+  - find
+  - part
+  - long
+  - great
+  - little
+  - own
+  - other
+  - old
+  - right
+  - big
+  - high
+  - different
+  - good
+  - place
+  - small
+  - large
+  - next
+  - early
+  - young
+  - last
+  - public
+  - think
+  - back
+  - after
+  - use
+  - only
+  - still
+  - even
+  - day
+  - week
+  - month
+  - life
+  - hand
+  - 자
+  - 를
+  - 의
+  - 에서
+  - 으로
+  - 기자
+  - 뉴스
+  - 오늘
+  - 내일
+  - 어제
+  - 올해
+  - 이번
+  - 지난
+  - 다음
+  - 최근
+  - 현재
+  - 이후
+  - 이전
+  - 또한
+  - 함께
+  - 통해
+  - 대한
+  - 위한
+  - 모든
+  - 다양한
+  - 새로운
+  - 많은
+  - 처음
+  - 가장
+  - 특히
+  - 더욱
+  - 이상
+  - 이하
+  - 발표
+  - 공개
+  - 진행
+  - 예정
+  - 시작
+  - 소개
+  - 마련
+  - 기획
+  - 참여
+  - 행사
+  - acrylic
+  - oil
+  - watercolor
+  - watercolour
+  - pencil
+  - ink
+  - graphite
+  - charcoal
+  - pastel
+  - digital
+  - marker
+  - gouache
+  - canvas
+  - paper
+  - linen
+  - wood
+  - bronze
+  - marble
+  - clay
+  - ceramic
+  - pen
+  - crayon
+  - spray
+  - mixed media
+  - collage
+  - embroidery
+  - textile
+  - fiber
+  - glass
+  - metal
+  - resin
+  - plaster
+  - tempera
+  - fresco
+  - encaustic
+  - lithograph
+  - etching
+  - woodcut
+  - screenprint
+  - monotype
+  - linocut
+  - intaglio
+  - portrait
+  - landscape
+  - still life
+  - abstract
+  - figurative
+  - surreal
+  - realism
+  - impressionist
+  - expressionist
+  - OC
+  - here
+  - this
+  - my
+  - just
+  - wanted
+  - share
+  - sharing
+  - post
+  - posted
+  - check
+  - thought
+  - love
+  - loved
+  - trying
+  - tried
+  - really
+  - finally
+  - please
+  - help
+  - advice
+  - feedback
+  - thoughts
+  - opinion
+  - question
+  - anyone
+  - does
+  - know
+  - think
+  - feel
+  - been
+  - doing
+  - made
+  - making
+  - working
+  - going
+  - looking
+  - wondering
+  - finished
+  - completed
+  - started
+  - today
+  - yesterday
+  - week
+  - month
+  - hour
+  - hours
+  - days
+  - ago
+  - since
+  - before
+  - after
+  - while
+  - during
+  - later
+  - '2026'
+  - '2025'
+  - '2024'
+  - review
+  - reviews
+  - reviewer
+  - critique
+  - curated
+  - curating
+  - retrospective
+  - solo
+  - group
+  - permanent
+  - temporary
+  - opens
+  - closes
+  - through
+  - until
+  - runs
+  - running
+  - sold
+  - selling
+  - buyer
+  - bidder
+  - estimate
+  - estimated
+  - value
+  - valued
+  - record
+  - million
+  - billion
+  - Christie's
+  - Sotheby's
+  - Phillips
+  - 개인전
+  - 단체전
+  - 기획전
+  - 특별전
+  - 상설전
+  - 소장품
+  - 신진
+  - 현대
+  - 고전
+  - 국내
+  - 해외
+  - 문화
+  - 예술가
+  - 미술가
+  - 설치
+  - 영상
+  - 퍼포먼스
+  - 출품
+  - 수상
+  - 선정
+  - photograph
+  - photographs
+  - photographer
+  - film
+  - video
+  - documentary
+  - camera
+  - shot
+  - captured
+  - I
+  - we
+  - you
+  - it
+  - that
+  - which
+  - who
+  - what
+  - how
+  - why
+  - when
+  - where
+  - the
+  - a
+  - an
+  - these
+  - those
+  - its
+  - their
+  - our
+  - your
+  - his
+  - her
+  - is
+  - are
+  - was
+  - were
+  - have
+  - has
+  - had
+  - will
+  - would
+  - could
+  - should
+  - can
+  - may
+  - might
+  - do
+  - does
+  - did
+  - be
+  - been
+  - being
+  - and
+  - or
+  - but
+  - so
+  - because
+  - if
+  - then
+  - also
+  - too
+  - very
+  - more
+  - less
+  - than
+  - as
+  - with
+  - for
+  - to
+  - of
+  - in
+  - 'on'
+  - at
+  - by
+  - from
+  - about
+  - into
+  - through
+  - during
+  - before
+  - after
+  - above
+  - below
+  - between
+  - under
+  - again
+  - further
+  - once
+  - many
+  - some
+  - all
+  - few
+  - each
+  - every
+  - any
+  - recently
+  - soon
+  - got
+  - want
+  - need
+  - start
+  - me
+  - us
+  - them
+  - him
+  - her
+  - myself
+  - yourself
+  - really
+  - very
+  - just
+  - still
+  - even
+  - only
+  - back
+  - up
+  - down
+  - out
+  - over
+  - 'off'
+  - away
+  - around
+  - here
+  - there
+  - where
+  - when
+  - while
+  - since
+  - until
+  - through
+  - because
+  - although
+  - however
+  - therefore
+  - let
+  - put
+  - keep
+  - hold
+  - bring
+  - move
+  - turn
+  - run
+  - show
+  - hear
+  - play
+  - read
+  - write
+  - learn
+  - call
+  - feel
+  - become
+  - leave
+  - change
+  - follow
+  - stop
+  - seem
+  - help
+  - talk
+  - meet
+  - pay
+  - buy
+  - sell
+  - include
+  - continue
+  - set
+  - add
+  - end
+  - live
+  - believe
+  - people
+  - thing
+  - things
+  - way
+  - world
+  - life
+  - part
+  - place
+  - case
+  - point
+  - fact
+  - group
+  - number
+  - problem
+  - question
+  - textile
+  - textiles
+  - tunic
+  - dress
+  - fragment
+  - fragments
+  - panel
+  - panels
+  - medallion
+  - mirror
+  - picture
+  - scene
+  - scenes
+  - figure
+  - figures
+  - depicting
+  - ceremonial
+  - needlework
+  - tapestry
+  - woven
+  - weft
+  - pile
+  - patch
+  - hood
+  - child
+  - universe
+  - lunar
+  - moon
+  - heaven
+  - fall
+  - king
+  - queen
+  - old
+  - testament
+  - pastoral
+  - untitled
+  - miss
+  - expanding
+  - season
+  - flowers
+  - gathering
+  - conducting
+  - experiments
+  - shadow
+  - foreground
+  - left
+  - right
+  - samples
+  - aluminum
+  - silk
+  - wool
+  - linen
+  - cotton
+  - satin
+  - weave
+  - woven
+  - embroidered
+  - embroidery
+  - tapestry
+  - mezzotint
+  - byzantine
+  - egypt
+  - england
+  - yemen
+  - peru
+  - nasca
+  - lambayeque
+  - japan
+  - japanese
+  - american
+  - shan
+  - burma
+  - myanmar
+  - kohistan
+  - afghanistan
+  - pakistan
+  - century
+  - CE
+  - 1st
+  - 2nd
+  - 3rd
+  - 4th
+  - 5th
+  - 6th
+  - 7th
+  - 8th
+  - 9th
+  - 10th
+  - 11th
+  - 12th
+  - 13th
+  - 14th
+  - 15th
+  - 16th
+  - 17th
+  - 18th
+  - 19th
+  - 20th
+  - 21st
+  - plain
+  - float
+  - slit
+  - weft
+  - warp
+  - stitch
+  - stitches
+  - applique
+  - threads
+  - yarns
+  - floss
+  - binding
+  - braided
+  - pieced
+  - lined
+  - talismanic
+  - yantra
+  - interlocking
+  - eccentric
+  - wrapped
+  - outlining
+  - isamu
+  - noguchi
+  - irwin
+  - james
+  - scott
+  - hamanishi
+  - katsunori
+  - NASA
+  - charles
+  - catherine
+  - braganza
+  - moses
+  - regolith
+  - senelogical
+  - ceremonial
+  - depicting
+  - finding
+  - looped
+  - pile
+  - stripes
+  - self-patterning

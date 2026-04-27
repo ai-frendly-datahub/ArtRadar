@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 import sys
-from datetime import UTC
+from datetime import UTC, datetime
 from importlib import import_module
 from pathlib import Path
 from typing import cast
@@ -22,6 +22,7 @@ date_storage_module = import_module("artradar.date_storage")
 
 load_settings = config_loader.load_settings
 load_category_config = config_loader.load_category_config
+load_category_quality_config = config_loader.load_category_quality_config
 collect_sources = collector_module.collect_sources
 apply_entity_rules = analyzer_module.apply_entity_rules
 validate_article = validators_module.validate_article
@@ -31,6 +32,9 @@ generate_index_html = reporter_module.generate_index_html
 SearchIndex = search_index_module.SearchIndex
 RadarStorage = storage_module.RadarStorage
 apply_date_storage_policy = date_storage_module.apply_date_storage_policy
+quality_report_module = import_module("artradar.quality_report")
+build_quality_report = quality_report_module.build_quality_report
+write_quality_report = quality_report_module.write_quality_report
 
 
 def _send_notifications(
@@ -101,8 +105,10 @@ def run(
     keep_report_days: int = 90,
     snapshot_db: bool = False,
 ) -> Path:
+    cycle_start = datetime.now(UTC)
     settings = load_settings(config_path)
     category_cfg = load_category_config(category, categories_dir=categories_dir)
+    quality_cfg = load_category_quality_config(category, categories_dir=categories_dir)
 
     print(
         f"[Radar] Collecting '{category_cfg.display_name}' from {len(category_cfg.sources)} sources..."
@@ -145,6 +151,18 @@ def run(
             search_idx.upsert(article.link, article.title, article.summary)
 
     recent_articles = storage.recent_articles(category_cfg.category_name, days=recent_days)
+    quality_window_days = max(recent_days, 14)
+    quality_articles_by_link = {
+        article.link: article
+        for article in [
+            *storage.recent_articles(
+                category_cfg.category_name, days=quality_window_days, limit=1000
+            ),
+            *storage.recent_articles_by_collected_at(
+                category_cfg.category_name, days=quality_window_days, limit=1000
+            ),
+        ]
+    }
     storage.close()
 
     stats = {
@@ -155,6 +173,13 @@ def run(
         "window_days": recent_days,
     }
 
+    quality_report = build_quality_report(
+        category=category_cfg,
+        articles=quality_articles_by_link.values(),
+        errors=errors,
+        quality_config=quality_cfg,
+        generated_at=cycle_start,
+    )
     output_path = settings.report_dir / f"{category_cfg.category_name}_report.html"
     _ = generate_report(
         category=category_cfg,
@@ -162,6 +187,12 @@ def run(
         output_path=output_path,
         stats=stats,
         errors=errors,
+        quality_report=quality_report,
+    )
+    quality_paths = write_quality_report(
+        quality_report,
+        output_dir=settings.report_dir,
+        category_name=category_cfg.category_name,
     )
     generate_index_html(settings.report_dir)
     date_storage = apply_date_storage_policy(
@@ -173,6 +204,7 @@ def run(
         snapshot_db=snapshot_db,
     )
     print(f"[Radar] Report generated at {output_path}")
+    print(f"[Radar] Quality report generated at {quality_paths['latest']}")
     snapshot_path = date_storage.get("snapshot_path")
     if isinstance(snapshot_path, str) and snapshot_path:
         print(f"[Radar] Snapshot saved at {snapshot_path}")

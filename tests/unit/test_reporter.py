@@ -123,8 +123,52 @@ def test_generate_report_contains_error_section() -> None:
         )
 
         content = output_path.read_text(encoding="utf-8")
-        assert "Collection errors" in content
+        assert "Errors detected (1)" in content
         assert "Artnet News: timeout" in content
+
+
+@pytest.mark.unit
+def test_generate_report_injects_art_quality_panel() -> None:
+    from artradar.reporter import generate_report
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        output_path = Path(tmpdir) / "report.html"
+
+        _ = generate_report(
+            category=_make_category(),
+            articles=[_make_article()],
+            output_path=output_path,
+            stats={"sources": 1, "collected": 1, "matched": 1, "window_days": 7},
+            errors=[],
+            quality_report={
+                "summary": {
+                    "art_signal_event_count": 1,
+                    "auction_result_events": 1,
+                    "event_required_field_gap_count": 2,
+                },
+                "events": [
+                    {
+                        "event_model": "auction_result",
+                        "source": "Auction",
+                        "canonical_key": "artwork:artist:work",
+                        "canonical_key_status": "complete",
+                        "required_field_gaps": [],
+                    }
+                ],
+                "daily_review_items": [],
+            },
+        )
+
+        content = output_path.read_text(encoding="utf-8")
+        assert 'id="art-quality"' in content
+        assert "Art Quality" in content
+        assert "artwork:artist:work" in content
+        summaries = sorted(Path(tmpdir).glob("art_[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]_summary.json"))
+        assert len(summaries) == 1
+        summary = summaries[0].read_text(encoding="utf-8")
+        assert '"repo": "ArtRadar"' in summary
+        assert '"ontology_version": "0.1.0"' in summary
+        assert '"art.auction_result"' in summary
 
 
 @pytest.mark.unit
@@ -143,7 +187,7 @@ def test_generate_report_handles_empty_articles() -> None:
         )
 
         content = output_path.read_text(encoding="utf-8")
-        assert "No articles in the recent window." in content
+        assert "No articles were collected for this run." in content
 
 
 @pytest.mark.unit
@@ -182,8 +226,9 @@ def test_generate_report_contains_date_filter_controls() -> None:
         )
 
         content = output_path.read_text(encoding="utf-8")
-        assert "Date-based review" in content
-        assert 'id="dateFilter"' in content
+        assert 'id="chartTimeline"' in content
+        assert "2026-03-12" in content
+        assert "2026-03-11" in content
 
 
 @pytest.mark.unit
@@ -205,5 +250,6 @@ def test_generate_report_contains_daily_summary_and_undated_bucket() -> None:
         )
 
         content = output_path.read_text(encoding="utf-8")
-        assert "Articles by day" in content
-        assert "Undated articles" in content
+        assert 'id="chartTimeline"' in content
+        assert "Dated One" in content
+        assert "Undated" in content

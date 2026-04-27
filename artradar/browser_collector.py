@@ -72,9 +72,19 @@ def collect_browser_sources(
         ]
 
     try:
-        source_dicts: list[dict[str, Any]] = [
-            {"name": s.name, "type": s.type, "url": s.url} for s in sources
-        ]
+        source_dicts: list[dict[str, Any]] = []
+        for source in sources:
+            config = dict(source.config)
+            if config.get("wait_for") and not config.get("fallback_wait_for"):
+                config["fallback_wait_for"] = "body"
+            source_dicts.append(
+                {
+                    "name": source.name,
+                    "type": source.type,
+                    "url": source.url,
+                    "config": config,
+                }
+            )
         core_articles, errors = _core_collect(
             sources=source_dicts,
             category=category,

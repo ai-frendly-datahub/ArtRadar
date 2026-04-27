@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
+from html import escape
 from pathlib import Path
+from typing import Any
 
+from radar_core.ontology import build_summary_ontology_metadata
 from radar_core.report_utils import (
     generate_index_html as _core_generate_index_html,
     generate_report as _core_generate_report,
@@ -19,6 +22,7 @@ def generate_report(
     stats: dict[str, int],
     errors: list[str] | None = None,
     store=None,
+    quality_report: Mapping[str, Any] | None = None,
 ) -> Path:
     """Generate HTML report (delegates to radar-core)."""
     articles_list = list(articles)
@@ -42,14 +46,22 @@ def generate_report(
     except Exception:
         pass
 
-    return _core_generate_report(
+    report_path = _core_generate_report(
         category=category,
         articles=articles_list,
         output_path=output_path,
         stats=stats,
         errors=errors,
         plugin_charts=plugin_charts if plugin_charts else None,
+        ontology_metadata=build_summary_ontology_metadata(
+            "ArtRadar",
+            category_name=category.category_name,
+            search_from=Path(__file__).resolve(),
+        ),
     )
+    if quality_report:
+        _inject_art_quality_panel(report_path, quality_report)
+    return report_path
 
 
 def generate_index_html(
@@ -59,3 +71,109 @@ def generate_index_html(
     """Generate index.html (delegates to radar-core)."""
     radar_name = "Art Radar"
     return _core_generate_index_html(report_dir, radar_name)
+
+
+def _inject_art_quality_panel(report_path: Path, quality_report: Mapping[str, Any]) -> None:
+    if not report_path.exists():
+        return
+    html = report_path.read_text(encoding="utf-8")
+    panel = _render_art_quality_panel(quality_report)
+    marker = "</body>"
+    if marker in html:
+        html = html.replace(marker, panel + "\n" + marker, 1)
+    else:
+        html += "\n" + panel
+    report_path.write_text(html, encoding="utf-8")
+
+
+def _render_art_quality_panel(quality_report: Mapping[str, Any]) -> str:
+    summary = _mapping(quality_report.get("summary"))
+    events = _list_of_mappings(quality_report.get("events"))
+    review_items = _list_of_mappings(quality_report.get("daily_review_items"))
+    cards = [
+        ("Art signals", summary.get("art_signal_event_count", 0)),
+        ("Auction", summary.get("auction_result_events", 0)),
+        ("Art fair", summary.get("art_fair_participant_events", 0)),
+        ("Exhibition", summary.get("exhibition_ticket_signal_events", 0)),
+        ("Artist link", summary.get("artist_institution_entity_events", 0)),
+        ("Artist present", summary.get("artist_present_count", 0)),
+        ("Required gaps", summary.get("event_required_field_gap_count", 0)),
+        ("Review items", summary.get("daily_review_item_count", 0)),
+    ]
+    cards_html = "\n".join(
+        "<div class=\"art-quality-card\">"
+        f"<span>{escape(label)}</span><strong>{escape(str(value))}</strong>"
+        "</div>"
+        for label, value in cards
+    )
+    return f"""
+<section id="art-quality" class="art-quality-panel">
+  <style>
+    .art-quality-panel {{ margin: 32px auto; max-width: 1180px; padding: 24px; border: 1px solid #d8dee4; border-radius: 8px; background: #fff; color: #24292f; }}
+    .art-quality-panel h2 {{ margin: 0 0 8px; font-size: 1.35rem; }}
+    .art-quality-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 16px 0 22px; }}
+    .art-quality-card {{ border: 1px solid #d8dee4; border-radius: 8px; padding: 10px 12px; background: #f6f8fa; }}
+    .art-quality-card span {{ display: block; font-size: .82rem; color: #57606a; }}
+    .art-quality-card strong {{ display: block; margin-top: 4px; font-size: 1.2rem; }}
+    .art-quality-table {{ width: 100%; border-collapse: collapse; margin-top: 12px; font-size: .9rem; }}
+    .art-quality-table th, .art-quality-table td {{ border-top: 1px solid #d8dee4; padding: 8px; text-align: left; vertical-align: top; }}
+    .art-quality-review {{ margin: 12px 0 0; padding-left: 18px; }}
+  </style>
+  <h2>Art Quality</h2>
+  <p>Auction, fair, exhibition, and artist-institution evidence is tracked separately from art coverage context.</p>
+  <div class="art-quality-grid">
+    {cards_html}
+  </div>
+  {_render_quality_events(events)}
+  {_render_quality_review(review_items)}
+</section>
+""".strip()
+
+
+def _render_quality_events(events: list[Mapping[str, Any]]) -> str:
+    if not events:
+        return "<p>No art quality events were observed in this report window.</p>"
+    rows = []
+    for event in events[:10]:
+        gaps = ", ".join(str(value) for value in event.get("required_field_gaps") or [])
+        rows.append(
+            "<tr>"
+            f"<td>{escape(str(event.get('event_model') or ''))}</td>"
+            f"<td>{escape(str(event.get('source') or ''))}</td>"
+            f"<td>{escape(str(event.get('canonical_key') or ''))}</td>"
+            f"<td>{escape(str(event.get('canonical_key_status') or ''))}</td>"
+            f"<td>{escape(gaps)}</td>"
+            "</tr>"
+        )
+    return (
+        "<h3>Observed Events</h3>"
+        "<table class=\"art-quality-table\"><thead><tr>"
+        "<th>Model</th><th>Source</th><th>Canonical key</th><th>Status</th><th>Gaps</th>"
+        "</tr></thead><tbody>"
+        + "\n".join(rows)
+        + "</tbody></table>"
+    )
+
+
+def _render_quality_review(review_items: list[Mapping[str, Any]]) -> str:
+    if not review_items:
+        return "<p>No daily review items.</p>"
+    items = []
+    for item in review_items[:10]:
+        label = item.get("source") or item.get("event_model") or item.get("signal_type") or ""
+        items.append(
+            "<li>"
+            f"{escape(str(item.get('reason') or 'review'))}: {escape(str(label))}"
+            "</li>"
+        )
+    return "<h3>Daily Review</h3><ul class=\"art-quality-review\">" + "\n".join(items) + "</ul>"
+
+
+def _mapping(value: object) -> Mapping[str, Any]:
+    return value if isinstance(value, Mapping) else {}
+
+
+def _list_of_mappings(value: object) -> list[Mapping[str, Any]]:
+    if not isinstance(value, list):
+        return []
+    return [item for item in value if isinstance(item, Mapping)]

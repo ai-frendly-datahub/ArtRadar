@@ -1,98 +1,98 @@
-category_name: "artwork"
-display_name: "Artwork Radar"
-
+category_name: artwork
+display_name: Artwork Radar
 sources:
-  - name: "Google Arts & Culture"
-    type: "rss"
-    url: "https://blog.google/products/arts-culture/rss/"
-  - name: "Artsy Editorial"
-    type: "rss"
-    url: "https://www.artsy.net/rss/news"
-  - name: "Colossal Art"
-    type: "rss"
-    url: "https://www.thisiscolossal.com/feed/"
-
-  # Hyperallergic - 아트 비평/뉴스 전문 매체
-  - name: "Hyperallergic"
-    type: "rss"
-    url: "https://hyperallergic.com/feed/"
-
-  # Artnet News - 글로벌 아트 뉴스
-  - name: "Artnet News"
-    type: "rss"
-    url: "https://news.artnet.com/feed"
-
+- name: Google Arts & Culture
+  type: rss
+  url: https://blog.google/products/arts-culture/rss/
+  config:
+    event_model: editorial_coverage
+- name: Artsy Editorial
+  type: rss
+  url: https://www.artsy.net/rss/news
+  config:
+    event_model: editorial_coverage
+- name: Colossal Art
+  type: rss
+  url: https://www.thisiscolossal.com/feed/
+  config:
+    event_model: editorial_coverage
+- name: Hyperallergic
+  type: rss
+  url: https://hyperallergic.com/feed/
+  config:
+    event_model: editorial_coverage
+- name: Artnet News
+  type: rss
+  url: https://news.artnet.com/feed
+  config:
+    event_model: editorial_coverage
 entities:
-  - name: "Medium"
-    display_name: "작품 매체"
-    keywords:
-      - "oil on canvas"
-      - "watercolor"
-      - "bronze"
-      - "ceramic"
-      - "photograph"
-      - "glass"
-      - "textile"
-      - "wood"
-      - "marble"
-      - "ink"
-      - "digital"
-      - "mixed media"
-
-  - name: "ArtworkType"
-    display_name: "작품 유형"
-    keywords:
-      - "portrait"
-      - "landscape"
-      - "still life"
-      - "chair"
-      - "table"
-      - "vase"
-      - "lamp"
-      - "drawing"
-      - "print"
-      - "sculpture"
-      - "window"
-      - "installation"
-
-  - name: "Artist"
-    display_name: "작가 정보"
-    keywords:
-      - "designed by"
-      - "made by"
-      - "artist"
-      - "painter"
-      - "sculptor"
-      - "studio"
-      - "attributed to"
-      - "workshop"
-      - "creator"
-      - "decorated by"
-
-  - name: "CollectionChange"
-    display_name: "소장품 변화"
-    keywords:
-      - "acquired"
-      - "donated"
-      - "gift"
-      - "accession"
-      - "collection"
-      - "on view"
-      - "loan"
-      - "archive"
-      - "catalogued"
-      - "restored"
-
-  - name: "Period"
-    display_name: "작품 시대"
-    keywords:
-      - "renaissance"
-      - "baroque"
-      - "rococo"
-      - "modern"
-      - "contemporary"
-      - "ancient"
-      - "medieval"
-      - "19th century"
-      - "20th century"
-      - "impressionist"
+- name: Medium
+  display_name: 작품 매체
+  keywords:
+  - oil on canvas
+  - watercolor
+  - bronze
+  - ceramic
+  - photograph
+  - glass
+  - textile
+  - wood
+  - marble
+  - ink
+  - digital
+  - mixed media
+- name: ArtworkType
+  display_name: 작품 유형
+  keywords:
+  - portrait
+  - landscape
+  - still life
+  - chair
+  - table
+  - vase
+  - lamp
+  - drawing
+  - print
+  - sculpture
+  - window
+  - installation
+- name: Artist
+  display_name: 작가 정보
+  keywords:
+  - designed by
+  - made by
+  - artist
+  - painter
+  - sculptor
+  - studio
+  - attributed to
+  - workshop
+  - creator
+  - decorated by
+- name: CollectionChange
+  display_name: 소장품 변화
+  keywords:
+  - acquired
+  - donated
+  - gift
+  - accession
+  - collection
+  - on view
+  - loan
+  - archive
+  - catalogued
+  - restored
+- name: Period
+  display_name: 작품 시대
+  keywords:
+  - renaissance
+  - baroque
+  - rococo
+  - modern
+  - contemporary
+  - ancient
+  - medieval
+  - 19th century
+  - 20th century
+  - impressionist

@@ -187,6 +187,10 @@ def collect_sources(
     max_age_days: int | None = None,
 ) -> tuple[list[Article], list[str]]:
     """Fetch items from all configured sources, returning articles and errors."""
+    sources = [source for source in sources if source.enabled]
+    if not sources:
+        return [], []
+
     articles: list[Article] = []
     errors: list[str] = []
     manager = get_circuit_breaker_manager()
@@ -453,8 +457,8 @@ def _collect_rss(
                         summary = str(first_item.get("value") or "")
             title = html.unescape(_entry_string(entry, "title").strip()) or "(no title)"
             link = _entry_string(entry, "link").strip()
-            # Data validation: skip entries without title or link
-            if not title or title == "(no title)" or not link:
+            # Keep untitled entries but skip records without a stable link.
+            if not link:
                 continue
             items.append(
                 Article(

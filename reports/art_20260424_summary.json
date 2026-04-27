@@ -1,0 +1,110 @@
+{
+  "date": "2026-04-24",
+  "category": "art",
+  "article_count": 200,
+  "source_count": 30,
+  "matched_count": 186,
+  "top_entities": [
+    {
+      "name": "ArtGeneral",
+      "count": 3171
+    },
+    {
+      "name": "Topic",
+      "count": 170
+    },
+    {
+      "name": "Institution",
+      "count": 116
+    },
+    {
+      "name": "Market",
+      "count": 40
+    },
+    {
+      "name": "Artist",
+      "count": 34
+    },
+    {
+      "name": "Genre",
+      "count": 33
+    },
+    {
+      "name": "Period",
+      "count": 14
+    }
+  ],
+  "sources": {
+    "Art Institute of Chicago": 30,
+    "ArtDaily": 24,
+    "Apollo Magazine": 23,
+    "e-flux": 1,
+    "MoMA Magazine": 1,
+    "Tate": 1,
+    "케이옥션": 3,
+    "서울옥션": 1,
+    "대림미술관": 1,
+    "국립중앙박물관": 1,
+    "리움미술관": 1,
+    "아르코미술관": 1,
+    "서울시립미술관": 1,
+    "Frieze": 1,
+    "네오룩": 1,
+    "데일리아트": 1,
+    "월간미술": 24,
+    "The Art Newspaper": 5,
+    "r/ArtHistory": 7,
+    "r/museum": 20,
+    "r/korea": 9,
+    "r/Art": 18,
+    "ARTnews": 6,
+    "Artnet News": 3,
+    "Colossal": 1,
+    "r/ArtCollecting": 5,
+    "r/ContemporaryArt": 2,
+    "Hyperallergic": 6,
+    "Guggenheim": 1,
+    "Artforum": 1
+  },
+  "generated_at": "2026-04-24T23:27:07.365067+09:00",
+  "ontology": {
+    "repo": "ArtRadar",
+    "category": "art",
+    "ontology_version": "0.1.0",
+    "event_model_ids": [
+      "art.art_fair_participant",
+      "art.artist_institution_entity",
+      "art.auction_result",
+      "art.exhibition_ticket_signal"
+    ],
+    "event_model_mappings": {
+      "auction_result": "art.auction_result",
+      "art_fair_participant": "art.art_fair_participant",
+      "exhibition_ticket_signal": "art.exhibition_ticket_signal",
+      "artist_institution_entity": "art.artist_institution_entity"
+    },
+    "entity_type_hints": [
+      "art.artist",
+      "art.institution"
+    ],
+    "source_role_ids": [
+      "community_signal",
+      "context_only",
+      "operational_evidence",
+      "primary_evidence"
+    ],
+    "source_role_mappings": {
+      "Sotheby's auction results": "primary_evidence",
+      "Christie's auction results": "primary_evidence",
+      "Art Basel exhibitor lists": "operational_evidence",
+      "Museum ticket and exhibition calendars": "operational_evidence",
+      "Artnet News": "context_only",
+      "r/Art": "community_signal"
+    },
+    "evidence_policy_ids": [
+      "traceable_url_required",
+      "official_confirmation_required",
+      "cross_reference_required"
+    ]
+  }
+}

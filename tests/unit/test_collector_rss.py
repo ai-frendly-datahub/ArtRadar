@@ -45,6 +45,25 @@ def test_collect_sources_unsupported_type() -> None:
 
 
 @pytest.mark.unit
+def test_collect_sources_skips_disabled_sources() -> None:
+    from artradar.collector import collect_sources
+
+    source = Source(
+        name="Disabled Feed",
+        type="rss",
+        url="https://example.com/feed",
+        enabled=False,
+    )
+
+    with patch("artradar.collector._collect_single") as mock_collect:
+        articles, errors = collect_sources([source], category="art")
+
+    assert articles == []
+    assert errors == []
+    mock_collect.assert_not_called()
+
+
+@pytest.mark.unit
 def test_collect_rss_parses_article() -> None:
     from artradar.collector import _collect_rss
 

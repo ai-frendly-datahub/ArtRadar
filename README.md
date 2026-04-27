@@ -107,3 +107,15 @@ ArtRadar/
 - Smithsonian은 기본적으로 API 키가 있어야 정상 수집됩니다.
 - `ArtSelector`는 공식 RSS 피드(`https://www.artselector.com/feed/`) 기반으로 수집합니다.
 - 공개 Pages 반영은 `gh-pages` 브랜치 갱신 후 수 분 정도 지연될 수 있습니다.
+
+<!-- DATAHUB-OPS-AUDIT:START -->
+## DataHub Operations
+
+- CI/CD workflows: `pr-checks.yml`, `radar-crawler.yml`.
+- GitHub Pages visualization: `reports/index.html` (valid HTML); https://ai-frendly-datahub.github.io/ArtRadar/.
+- Latest remote Pages check: HTTP 200, HTML.
+- Local workspace audit: 46 Python files parsed, 0 syntax errors.
+- Re-run audit from the workspace root: `python scripts/audit_ci_pages_readme.py --syntax-check --write`.
+- Latest audit report: `_workspace/2026-04-14_github_ci_pages_readme_audit.md`.
+- Latest Pages URL report: `_workspace/2026-04-14_github_pages_url_check.md`.
+<!-- DATAHUB-OPS-AUDIT:END -->

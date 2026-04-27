@@ -7,6 +7,8 @@ from artradar.date_storage import (
     apply_date_storage_policy,
     cleanup_date_directories,
     cleanup_dated_reports,
+    latest_snapshot_path,
+    resolve_read_database_path,
     snapshot_database,
 )
 
@@ -21,6 +23,41 @@ def test_snapshot_database_copies_duckdb_to_dated_dir(tmp_path: Path) -> None:
     assert target is not None
     assert target == tmp_path / "data" / "snapshots" / "2026-03-13" / "art_data.duckdb"
     assert target.read_text(encoding="utf-8") == "db"
+
+
+def test_latest_snapshot_path_returns_newest_matching_database(tmp_path: Path) -> None:
+    db_path = tmp_path / "data" / "art_data.duckdb"
+    older = tmp_path / "data" / "snapshots" / "2026-03-12" / "art_data.duckdb"
+    newer = tmp_path / "data" / "snapshots" / "2026-03-13" / "art_data.duckdb"
+    unrelated = tmp_path / "data" / "snapshots" / "2026-03-14" / "other.duckdb"
+    older.parent.mkdir(parents=True)
+    newer.parent.mkdir(parents=True)
+    unrelated.parent.mkdir(parents=True)
+    older.write_text("older", encoding="utf-8")
+    newer.write_text("newer", encoding="utf-8")
+    unrelated.write_text("other", encoding="utf-8")
+
+    assert latest_snapshot_path(db_path) == newer
+
+
+def test_resolve_read_database_path_prefers_primary_database(tmp_path: Path) -> None:
+    db_path = tmp_path / "data" / "art_data.duckdb"
+    snapshot = tmp_path / "data" / "snapshots" / "2026-03-13" / "art_data.duckdb"
+    db_path.parent.mkdir(parents=True)
+    snapshot.parent.mkdir(parents=True)
+    db_path.write_text("primary", encoding="utf-8")
+    snapshot.write_text("snapshot", encoding="utf-8")
+
+    assert resolve_read_database_path(db_path) == db_path
+
+
+def test_resolve_read_database_path_falls_back_to_latest_snapshot(tmp_path: Path) -> None:
+    db_path = tmp_path / "data" / "art_data.duckdb"
+    snapshot = tmp_path / "data" / "snapshots" / "2026-03-13" / "art_data.duckdb"
+    snapshot.parent.mkdir(parents=True)
+    snapshot.write_text("snapshot", encoding="utf-8")
+
+    assert resolve_read_database_path(db_path) == snapshot
 
 
 def test_cleanup_date_directories_removes_old_folders_only(tmp_path: Path) -> None:
