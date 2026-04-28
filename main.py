@@ -6,6 +6,7 @@ from datetime import UTC, datetime
 from importlib import import_module
 from pathlib import Path
 from typing import cast
+from radar_core.ontology import annotate_articles_with_ontology
 
 if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -119,6 +120,15 @@ def run(
         limit_per_source=per_source_limit,
         timeout=timeout,
         max_age_days=max_age_days,
+    )
+
+    collected = annotate_articles_with_ontology(
+        collected,
+        repo_name="ArtRadar",
+        sources_by_name={source.name: source for source in category_cfg.sources},
+        category_name=category_cfg.category_name,
+        search_from=Path(__file__),
+        attach_event_model_payload=True,
     )
 
     raw_logger = RawLogger(settings.raw_data_dir)
