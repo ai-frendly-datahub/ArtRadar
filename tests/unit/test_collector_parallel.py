@@ -51,9 +51,14 @@ def test_parallel_collection_reduces_runtime() -> None:
             )
         ]
 
+    mock_health_store = Mock()
+    mock_health_store.is_disabled.return_value = False
+
     with (
         patch("artradar.collector._collect_single", side_effect=delayed_collect),
         patch("artradar.collector.get_circuit_breaker_manager", return_value=manager),
+        patch("artradar.collector.CrawlHealthStore", return_value=mock_health_store),
+        patch("artradar.collector._create_session"),
         patch.dict(os.environ, {"RADAR_MAX_WORKERS": "5"}, clear=False),
     ):
         start = time.monotonic()
@@ -207,3 +212,60 @@ def test_max_workers_is_capped_and_validated(env_value: str, expected_workers: i
         mock_executor.assert_not_called()
     else:
         mock_executor.assert_called_once_with(max_workers=expected_workers)
+
+
+def test_browser_collection_receives_cli_timeout_in_milliseconds() -> None:
+    source = Source(name="JS Source", type="javascript", url="https://example.com")
+    mock_session = Mock()
+    mock_health_store = Mock()
+
+    with (
+        patch("artradar.collector.CrawlHealthStore", return_value=mock_health_store),
+        patch("artradar.collector._create_session", return_value=mock_session),
+        patch(
+            "artradar.browser_collector.collect_browser_sources",
+            return_value=([], []),
+        ) as mock_browser_collect,
+    ):
+        articles, errors = collect_sources(
+            [source],
+            category="art",
+            timeout=5,
+            health_db_path=":memory:",
+        )
+
+    assert articles == []
+    assert errors == []
+    assert mock_browser_collect.call_args.kwargs["timeout"] == 5_000
+    assert mock_browser_collect.call_args.kwargs["health_db_path"] == ":memory:"
+    mock_session.close.assert_called_once()
+    mock_health_store.close.assert_called_once()
+
+
+def test_browser_source_limit_caps_js_sources_for_bounded_smoke() -> None:
+    sources = [
+        Source(name="JS Source 1", type="javascript", url="https://example.com/1"),
+        Source(name="JS Source 2", type="javascript", url="https://example.com/2"),
+        Source(name="JS Source 3", type="javascript", url="https://example.com/3"),
+    ]
+    mock_session = Mock()
+    mock_health_store = Mock()
+
+    with (
+        patch("artradar.collector.CrawlHealthStore", return_value=mock_health_store),
+        patch("artradar.collector._create_session", return_value=mock_session),
+        patch(
+            "artradar.browser_collector.collect_browser_sources",
+            return_value=([], []),
+        ) as mock_browser_collect,
+    ):
+        _, _ = collect_sources(
+            sources,
+            category="art",
+            timeout=5,
+            browser_source_limit=2,
+            health_db_path=":memory:",
+        )
+
+    browser_sources = mock_browser_collect.call_args.args[0]
+    assert [source.name for source in browser_sources] == ["JS Source 1", "JS Source 2"]

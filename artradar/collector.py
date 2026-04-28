@@ -185,6 +185,7 @@ def collect_sources(
     max_workers: int | None = None,
     health_db_path: str | None = None,
     max_age_days: int | None = None,
+    browser_source_limit: int | None = None,
 ) -> tuple[list[Article], list[str]]:
     """Fetch items from all configured sources, returning articles and errors."""
     sources = [source for source in sources if source.enabled]
@@ -202,9 +203,10 @@ def collect_sources(
         host: RateLimiter(min_interval=min_interval_per_host) for host in set(source_hosts.values())
     }
     throttler = AdaptiveThrottler(min_delay=max(0.001, min_interval_per_host))
-    health_store = CrawlHealthStore(
-        health_db_path or os.environ.get("RADAR_CRAWL_HEALTH_DB_PATH", _DEFAULT_HEALTH_DB_PATH)
+    resolved_health_db_path = health_db_path or os.environ.get(
+        "RADAR_CRAWL_HEALTH_DB_PATH", _DEFAULT_HEALTH_DB_PATH
     )
+    health_store = CrawlHealthStore(resolved_health_db_path)
     _set_collection_controls(throttler, health_store)
     session = _create_session()
 
@@ -212,6 +214,8 @@ def collect_sources(
     _js_types = {"javascript", "browser"}
     rss_sources = [s for s in sources if s.type.lower() not in _js_types]
     js_sources = [s for s in sources if s.type.lower() in _js_types]
+    if browser_source_limit is not None and browser_source_limit >= 0:
+        js_sources = js_sources[:browser_source_limit]
 
     def _collect_for_source(source: Source) -> tuple[list[Article], list[str]]:
         if health_store.is_disabled(source.name):
@@ -300,7 +304,12 @@ def collect_sources(
             try:
                 from .browser_collector import collect_browser_sources
 
-                js_articles, js_errors = collect_browser_sources(js_sources, category)
+                js_articles, js_errors = collect_browser_sources(
+                    js_sources,
+                    category,
+                    timeout=max(1_000, timeout * 1_000),
+                    health_db_path=resolved_health_db_path,
+                )
                 articles.extend(js_articles)
                 errors.extend(js_errors)
             except ImportError:

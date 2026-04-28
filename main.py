@@ -101,6 +101,7 @@ def run(
     recent_days: int = 7,
     max_age_days: int | None = None,
     timeout: int = 15,
+    browser_source_limit: int | None = None,
     keep_days: int = 90,
     keep_raw_days: int = 180,
     keep_report_days: int = 90,
@@ -120,6 +121,7 @@ def run(
         limit_per_source=per_source_limit,
         timeout=timeout,
         max_age_days=max_age_days,
+        browser_source_limit=browser_source_limit,
     )
 
     collected = annotate_articles_with_ontology(
@@ -260,6 +262,12 @@ def parse_args() -> argparse.Namespace:
         "--timeout", type=int, default=15, help="HTTP timeout per request (seconds)"
     )
     _ = parser.add_argument(
+        "--browser-source-limit",
+        type=int,
+        default=None,
+        help="Limit JavaScript/browser sources for bounded smoke runs",
+    )
+    _ = parser.add_argument(
         "--keep-days", type=int, default=90, help="Retention window for stored items"
     )
     _ = parser.add_argument(
@@ -312,6 +320,7 @@ if __name__ == "__main__":
         recent_days=_to_int(args.get("recent_days"), 7),
         max_age_days=args.get("max_age_days"),
         timeout=_to_int(args.get("timeout"), 15),
+        browser_source_limit=args.get("browser_source_limit"),
         keep_days=_to_int(args.get("keep_days"), 90),
         keep_raw_days=_to_int(args.get("keep_raw_days"), 180),
         keep_report_days=_to_int(args.get("keep_report_days"), 90),
