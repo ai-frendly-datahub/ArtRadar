@@ -55,13 +55,13 @@ EntityDefinition = cast(_EntityCtor, import_module("artradar.models").EntityDefi
 apply_entity_rules = cast(_ApplyEntityRules, import_module("artradar.analyzer").apply_entity_rules)
 
 
-def _make_article(*, title: str, summary: str) -> _Article:
+def _make_article(*, title: str, summary: str, source: str = "Example RSS") -> _Article:
     return Article(
         title=title,
         link=f"https://example.com/{title.lower().replace(' ', '-')}",
         summary=summary,
         published=datetime(2026, 3, 10, 9, 0, tzinfo=UTC),
-        source="Example RSS",
+        source=source,
         category="tech",
     )
 
@@ -153,3 +153,16 @@ def test_apply_entity_rules_cjk_keyword_keeps_substring_matching() -> None:
     analyzed = apply_entity_rules([article], entities)
 
     assert analyzed[0].matched_entities == {"topic": ["인공지능"]}
+
+
+def test_apply_entity_rules_uses_source_name_as_domain_context() -> None:
+    article = _make_article(
+        title="김범: 당신은 보아야만 믿는가?",
+        summary="",
+        source="월간미술",
+    )
+    entities = [EntityDefinition(name="topic", display_name="Topic", keywords=["미술"])]
+
+    analyzed = apply_entity_rules([article], entities)
+
+    assert analyzed[0].matched_entities == {"topic": ["미술"]}

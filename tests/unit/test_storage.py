@@ -308,8 +308,30 @@ def test_delete_older_than_preserves_recent_articles(tmp_storage: object) -> Non
     assert results[0].link == recent_article.link
 
 
-def test_delete_older_than_removes_old_articles(tmp_storage: object) -> None:
+def test_delete_older_than_preserves_recently_collected_old_published_article(
+    tmp_storage: object,
+) -> None:
     storage = cast(_RadarStorage, tmp_storage)
+    old_article = _make_article(
+        title="Old but recollected",
+        link="https://example.com/old-published-keep",
+        summary="published long ago but collected in this run",
+        published=datetime.now(UTC) - timedelta(days=40),
+    )
+
+    storage.upsert_articles([old_article])
+    deleted = storage.delete_older_than(days=7)
+    collected_results = storage.recent_articles_by_collected_at(category="tech", days=7)
+
+    assert deleted == 0
+    assert len(collected_results) == 1
+    assert collected_results[0].link == old_article.link
+
+
+def test_delete_older_than_removes_old_collected_articles(
+    tmp_duckdb: Path,
+) -> None:
+    storage = RadarStorage(tmp_duckdb)
     old_article = _make_article(
         title="Old",
         link="https://example.com/old-delete",
@@ -318,8 +340,14 @@ def test_delete_older_than_removes_old_articles(tmp_storage: object) -> None:
     )
 
     storage.upsert_articles([old_article])
+    old_collected_at = datetime.now(UTC) - timedelta(days=40)
+    storage.conn.execute(
+        "UPDATE articles SET collected_at = ? WHERE link = ?",
+        [old_collected_at.replace(tzinfo=None), old_article.link],
+    )
     deleted = storage.delete_older_than(days=7)
     results = storage.recent_articles(category="tech", days=365)
+    storage.close()
 
     assert deleted == 1
     assert results == []

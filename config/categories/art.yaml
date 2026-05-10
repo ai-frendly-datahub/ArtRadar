@@ -558,6 +558,8 @@ entities:
   - 아트테크
   - 미술투자
   - 아트페어
+  - 아트바젤
+  - 아트바젤 홍콩
   - 키아프
   - 프리즈서울
   - 아트부산
@@ -612,6 +614,7 @@ entities:
   - biennale
   - exhibition
   - curator
+  - Apollo Magazine
 - name: Artist
   display_name: 작가
   keywords:

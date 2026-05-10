@@ -1,0 +1,96 @@
+{
+  "date": "2026-04-30",
+  "category": "art",
+  "article_count": 41,
+  "source_count": 14,
+  "matched_count": 41,
+  "top_entities": [
+    {
+      "name": "ArtGeneral",
+      "count": 614
+    },
+    {
+      "name": "Topic",
+      "count": 70
+    },
+    {
+      "name": "Institution",
+      "count": 23
+    },
+    {
+      "name": "Market",
+      "count": 15
+    },
+    {
+      "name": "Artist",
+      "count": 6
+    },
+    {
+      "name": "Genre",
+      "count": 6
+    },
+    {
+      "name": "Period",
+      "count": 3
+    }
+  ],
+  "sources": {
+    "Art Institute of Chicago": 3,
+    "ArtDaily": 2,
+    "Frieze": 1,
+    "네오룩": 1,
+    "데일리아트": 1,
+    "월간미술": 24,
+    "Artnet News": 2,
+    "Artforum": 1,
+    "ARTnews": 1,
+    "The Art Newspaper": 1,
+    "Hyperallergic": 1,
+    "Colossal": 1,
+    "r/museum": 1,
+    "Artsy": 1
+  },
+  "generated_at": "2026-04-30T11:23:51.545582+09:00",
+  "ontology": {
+    "repo": "ArtRadar",
+    "category": "art",
+    "ontology_version": "0.1.0",
+    "event_model_ids": [
+      "art.art_fair_participant",
+      "art.artist_institution_entity",
+      "art.auction_result",
+      "art.editorial_coverage",
+      "art.exhibition_ticket_signal"
+    ],
+    "event_model_mappings": {
+      "auction_result": "art.auction_result",
+      "art_fair_participant": "art.art_fair_participant",
+      "exhibition_ticket_signal": "art.exhibition_ticket_signal",
+      "artist_institution_entity": "art.artist_institution_entity",
+      "editorial_coverage": "art.editorial_coverage"
+    },
+    "entity_type_hints": [
+      "art.artist",
+      "art.institution"
+    ],
+    "source_role_ids": [
+      "community_signal",
+      "context_only",
+      "operational_evidence",
+      "primary_evidence"
+    ],
+    "source_role_mappings": {
+      "Sotheby's auction results": "primary_evidence",
+      "Christie's auction results": "primary_evidence",
+      "Art Basel exhibitor lists": "operational_evidence",
+      "Museum ticket and exhibition calendars": "operational_evidence",
+      "Artnet News": "context_only",
+      "r/Art": "community_signal"
+    },
+    "evidence_policy_ids": [
+      "traceable_url_required",
+      "official_confirmation_required",
+      "cross_reference_required"
+    ]
+  }
+}

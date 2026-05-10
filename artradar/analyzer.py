@@ -89,7 +89,11 @@ def apply_entity_rules(
         normalized_entities.append((entity, normalized_keywords))
 
     for article in articles:
-        haystack = f"{article.title}\n{article.summary}"
+        haystack = "\n".join(
+            part
+            for part in (article.title, article.summary, article.source)
+            if part
+        )
         haystack_lower = haystack.lower()
         matches: dict[str, list[str]] = {}
         for entity, keywords_with_patterns in normalized_entities:

@@ -194,11 +194,11 @@ class RadarStorage:
         """보존 기간 밖 데이터 삭제."""
         cutoff = _utc_naive(datetime.now(UTC) - timedelta(days=days))
         count_row = self.conn.execute(
-            "SELECT COUNT(*) FROM articles WHERE COALESCE(published, collected_at) < ?", [cutoff]
+            "SELECT COUNT(*) FROM articles WHERE COALESCE(collected_at, published) < ?", [cutoff]
         ).fetchone()
         to_delete = count_row[0] if count_row else 0
         _ = self.conn.execute(
-            "DELETE FROM articles WHERE COALESCE(published, collected_at) < ?", [cutoff]
+            "DELETE FROM articles WHERE COALESCE(collected_at, published) < ?", [cutoff]
         )
         return to_delete
 
