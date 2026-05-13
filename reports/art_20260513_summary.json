@@ -2,41 +2,41 @@
   "date": "2026-05-13",
   "category": "art",
   "article_count": 200,
-  "source_count": 31,
+  "source_count": 29,
   "matched_count": 199,
   "top_entities": [
     {
       "name": "ArtGeneral",
-      "count": 3356
+      "count": 3392
     },
     {
       "name": "Topic",
-      "count": 262
+      "count": 253
     },
     {
       "name": "Institution",
-      "count": 137
+      "count": 136
     },
     {
       "name": "Market",
-      "count": 43
+      "count": 49
     },
     {
       "name": "Artist",
-      "count": 37
+      "count": 38
     },
     {
       "name": "Genre",
-      "count": 34
+      "count": 35
     },
     {
       "name": "Period",
-      "count": 12
+      "count": 10
     }
   ],
   "sources": {
-    "ArtDaily": 24,
     "Art Institute of Chicago": 30,
+    "ArtDaily": 23,
     "Apollo Magazine": 23,
     "e-flux": 1,
     "MoMA Magazine": 1,
@@ -52,20 +52,18 @@
     "네오룩": 1,
     "데일리아트": 1,
     "월간미술": 24,
-    "The Art Newspaper": 9,
-    "r/ArtCollecting": 10,
-    "Artnet News": 6,
-    "Artforum": 3,
-    "ARTnews": 9,
-    "Hyperallergic": 7,
-    "r/museum": 14,
-    "r/Art": 15,
-    "r/ArtHistory": 2,
-    "Colossal": 3,
-    "r/korea": 2,
+    "r/ArtHistory": 5,
     "r/ContemporaryArt": 2,
-    "Artsy": 2,
-    "Metropolitan Museum": 1
+    "r/korea": 5,
+    "r/ArtCollecting": 9,
+    "r/museum": 17,
+    "r/Art": 13,
+    "Artforum": 4,
+    "ARTnews": 5,
+    "The Art Newspaper": 11,
+    "Artnet News": 6,
+    "Hyperallergic": 7,
+    "Colossal": 2
   },
-  "generated_at": "2026-05-13T05:41:14.941856+09:00"
+  "generated_at": "2026-05-13T12:35:35.962258+09:00"
 }
