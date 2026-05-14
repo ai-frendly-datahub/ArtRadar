@@ -57,7 +57,8 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: update radar data [skip ci]"
-          file_pattern: "data/*.duckdb data/snapshots reports/*_summary.json"
+          file_pattern: "data/ reports/"
+          add_options: "-f"
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
