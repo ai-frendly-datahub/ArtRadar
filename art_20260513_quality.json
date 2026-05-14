@@ -1,6 +1,6 @@
 {
   "category": "art",
-  "generated_at": "2026-05-13T03:30:45.908089+00:00",
+  "generated_at": "2026-05-13T12:15:49.650050+00:00",
   "scope_note": "ArtRadar separates exhibition, auction, art-fair, and artist-institution signals from broad art news and community feeds. Community feeds are kept as context until canonical artist, institution, or market fields are present.",
   "summary": {
     "total_sources": 36,
@@ -16,23 +16,23 @@
     "collection_error_count": 0,
     "auction_result_events": 3,
     "art_fair_participant_events": 1,
-    "exhibition_ticket_signal_events": 37,
+    "exhibition_ticket_signal_events": 12,
     "artist_institution_entity_events": 0,
-    "art_signal_event_count": 41,
-    "official_or_operational_event_count": 36,
+    "art_signal_event_count": 16,
+    "official_or_operational_event_count": 11,
     "news_proxy_event_count": 0,
     "complete_canonical_key_count": 1,
-    "proxy_canonical_key_count": 40,
+    "proxy_canonical_key_count": 15,
     "missing_canonical_key_count": 0,
-    "artist_present_count": 4,
-    "institution_present_count": 11,
+    "artist_present_count": 2,
+    "institution_present_count": 10,
     "market_present_count": 4,
     "hammer_price_present_count": 0,
-    "event_required_field_gap_count": 115,
+    "event_required_field_gap_count": 41,
     "tracked_source_gap_count": 0,
     "missing_event_model_count": 1,
     "source_backlog_candidate_count": 4,
-    "daily_review_item_count": 50
+    "daily_review_item_count": 35
   },
   "sources": [
     {
@@ -48,7 +48,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 24,
+      "article_count": 29,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -123,7 +123,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 10,
+      "article_count": 4,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -148,7 +148,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 10,
+      "article_count": 3,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -173,7 +173,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 12,
+      "article_count": 3,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -198,7 +198,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 15,
+      "article_count": 3,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -223,7 +223,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 30,
+      "article_count": 3,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -248,7 +248,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 22,
+      "article_count": 3,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -275,7 +275,7 @@
       "status": "fresh",
       "article_count": 1,
       "event_count": 1,
-      "latest_event_at": "2026-05-13T03:32:13.765842+00:00",
+      "latest_event_at": "2026-05-13T12:16:44.150367+00:00",
       "age_days": 0.0,
       "latest_title": "Home | Frieze",
       "latest_url": "https://www.frieze.com/",
@@ -309,7 +309,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 10,
+      "article_count": 3,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -334,7 +334,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 23,
+      "article_count": 4,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -359,15 +359,13 @@
       "event_model": "exhibition_ticket_signal",
       "freshness_sla_days": 3.0,
       "status": "fresh",
-      "article_count": 2,
-      "event_count": 2,
-      "latest_event_at": "2026-05-13T03:35:34.417698+00:00",
+      "article_count": 1,
+      "event_count": 1,
+      "latest_event_at": "2026-05-13T12:17:50.521888+00:00",
       "age_days": 0.0,
-      "latest_title": "Statuette of a hippo goddess, probably Taweret",
-      "latest_url": "https://www.metmuseum.org/art/collection/search/544864",
-      "latest_artist": [
-        "artist"
-      ],
+      "latest_title": "Camille Monet (1847–1879) on a Garden Bench",
+      "latest_url": "https://www.metmuseum.org/art/collection/search/438003",
+      "latest_artist": [],
       "latest_institution": [
         "museum"
       ],
@@ -392,12 +390,12 @@
       "event_model": "exhibition_ticket_signal",
       "freshness_sla_days": 3.0,
       "status": "fresh",
-      "article_count": 30,
-      "event_count": 30,
-      "latest_event_at": "2026-05-13T03:35:34.417698+00:00",
+      "article_count": 6,
+      "event_count": 6,
+      "latest_event_at": "2026-05-13T12:17:50.521888+00:00",
       "age_days": 0.0,
-      "latest_title": "The Parting Look (with Man and Box)",
-      "latest_url": "https://www.artic.edu/artworks/61563",
+      "latest_title": "Panel (Upholstery Fabric)",
+      "latest_url": "https://www.artic.edu/artworks/65133",
       "latest_artist": [],
       "latest_institution": [],
       "latest_market": [],
@@ -448,7 +446,7 @@
       "status": "fresh",
       "article_count": 1,
       "event_count": 1,
-      "latest_event_at": "2026-05-13T03:32:35.428313+00:00",
+      "latest_event_at": "2026-05-13T12:16:53.433060+00:00",
       "age_days": 0.0,
       "latest_title": "500 Internal Server Error",
       "latest_url": "https://sema.seoul.go.kr/kr/whatson/exhibition/list",
@@ -480,7 +478,7 @@
       "status": "fresh",
       "article_count": 1,
       "event_count": 1,
-      "latest_event_at": "2026-05-13T03:32:56.786816+00:00",
+      "latest_event_at": "2026-05-13T12:17:02.737068+00:00",
       "age_days": 0.0,
       "latest_title": "한국문화예술위원회",
       "latest_url": "https://www.arko.or.kr/artcenter/program/exhibit/",
@@ -517,7 +515,7 @@
       "status": "fresh",
       "article_count": 1,
       "event_count": 1,
-      "latest_event_at": "2026-05-13T03:33:20.035641+00:00",
+      "latest_event_at": "2026-05-13T12:17:10.274681+00:00",
       "age_days": 0.0,
       "latest_title": "오류 : 리움미술관",
       "latest_url": "https://www.leeumhoam.org/exhibition",
@@ -549,7 +547,7 @@
       "status": "fresh",
       "article_count": 1,
       "event_count": 1,
-      "latest_event_at": "2026-05-13T03:33:48.884178+00:00",
+      "latest_event_at": "2026-05-13T12:17:21.229130+00:00",
       "age_days": 0.0,
       "latest_title": "국립중앙박물관",
       "latest_url": "https://www.museum.go.kr/MUSEUM/main/index.do",
@@ -586,7 +584,7 @@
       "status": "fresh",
       "article_count": 1,
       "event_count": 1,
-      "latest_event_at": "2026-05-13T03:34:18.422986+00:00",
+      "latest_event_at": "2026-05-13T12:17:30.488540+00:00",
       "age_days": 0.0,
       "latest_title": "EXHIBITION | DAELIM MUSEUM | D MUSEUM",
       "latest_url": "https://www.daelimmuseum.org/exhibition/",
@@ -621,7 +619,7 @@
       "status": "fresh",
       "article_count": 1,
       "event_count": 1,
-      "latest_event_at": "2026-05-13T03:34:37.988572+00:00",
+      "latest_event_at": "2026-05-13T12:17:39.021421+00:00",
       "age_days": 0.0,
       "latest_title": "Seoul Auction",
       "latest_url": "https://www.seoulauction.com/main/auction",
@@ -659,7 +657,7 @@
       "status": "fresh",
       "article_count": 2,
       "event_count": 2,
-      "latest_event_at": "2026-05-13T03:34:44.906531+00:00",
+      "latest_event_at": "2026-05-13T12:17:42.379809+00:00",
       "age_days": 0.0,
       "latest_title": "Results",
       "latest_url": "https://www.k-auction.com/Auction/Online/Result",
@@ -690,7 +688,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 25,
+      "article_count": 3,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -715,7 +713,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 24,
+      "article_count": 1,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -740,7 +738,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 25,
+      "article_count": 4,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -765,7 +763,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 24,
+      "article_count": 1,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -790,7 +788,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 25,
+      "article_count": 3,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -815,7 +813,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 24,
+      "article_count": 1,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -940,7 +938,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 1,
+      "article_count": 0,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -965,7 +963,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 1,
+      "article_count": 0,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -990,7 +988,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 2,
+      "article_count": 3,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -1015,7 +1013,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 23,
+      "article_count": 0,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -1038,10 +1036,10 @@
       "producer_role": "",
       "info_purpose": [],
       "event_model": "exhibition_ticket_signal",
-      "title": "The Parting Look (with Man and Box)",
-      "url": "https://www.artic.edu/artworks/61563",
-      "source_url": "https://www.artic.edu/artworks/61563",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
+      "title": "Panel (Upholstery Fabric)",
+      "url": "https://www.artic.edu/artworks/65133",
+      "source_url": "https://www.artic.edu/artworks/65133",
+      "event_at": "2026-05-13T12:17:50.521888+00:00",
       "artist": [],
       "institution": [],
       "market": [],
@@ -1052,561 +1050,13 @@
       ],
       "art_general": [
         "art",
-        "look",
-        "paper",
-        "the",
-        "and",
-        "with",
-        "of",
-        "on"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:ae7493d88d51",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:41017399253f:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "What We Think About When We Think About Ships",
-      "url": "https://www.artic.edu/artworks/252012",
-      "source_url": "https://www.artic.edu/artworks/252012",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "color",
-        "what",
-        "think",
-        "think",
-        "video",
-        "we",
-        "what",
-        "when",
-        "of",
-        "about",
-        "when",
-        "american"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:f191a1899e51",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:0f5cc90fa02b:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "The Bridesmaid",
-      "url": "https://www.artic.edu/artworks/61552",
-      "source_url": "https://www.artic.edu/artworks/61552",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "paper",
-        "the",
-        "with",
-        "of",
-        "on"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:d8baef4a229a",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:a99c3588caf2:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "The Parting Look (without Man and Box)",
-      "url": "https://www.artic.edu/artworks/61565",
-      "source_url": "https://www.artic.edu/artworks/61565",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "look",
-        "paper",
-        "the",
-        "and",
-        "with",
-        "of",
-        "on"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:baf699019ed8",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:8ca66dde8173:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "My Getty Center",
-      "url": "https://www.artic.edu/artworks/252011",
-      "source_url": "https://www.artic.edu/artworks/252011",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "color",
-        "my",
-        "video",
-        "of",
-        "american"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:59f84a7f8459",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:da036644a717:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "The Massacre of the Lamented Missionary, The Rev. J. Williams and Mr Harris",
-      "url": "https://www.artic.edu/artworks/138630",
-      "source_url": "https://www.artic.edu/artworks/138630",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "colors",
-        "paper",
-        "etching",
-        "the",
-        "and",
-        "with",
-        "of",
-        "in",
-        "on",
-        "down"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:11a104d2b8a8",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:9ca0d40d6fe2:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "Arrival of Her Most Gracious Majesty at House of Lords to Open First Parliament of her Reign",
-      "url": "https://www.artic.edu/artworks/61548",
-      "source_url": "https://www.artic.edu/artworks/61548",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "open",
-        "first",
-        "most",
-        "paper",
-        "her",
-        "with",
-        "to",
-        "of",
-        "on",
-        "at",
-        "her"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:06d3cede5483",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:8f6734996a92:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "The Dogs of St. Bernard",
-      "url": "https://www.artic.edu/artworks/61558",
-      "source_url": "https://www.artic.edu/artworks/61558",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "paper",
-        "the",
-        "with",
-        "of",
-        "on"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:64846dbda988",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:6e0a36ce4d1c:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "Lake Lucerne, Switzerland",
-      "url": "https://www.artic.edu/artworks/61555",
-      "source_url": "https://www.artic.edu/artworks/61555",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "paper",
-        "with",
-        "of",
-        "on"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:c8041f123915",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:f21da8938f6a:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "Guided Tour",
-      "url": "https://www.artic.edu/artworks/252015",
-      "source_url": "https://www.artic.edu/artworks/252015",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "video",
         "and",
         "of",
-        "american"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:a37bad31b6fb",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:e0d39fa99bb1:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "Trinity",
-      "url": "https://www.artic.edu/artworks/259192",
-      "source_url": "https://www.artic.edu/artworks/259192",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "bronze",
-        "of",
+        "panel",
+        "cotton",
+        "weave",
         "american",
-        "isamu",
-        "noguchi"
+        "float"
       ],
       "artwork_title": "",
       "hammer_price": null,
@@ -1618,1119 +1068,9 @@
       "exhibition_id": "",
       "ticket_status": "",
       "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:934a11e60268",
+      "canonical_key": "art_source:art-institute-of-chicago:d88c014526f3",
       "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:c609b6b7dda5:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "The Massacre of the Lamented Missionary the Rev. J. Williams and Mr. Harris, from Two Specimens",
-      "url": "https://www.artic.edu/artworks/59523",
-      "source_url": "https://www.artic.edu/artworks/59523",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "colors",
-        "two",
-        "paper",
-        "etching",
-        "the",
-        "and",
-        "with",
-        "of",
-        "in",
-        "on",
-        "from",
-        "down"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:4d45239401c6",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:dbdab915b41f:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "The Wreck of the Reliance (November 12, 1842)",
-      "url": "https://www.artic.edu/artworks/59487",
-      "source_url": "https://www.artic.edu/artworks/59487",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "oil",
-        "paper",
-        "the",
-        "with",
-        "of",
-        "in",
-        "on"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:0fe727b48777",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:956c7d3cf03d:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "Three Funerals and Some Acts of Preservation",
-      "url": "https://www.artic.edu/artworks/252017",
-      "source_url": "https://www.artic.edu/artworks/252017",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "color",
-        "three",
-        "video",
-        "and",
-        "with",
-        "of",
-        "some",
-        "american"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:dfb51a1212f6",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:725c141a2870:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "The Crucifixion, also called The Large Crucifixion",
-      "url": "https://www.artic.edu/artworks/138636",
-      "source_url": "https://www.artic.edu/artworks/138636",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "also",
-        "large",
-        "paper",
-        "etching",
-        "the",
-        "and",
-        "also",
-        "of",
-        "in",
-        "on",
-        "down"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:ddf2acf8bbd1",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:97bb0424c16b:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "The Ordinance of Baptism, from Missions in Jamaica",
-      "url": "https://www.artic.edu/artworks/59485",
-      "source_url": "https://www.artic.edu/artworks/59485",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "color",
-        "paper",
-        "etching",
-        "the",
-        "and",
-        "with",
-        "of",
-        "in",
-        "on",
-        "from",
-        "down"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:705867e6defc",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:c2d0491c447e:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "I'll Remember Mama",
-      "url": "https://www.artic.edu/artworks/252016",
-      "source_url": "https://www.artic.edu/artworks/252016",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "color",
-        "video",
-        "i",
-        "with",
-        "of",
-        "american"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:65e6bee88aa2",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:58588ea6803c:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "The Hop Garden",
-      "url": "https://www.artic.edu/artworks/54363",
-      "source_url": "https://www.artic.edu/artworks/54363",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "colors",
-        "paper",
-        "etching",
-        "the",
-        "and",
-        "with",
-        "of",
-        "in",
-        "on",
-        "from",
-        "down"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:f46c9227cab9",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:299897a774f3:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "The Bride, cover for The Prima Donna Waltz sheet music",
-      "url": "https://www.artic.edu/artworks/138652",
-      "source_url": "https://www.artic.edu/artworks/138652",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "colors",
-        "paper",
-        "etching",
-        "the",
-        "and",
-        "with",
-        "for",
-        "of",
-        "in",
-        "on",
-        "by",
-        "down"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:bcfaed24afe0",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:1c8f9bd8694d:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "Temperate",
-      "url": "https://www.artic.edu/artworks/53976",
-      "source_url": "https://www.artic.edu/artworks/53976",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "colors",
-        "paper",
-        "etching",
-        "and",
-        "with",
-        "of",
-        "in",
-        "on"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:20f52b106bdf",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:a559c83194bc:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "50 Ways to Set the Table",
-      "url": "https://www.artic.edu/artworks/252013",
-      "source_url": "https://www.artic.edu/artworks/252013",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "color",
-        "set",
-        "video",
-        "the",
-        "to",
-        "of",
-        "set",
-        "american"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:3d98df00a042",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:5519ccaa9d27:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "First Impression, also called First Impressions (Large)",
-      "url": "https://www.artic.edu/artworks/59489",
-      "source_url": "https://www.artic.edu/artworks/59489",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "color",
-        "first",
-        "also",
-        "large",
-        "paper",
-        "etching",
-        "and",
-        "also",
-        "with",
-        "of",
-        "in",
-        "on"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:ada1e549463a",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:4006f1a3bc46:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "The Mountain Stream",
-      "url": "https://www.artic.edu/artworks/61560",
-      "source_url": "https://www.artic.edu/artworks/61560",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "paper",
-        "the",
-        "with",
-        "of",
-        "on"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:9fc096123698",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:715e8d5d3ec8:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "The Reception of the Rev. J. Williams, at Tanna in the South Seas, the Day Before He was Massacred, from Two Specimens",
-      "url": "https://www.artic.edu/artworks/59521",
-      "source_url": "https://www.artic.edu/artworks/59521",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "colors",
-        "two",
-        "day",
-        "paper",
-        "etching",
-        "before",
-        "the",
-        "was",
-        "with",
-        "of",
-        "in",
-        "on",
-        "at",
-        "from",
-        "before",
-        "down"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:f2fb7cefabfb",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:f46ca6cfc1fd:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "Her Most Gracious Majesty Queen Victoria Receiving the Sacrament at her Coronation",
-      "url": "https://www.artic.edu/artworks/61545",
-      "source_url": "https://www.artic.edu/artworks/61545",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "most",
-        "paper",
-        "the",
-        "her",
-        "with",
-        "of",
-        "on",
-        "at",
-        "her",
-        "queen"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:1e4e6fb07e5c",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:7943658ca352:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "Indian Settlement",
-      "url": "https://www.artic.edu/artworks/54190",
-      "source_url": "https://www.artic.edu/artworks/54190",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "colors",
-        "paper",
-        "etching",
-        "and",
-        "with",
-        "of",
-        "in",
-        "on",
-        "down"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:8bdf5028b1b0",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:b47663fd2f36:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "Cloud Painting #5 \"Portrait of a Cloud\"",
-      "url": "https://www.artic.edu/artworks/282622",
-      "source_url": "https://www.artic.edu/artworks/282622",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [
-        "painting"
-      ],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "painting",
-        "oil",
-        "canvas",
-        "portrait",
-        "a",
-        "of",
-        "on",
-        "american"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:99ba5f86ef47",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:350cbee76a7c:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "The Reception of the Rev. J. Williams, at Tanna in the South Seas, the Day Before He was Massacred",
-      "url": "https://www.artic.edu/artworks/138629",
-      "source_url": "https://www.artic.edu/artworks/138629",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "colors",
-        "day",
-        "paper",
-        "etching",
-        "before",
-        "the",
-        "was",
-        "with",
-        "of",
-        "in",
-        "on",
-        "at",
-        "before",
-        "down"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:e3d2a53bc1f1",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:cb1eca559f1e:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "Victoria, Queen of Great Britain, India, etc., also called The Large Queen",
-      "url": "https://www.artic.edu/artworks/59491",
-      "source_url": "https://www.artic.edu/artworks/59491",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "color",
-        "also",
-        "great",
-        "large",
-        "paper",
-        "etching",
-        "the",
-        "and",
-        "also",
-        "with",
-        "of",
-        "in",
-        "on",
-        "down",
-        "queen",
-        "mezzotint"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:967a13a31565",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:43219b177faa:20260513",
-      "required_field_proxy": {
-        "institution_id": false,
-        "exhibition_id": false,
-        "ticket_status": false
-      },
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "source": "Art Institute of Chicago",
-      "source_type": "aic",
-      "trust_tier": "T1_official",
-      "content_type": "collection",
-      "collection_tier": "C3_api",
-      "producer_role": "",
-      "info_purpose": [],
-      "event_model": "exhibition_ticket_signal",
-      "title": "The Bride, cover for The Prima Donna Waltz sheet music",
-      "url": "https://www.artic.edu/artworks/59541",
-      "source_url": "https://www.artic.edu/artworks/59541",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [],
-      "institution": [],
-      "market": [],
-      "genre": [],
-      "period": [],
-      "topic": [
-        "art"
-      ],
-      "art_general": [
-        "art",
-        "colors",
-        "paper",
-        "etching",
-        "the",
-        "and",
-        "with",
-        "for",
-        "of",
-        "in",
-        "on",
-        "by",
-        "down"
-      ],
-      "artwork_title": "",
-      "hammer_price": null,
-      "currency": "",
-      "fair_id": "",
-      "organization_name": "",
-      "role": "art",
-      "institution_id": "",
-      "exhibition_id": "",
-      "ticket_status": "",
-      "relationship_type": "art",
-      "canonical_key": "art_source:art-institute-of-chicago:bcfaed24afe0",
-      "canonical_key_status": "source_proxy",
-      "event_key": "exhibition_ticket_signal:1c8f9bd8694d:20260513",
+      "event_key": "exhibition_ticket_signal:f99c0af9a3f3:20260513",
       "required_field_proxy": {
         "institution_id": false,
         "exhibition_id": false,
@@ -2754,7 +1094,7 @@
       "title": "Results",
       "url": "https://www.k-auction.com/Auction/Online/Result",
       "source_url": "https://www.k-auction.com/Auction/Online/Result",
-      "event_at": "2026-05-13T03:34:44.906531+00:00",
+      "event_at": "2026-05-13T12:17:42.379809+00:00",
       "artist": [],
       "institution": [
         "케이옥션"
@@ -2803,7 +1143,7 @@
       "title": "Results",
       "url": "https://www.k-auction.com/Auction/Major/Result",
       "source_url": "https://www.k-auction.com/Auction/Major/Result",
-      "event_at": "2026-05-13T03:34:44.906510+00:00",
+      "event_at": "2026-05-13T12:17:42.379774+00:00",
       "artist": [],
       "institution": [
         "케이옥션"
@@ -2852,7 +1192,7 @@
       "title": "Seoul Auction",
       "url": "https://www.seoulauction.com/main/auction",
       "source_url": "https://www.seoulauction.com/main/auction",
-      "event_at": "2026-05-13T03:34:37.988572+00:00",
+      "event_at": "2026-05-13T12:17:39.021421+00:00",
       "artist": [],
       "institution": [
         "서울옥션",
@@ -2869,7 +1209,6 @@
         "미술"
       ],
       "art_general": [
-        "viewing",
         "미술",
         "전시",
         "자",
@@ -2925,7 +1264,7 @@
       "title": "EXHIBITION | DAELIM MUSEUM | D MUSEUM",
       "url": "https://www.daelimmuseum.org/exhibition/",
       "source_url": "https://www.daelimmuseum.org/exhibition/",
-      "event_at": "2026-05-13T03:34:18.422986+00:00",
+      "event_at": "2026-05-13T12:17:30.488540+00:00",
       "artist": [],
       "institution": [
         "대림미술관",
@@ -3002,7 +1341,7 @@
       "title": "국립중앙박물관",
       "url": "https://www.museum.go.kr/MUSEUM/main/index.do",
       "source_url": "https://www.museum.go.kr/MUSEUM/main/index.do",
-      "event_at": "2026-05-13T03:33:48.884178+00:00",
+      "event_at": "2026-05-13T12:17:21.229130+00:00",
       "artist": [],
       "institution": [
         "국립중앙박물관",
@@ -3097,7 +1436,7 @@
       "title": "오류 : 리움미술관",
       "url": "https://www.leeumhoam.org/exhibition",
       "source_url": "https://www.leeumhoam.org/exhibition",
-      "event_at": "2026-05-13T03:33:20.035641+00:00",
+      "event_at": "2026-05-13T12:17:10.274681+00:00",
       "artist": [],
       "institution": [
         "리움",
@@ -3156,7 +1495,7 @@
       "title": "한국문화예술위원회",
       "url": "https://www.arko.or.kr/artcenter/program/exhibit/",
       "source_url": "https://www.arko.or.kr/artcenter/program/exhibit/",
-      "event_at": "2026-05-13T03:32:56.786816+00:00",
+      "event_at": "2026-05-13T12:17:02.737068+00:00",
       "artist": [
         "작가"
       ],
@@ -3254,7 +1593,7 @@
       "title": "500 Internal Server Error",
       "url": "https://sema.seoul.go.kr/kr/whatson/exhibition/list",
       "source_url": "https://sema.seoul.go.kr/kr/whatson/exhibition/list",
-      "event_at": "2026-05-13T03:32:35.428313+00:00",
+      "event_at": "2026-05-13T12:16:53.433060+00:00",
       "artist": [],
       "institution": [
         "서울시립미술관",
@@ -3309,7 +1648,7 @@
       "title": "Home | Frieze",
       "url": "https://www.frieze.com/",
       "source_url": "https://www.frieze.com/",
-      "event_at": "2026-05-13T03:32:13.765842+00:00",
+      "event_at": "2026-05-13T12:16:44.150367+00:00",
       "artist": [
         "artist"
       ],
@@ -3440,53 +1779,262 @@
       "required_field_gaps": []
     },
     {
-      "source": "Metropolitan Museum",
-      "source_type": "met_museum",
+      "source": "Art Institute of Chicago",
+      "source_type": "aic",
       "trust_tier": "T1_official",
       "content_type": "collection",
       "collection_tier": "C3_api",
       "producer_role": "",
       "info_purpose": [],
       "event_model": "exhibition_ticket_signal",
-      "title": "Statuette of a hippo goddess, probably Taweret",
-      "url": "https://www.metmuseum.org/art/collection/search/544864",
-      "source_url": "https://www.metmuseum.org/art/collection/search/544864",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [
-        "artist"
-      ],
-      "institution": [
-        "museum"
-      ],
+      "title": "The Finding of Moses, from Religious Events No. 1",
+      "url": "https://www.artic.edu/artworks/138632",
+      "source_url": "https://www.artic.edu/artworks/138632",
+      "event_at": "2026-05-07T01:57:00.041245+00:00",
+      "artist": [],
+      "institution": [],
       "market": [],
       "genre": [],
       "period": [],
-      "topic": [],
+      "topic": [
+        "art"
+      ],
       "art_general": [
-        "artist",
-        "museum",
-        "a",
-        "of"
+        "art",
+        "colors",
+        "paper",
+        "etching",
+        "the",
+        "and",
+        "with",
+        "of",
+        "in",
+        "on",
+        "from",
+        "down",
+        "moses",
+        "finding"
       ],
       "artwork_title": "",
       "hammer_price": null,
       "currency": "",
       "fair_id": "",
-      "organization_name": "museum",
-      "role": "artist",
-      "institution_id": "museum",
+      "organization_name": "",
+      "role": "art",
+      "institution_id": "",
       "exhibition_id": "",
       "ticket_status": "",
-      "relationship_type": "artist",
-      "canonical_key": "exhibition:museum:3da5215e617a",
-      "canonical_key_status": "institution_proxy",
-      "event_key": "exhibition_ticket_signal:8f58e869215d:20260513",
+      "relationship_type": "art",
+      "canonical_key": "art_source:art-institute-of-chicago:449649c75e7a",
+      "canonical_key_status": "source_proxy",
+      "event_key": "exhibition_ticket_signal:75c8aaca25b2:20260507",
       "required_field_proxy": {
-        "institution_id": true,
+        "institution_id": false,
         "exhibition_id": false,
         "ticket_status": false
       },
       "required_field_gaps": [
+        "institution_id",
+        "exhibition_id",
+        "ticket_status"
+      ]
+    },
+    {
+      "source": "Art Institute of Chicago",
+      "source_type": "aic",
+      "trust_tier": "T1_official",
+      "content_type": "collection",
+      "collection_tier": "C3_api",
+      "producer_role": "",
+      "info_purpose": [],
+      "event_model": "exhibition_ticket_signal",
+      "title": "Untitled (painted attached shoes)",
+      "url": "https://www.artic.edu/artworks/283145",
+      "source_url": "https://www.artic.edu/artworks/283145",
+      "event_at": "2026-05-07T00:49:20.120838+00:00",
+      "artist": [],
+      "institution": [],
+      "market": [],
+      "genre": [],
+      "period": [],
+      "topic": [
+        "art"
+      ],
+      "art_general": [
+        "art",
+        "painted",
+        "2024",
+        "and",
+        "of",
+        "untitled",
+        "american"
+      ],
+      "artwork_title": "",
+      "hammer_price": null,
+      "currency": "",
+      "fair_id": "",
+      "organization_name": "",
+      "role": "art",
+      "institution_id": "",
+      "exhibition_id": "",
+      "ticket_status": "",
+      "relationship_type": "art",
+      "canonical_key": "art_source:art-institute-of-chicago:4fd81fd96e42",
+      "canonical_key_status": "source_proxy",
+      "event_key": "exhibition_ticket_signal:dbfcab0afeec:20260507",
+      "required_field_proxy": {
+        "institution_id": false,
+        "exhibition_id": false,
+        "ticket_status": false
+      },
+      "required_field_gaps": [
+        "institution_id",
+        "exhibition_id",
+        "ticket_status"
+      ]
+    },
+    {
+      "source": "Art Institute of Chicago",
+      "source_type": "aic",
+      "trust_tier": "T1_official",
+      "content_type": "collection",
+      "collection_tier": "C3_api",
+      "producer_role": "",
+      "info_purpose": [],
+      "event_model": "exhibition_ticket_signal",
+      "title": "Guided Tour",
+      "url": "https://www.artic.edu/artworks/252015",
+      "source_url": "https://www.artic.edu/artworks/252015",
+      "event_at": "2026-04-30T02:23:49.844464+00:00",
+      "artist": [],
+      "institution": [],
+      "market": [],
+      "genre": [],
+      "period": [],
+      "topic": [
+        "art"
+      ],
+      "art_general": [
+        "art",
+        "video",
+        "and",
+        "of",
+        "american"
+      ],
+      "artwork_title": "",
+      "hammer_price": null,
+      "currency": "",
+      "fair_id": "",
+      "organization_name": "",
+      "role": "art",
+      "institution_id": "",
+      "exhibition_id": "",
+      "ticket_status": "",
+      "relationship_type": "art",
+      "canonical_key": "art_source:art-institute-of-chicago:a37bad31b6fb",
+      "canonical_key_status": "source_proxy",
+      "event_key": "exhibition_ticket_signal:e0d39fa99bb1:20260430",
+      "required_field_proxy": {
+        "institution_id": false,
+        "exhibition_id": false,
+        "ticket_status": false
+      },
+      "required_field_gaps": [
+        "institution_id",
+        "exhibition_id",
+        "ticket_status"
+      ]
+    },
+    {
+      "source": "Art Institute of Chicago",
+      "source_type": "aic",
+      "trust_tier": "T1_official",
+      "content_type": "collection",
+      "collection_tier": "C3_api",
+      "producer_role": "",
+      "info_purpose": [],
+      "event_model": "exhibition_ticket_signal",
+      "title": "The Police at Clarksdale, Mississippi",
+      "url": "https://www.artic.edu/artworks/240996",
+      "source_url": "https://www.artic.edu/artworks/240996",
+      "event_at": "2026-04-30T01:05:36.731743+00:00",
+      "artist": [],
+      "institution": [],
+      "market": [],
+      "genre": [],
+      "period": [],
+      "topic": [],
+      "art_general": [
+        "the",
+        "at",
+        "american"
+      ],
+      "artwork_title": "",
+      "hammer_price": null,
+      "currency": "",
+      "fair_id": "",
+      "organization_name": "",
+      "role": "the",
+      "institution_id": "",
+      "exhibition_id": "",
+      "ticket_status": "",
+      "relationship_type": "the",
+      "canonical_key": "art_source:art-institute-of-chicago:b6c64ffac3ad",
+      "canonical_key_status": "source_proxy",
+      "event_key": "exhibition_ticket_signal:0dce716ea355:20260430",
+      "required_field_proxy": {
+        "institution_id": false,
+        "exhibition_id": false,
+        "ticket_status": false
+      },
+      "required_field_gaps": [
+        "institution_id",
+        "exhibition_id",
+        "ticket_status"
+      ]
+    },
+    {
+      "source": "Art Institute of Chicago",
+      "source_type": "aic",
+      "trust_tier": "T1_official",
+      "content_type": "collection",
+      "collection_tier": "C3_api",
+      "producer_role": "",
+      "info_purpose": [],
+      "event_model": "exhibition_ticket_signal",
+      "title": "Cambridge, Maryland",
+      "url": "https://www.artic.edu/artworks/240995",
+      "source_url": "https://www.artic.edu/artworks/240995",
+      "event_at": "2026-04-30T00:54:32.010645+00:00",
+      "artist": [],
+      "institution": [],
+      "market": [],
+      "genre": [],
+      "period": [],
+      "topic": [],
+      "art_general": [
+        "american"
+      ],
+      "artwork_title": "",
+      "hammer_price": null,
+      "currency": "",
+      "fair_id": "",
+      "organization_name": "",
+      "role": "american",
+      "institution_id": "",
+      "exhibition_id": "",
+      "ticket_status": "",
+      "relationship_type": "american",
+      "canonical_key": "art_source:art-institute-of-chicago:84c4fd49b0aa",
+      "canonical_key_status": "source_proxy",
+      "event_key": "exhibition_ticket_signal:6b9ef90b187f:20260430",
+      "required_field_proxy": {
+        "institution_id": false,
+        "exhibition_id": false,
+        "ticket_status": false
+      },
+      "required_field_gaps": [
+        "institution_id",
         "exhibition_id",
         "ticket_status"
       ]
@@ -3500,13 +2048,11 @@
       "producer_role": "",
       "info_purpose": [],
       "event_model": "exhibition_ticket_signal",
-      "title": "The Fieschi Morgan Staurotheke",
-      "url": "https://www.metmuseum.org/art/collection/search/472562",
-      "source_url": "https://www.metmuseum.org/art/collection/search/472562",
-      "event_at": "2026-05-13T03:35:34.417698+00:00",
-      "artist": [
-        "artist"
-      ],
+      "title": "Camille Monet (1847–1879) on a Garden Bench",
+      "url": "https://www.metmuseum.org/art/collection/search/438003",
+      "source_url": "https://www.metmuseum.org/art/collection/search/438003",
+      "event_at": "2026-05-13T12:17:50.521888+00:00",
+      "artist": [],
       "institution": [
         "museum"
       ],
@@ -3515,28 +2061,25 @@
       "period": [],
       "topic": [],
       "art_general": [
-        "artist",
         "museum",
-        "early",
-        "the",
-        "and",
-        "in",
-        "century",
-        "9th"
+        "oil",
+        "canvas",
+        "a",
+        "on"
       ],
       "artwork_title": "",
       "hammer_price": null,
       "currency": "",
       "fair_id": "",
       "organization_name": "museum",
-      "role": "artist",
+      "role": "museum",
       "institution_id": "museum",
       "exhibition_id": "",
       "ticket_status": "",
-      "relationship_type": "artist",
-      "canonical_key": "exhibition:museum:666273df19a0",
+      "relationship_type": "museum",
+      "canonical_key": "exhibition:museum:3f87134531da",
       "canonical_key_status": "institution_proxy",
-      "event_key": "exhibition_ticket_signal:a932a7627ebc:20260513",
+      "event_key": "exhibition_ticket_signal:41e2018cf8c1:20260513",
       "required_field_proxy": {
         "institution_id": true,
         "exhibition_id": false,
@@ -3553,8 +2096,8 @@
       "reason": "missing_required_fields",
       "event_model": "exhibition_ticket_signal",
       "source": "Art Institute of Chicago",
-      "title": "The Parting Look (with Man and Box)",
-      "canonical_key": "art_source:art-institute-of-chicago:ae7493d88d51",
+      "title": "Panel (Upholstery Fabric)",
+      "canonical_key": "art_source:art-institute-of-chicago:d88c014526f3",
       "required_field_gaps": [
         "institution_id",
         "exhibition_id",
@@ -3565,15 +2108,183 @@
       "reason": "proxy_canonical_key",
       "event_model": "exhibition_ticket_signal",
       "source": "Art Institute of Chicago",
-      "title": "The Parting Look (with Man and Box)",
+      "title": "Panel (Upholstery Fabric)",
+      "canonical_key_status": "source_proxy"
+    },
+    {
+      "reason": "missing_required_fields",
+      "event_model": "auction_result",
+      "source": "케이옥션",
+      "title": "Results",
+      "canonical_key": "art_source:케이옥션:c099142bc318",
+      "required_field_gaps": [
+        "artist_name",
+        "artwork_title",
+        "hammer_price",
+        "currency"
+      ]
+    },
+    {
+      "reason": "proxy_canonical_key",
+      "event_model": "auction_result",
+      "source": "케이옥션",
+      "title": "Results",
+      "canonical_key_status": "source_proxy"
+    },
+    {
+      "reason": "missing_required_fields",
+      "event_model": "auction_result",
+      "source": "케이옥션",
+      "title": "Results",
+      "canonical_key": "art_source:케이옥션:c099142bc318",
+      "required_field_gaps": [
+        "artist_name",
+        "artwork_title",
+        "hammer_price",
+        "currency"
+      ]
+    },
+    {
+      "reason": "proxy_canonical_key",
+      "event_model": "auction_result",
+      "source": "케이옥션",
+      "title": "Results",
+      "canonical_key_status": "source_proxy"
+    },
+    {
+      "reason": "missing_required_fields",
+      "event_model": "auction_result",
+      "source": "서울옥션",
+      "title": "Seoul Auction",
+      "canonical_key": "art_source:서울옥션:33ece2e6b570",
+      "required_field_gaps": [
+        "artist_name",
+        "artwork_title",
+        "hammer_price",
+        "currency"
+      ]
+    },
+    {
+      "reason": "proxy_canonical_key",
+      "event_model": "auction_result",
+      "source": "서울옥션",
+      "title": "Seoul Auction",
+      "canonical_key_status": "source_proxy"
+    },
+    {
+      "reason": "missing_required_fields",
+      "event_model": "exhibition_ticket_signal",
+      "source": "대림미술관",
+      "title": "EXHIBITION | DAELIM MUSEUM | D MUSEUM",
+      "canonical_key": "exhibition:대림미술관:7f80f287bd90",
+      "required_field_gaps": [
+        "exhibition_id"
+      ]
+    },
+    {
+      "reason": "proxy_canonical_key",
+      "event_model": "exhibition_ticket_signal",
+      "source": "대림미술관",
+      "title": "EXHIBITION | DAELIM MUSEUM | D MUSEUM",
+      "canonical_key_status": "institution_proxy"
+    },
+    {
+      "reason": "missing_required_fields",
+      "event_model": "exhibition_ticket_signal",
+      "source": "국립중앙박물관",
+      "title": "국립중앙박물관",
+      "canonical_key": "exhibition:국립중앙박물관:a7e6563df7cf",
+      "required_field_gaps": [
+        "exhibition_id",
+        "ticket_status"
+      ]
+    },
+    {
+      "reason": "proxy_canonical_key",
+      "event_model": "exhibition_ticket_signal",
+      "source": "국립중앙박물관",
+      "title": "국립중앙박물관",
+      "canonical_key_status": "institution_proxy"
+    },
+    {
+      "reason": "missing_required_fields",
+      "event_model": "exhibition_ticket_signal",
+      "source": "리움미술관",
+      "title": "오류 : 리움미술관",
+      "canonical_key": "exhibition:리움:6295ba3be863",
+      "required_field_gaps": [
+        "exhibition_id",
+        "ticket_status"
+      ]
+    },
+    {
+      "reason": "proxy_canonical_key",
+      "event_model": "exhibition_ticket_signal",
+      "source": "리움미술관",
+      "title": "오류 : 리움미술관",
+      "canonical_key_status": "institution_proxy"
+    },
+    {
+      "reason": "missing_required_fields",
+      "event_model": "exhibition_ticket_signal",
+      "source": "아르코미술관",
+      "title": "한국문화예술위원회",
+      "canonical_key": "exhibition:베니스비엔날레:12ca9591fc3e",
+      "required_field_gaps": [
+        "exhibition_id",
+        "ticket_status"
+      ]
+    },
+    {
+      "reason": "proxy_canonical_key",
+      "event_model": "exhibition_ticket_signal",
+      "source": "아르코미술관",
+      "title": "한국문화예술위원회",
+      "canonical_key_status": "institution_proxy"
+    },
+    {
+      "reason": "missing_required_fields",
+      "event_model": "exhibition_ticket_signal",
+      "source": "서울시립미술관",
+      "title": "500 Internal Server Error",
+      "canonical_key": "exhibition:서울시립미술관:5739fc193a0c",
+      "required_field_gaps": [
+        "exhibition_id",
+        "ticket_status"
+      ]
+    },
+    {
+      "reason": "proxy_canonical_key",
+      "event_model": "exhibition_ticket_signal",
+      "source": "서울시립미술관",
+      "title": "500 Internal Server Error",
+      "canonical_key_status": "institution_proxy"
+    },
+    {
+      "reason": "missing_required_fields",
+      "event_model": "exhibition_ticket_signal",
+      "source": "Art Institute of Chicago",
+      "title": "The Finding of Moses, from Religious Events No. 1",
+      "canonical_key": "art_source:art-institute-of-chicago:449649c75e7a",
+      "required_field_gaps": [
+        "institution_id",
+        "exhibition_id",
+        "ticket_status"
+      ]
+    },
+    {
+      "reason": "proxy_canonical_key",
+      "event_model": "exhibition_ticket_signal",
+      "source": "Art Institute of Chicago",
+      "title": "The Finding of Moses, from Religious Events No. 1",
       "canonical_key_status": "source_proxy"
     },
     {
       "reason": "missing_required_fields",
       "event_model": "exhibition_ticket_signal",
       "source": "Art Institute of Chicago",
-      "title": "What We Think About When We Think About Ships",
-      "canonical_key": "art_source:art-institute-of-chicago:f191a1899e51",
+      "title": "Untitled (painted attached shoes)",
+      "canonical_key": "art_source:art-institute-of-chicago:4fd81fd96e42",
       "required_field_gaps": [
         "institution_id",
         "exhibition_id",
@@ -3584,140 +2295,7 @@
       "reason": "proxy_canonical_key",
       "event_model": "exhibition_ticket_signal",
       "source": "Art Institute of Chicago",
-      "title": "What We Think About When We Think About Ships",
-      "canonical_key_status": "source_proxy"
-    },
-    {
-      "reason": "missing_required_fields",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "The Bridesmaid",
-      "canonical_key": "art_source:art-institute-of-chicago:d8baef4a229a",
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "reason": "proxy_canonical_key",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "The Bridesmaid",
-      "canonical_key_status": "source_proxy"
-    },
-    {
-      "reason": "missing_required_fields",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "The Parting Look (without Man and Box)",
-      "canonical_key": "art_source:art-institute-of-chicago:baf699019ed8",
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "reason": "proxy_canonical_key",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "The Parting Look (without Man and Box)",
-      "canonical_key_status": "source_proxy"
-    },
-    {
-      "reason": "missing_required_fields",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "My Getty Center",
-      "canonical_key": "art_source:art-institute-of-chicago:59f84a7f8459",
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "reason": "proxy_canonical_key",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "My Getty Center",
-      "canonical_key_status": "source_proxy"
-    },
-    {
-      "reason": "missing_required_fields",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "The Massacre of the Lamented Missionary, The Rev. J. Williams and Mr Harris",
-      "canonical_key": "art_source:art-institute-of-chicago:11a104d2b8a8",
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "reason": "proxy_canonical_key",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "The Massacre of the Lamented Missionary, The Rev. J. Williams and Mr Harris",
-      "canonical_key_status": "source_proxy"
-    },
-    {
-      "reason": "missing_required_fields",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "Arrival of Her Most Gracious Majesty at House of Lords to Open First Parliament of her Reign",
-      "canonical_key": "art_source:art-institute-of-chicago:06d3cede5483",
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "reason": "proxy_canonical_key",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "Arrival of Her Most Gracious Majesty at House of Lords to Open First Parliament of her Reign",
-      "canonical_key_status": "source_proxy"
-    },
-    {
-      "reason": "missing_required_fields",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "The Dogs of St. Bernard",
-      "canonical_key": "art_source:art-institute-of-chicago:64846dbda988",
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "reason": "proxy_canonical_key",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "The Dogs of St. Bernard",
-      "canonical_key_status": "source_proxy"
-    },
-    {
-      "reason": "missing_required_fields",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "Lake Lucerne, Switzerland",
-      "canonical_key": "art_source:art-institute-of-chicago:c8041f123915",
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "reason": "proxy_canonical_key",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "Lake Lucerne, Switzerland",
+      "title": "Untitled (painted attached shoes)",
       "canonical_key_status": "source_proxy"
     },
     {
@@ -3743,8 +2321,8 @@
       "reason": "missing_required_fields",
       "event_model": "exhibition_ticket_signal",
       "source": "Art Institute of Chicago",
-      "title": "Trinity",
-      "canonical_key": "art_source:art-institute-of-chicago:934a11e60268",
+      "title": "The Police at Clarksdale, Mississippi",
+      "canonical_key": "art_source:art-institute-of-chicago:b6c64ffac3ad",
       "required_field_gaps": [
         "institution_id",
         "exhibition_id",
@@ -3755,15 +2333,15 @@
       "reason": "proxy_canonical_key",
       "event_model": "exhibition_ticket_signal",
       "source": "Art Institute of Chicago",
-      "title": "Trinity",
+      "title": "The Police at Clarksdale, Mississippi",
       "canonical_key_status": "source_proxy"
     },
     {
       "reason": "missing_required_fields",
       "event_model": "exhibition_ticket_signal",
       "source": "Art Institute of Chicago",
-      "title": "The Massacre of the Lamented Missionary the Rev. J. Williams and Mr. Harris, from Two Specimens",
-      "canonical_key": "art_source:art-institute-of-chicago:4d45239401c6",
+      "title": "Cambridge, Maryland",
+      "canonical_key": "art_source:art-institute-of-chicago:84c4fd49b0aa",
       "required_field_gaps": [
         "institution_id",
         "exhibition_id",
@@ -3774,17 +2352,16 @@
       "reason": "proxy_canonical_key",
       "event_model": "exhibition_ticket_signal",
       "source": "Art Institute of Chicago",
-      "title": "The Massacre of the Lamented Missionary the Rev. J. Williams and Mr. Harris, from Two Specimens",
+      "title": "Cambridge, Maryland",
       "canonical_key_status": "source_proxy"
     },
     {
       "reason": "missing_required_fields",
       "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "The Wreck of the Reliance (November 12, 1842)",
-      "canonical_key": "art_source:art-institute-of-chicago:0fe727b48777",
+      "source": "Metropolitan Museum",
+      "title": "Camille Monet (1847–1879) on a Garden Bench",
+      "canonical_key": "exhibition:museum:3f87134531da",
       "required_field_gaps": [
-        "institution_id",
         "exhibition_id",
         "ticket_status"
       ]
@@ -3792,237 +2369,37 @@
     {
       "reason": "proxy_canonical_key",
       "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "The Wreck of the Reliance (November 12, 1842)",
-      "canonical_key_status": "source_proxy"
+      "source": "Metropolitan Museum",
+      "title": "Camille Monet (1847–1879) on a Garden Bench",
+      "canonical_key_status": "institution_proxy"
     },
     {
-      "reason": "missing_required_fields",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "Three Funerals and Some Acts of Preservation",
-      "canonical_key": "art_source:art-institute-of-chicago:dfb51a1212f6",
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
+      "reason": "missing_event_model",
+      "event_model": "artist_institution_entity"
     },
     {
-      "reason": "proxy_canonical_key",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "Three Funerals and Some Acts of Preservation",
-      "canonical_key_status": "source_proxy"
+      "reason": "source_backlog_pending",
+      "source": "Sotheby's auction results",
+      "signal_type": "auction_result",
+      "activation_gate": "ToS review, price currency normalization, and artist/artwork canonicalization"
     },
     {
-      "reason": "missing_required_fields",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "The Crucifixion, also called The Large Crucifixion",
-      "canonical_key": "art_source:art-institute-of-chicago:ddf2acf8bbd1",
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
+      "reason": "source_backlog_pending",
+      "source": "Christie's auction results",
+      "signal_type": "auction_result",
+      "activation_gate": "ToS review, lot id mapping, and fee inclusion policy"
     },
     {
-      "reason": "proxy_canonical_key",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "The Crucifixion, also called The Large Crucifixion",
-      "canonical_key_status": "source_proxy"
+      "reason": "source_backlog_pending",
+      "source": "Art Basel exhibitor lists",
+      "signal_type": "art_fair_participant",
+      "activation_gate": "fair id mapping, gallery canonicalization, and snapshot retention"
     },
     {
-      "reason": "missing_required_fields",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "The Ordinance of Baptism, from Missions in Jamaica",
-      "canonical_key": "art_source:art-institute-of-chicago:705867e6defc",
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "reason": "proxy_canonical_key",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "The Ordinance of Baptism, from Missions in Jamaica",
-      "canonical_key_status": "source_proxy"
-    },
-    {
-      "reason": "missing_required_fields",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "I'll Remember Mama",
-      "canonical_key": "art_source:art-institute-of-chicago:65e6bee88aa2",
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "reason": "proxy_canonical_key",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "I'll Remember Mama",
-      "canonical_key_status": "source_proxy"
-    },
-    {
-      "reason": "missing_required_fields",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "The Hop Garden",
-      "canonical_key": "art_source:art-institute-of-chicago:f46c9227cab9",
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "reason": "proxy_canonical_key",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "The Hop Garden",
-      "canonical_key_status": "source_proxy"
-    },
-    {
-      "reason": "missing_required_fields",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "The Bride, cover for The Prima Donna Waltz sheet music",
-      "canonical_key": "art_source:art-institute-of-chicago:bcfaed24afe0",
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "reason": "proxy_canonical_key",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "The Bride, cover for The Prima Donna Waltz sheet music",
-      "canonical_key_status": "source_proxy"
-    },
-    {
-      "reason": "missing_required_fields",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "Temperate",
-      "canonical_key": "art_source:art-institute-of-chicago:20f52b106bdf",
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "reason": "proxy_canonical_key",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "Temperate",
-      "canonical_key_status": "source_proxy"
-    },
-    {
-      "reason": "missing_required_fields",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "50 Ways to Set the Table",
-      "canonical_key": "art_source:art-institute-of-chicago:3d98df00a042",
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "reason": "proxy_canonical_key",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "50 Ways to Set the Table",
-      "canonical_key_status": "source_proxy"
-    },
-    {
-      "reason": "missing_required_fields",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "First Impression, also called First Impressions (Large)",
-      "canonical_key": "art_source:art-institute-of-chicago:ada1e549463a",
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "reason": "proxy_canonical_key",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "First Impression, also called First Impressions (Large)",
-      "canonical_key_status": "source_proxy"
-    },
-    {
-      "reason": "missing_required_fields",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "The Mountain Stream",
-      "canonical_key": "art_source:art-institute-of-chicago:9fc096123698",
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "reason": "proxy_canonical_key",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "The Mountain Stream",
-      "canonical_key_status": "source_proxy"
-    },
-    {
-      "reason": "missing_required_fields",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "The Reception of the Rev. J. Williams, at Tanna in the South Seas, the Day Before He was Massacred, from Two Specimens",
-      "canonical_key": "art_source:art-institute-of-chicago:f2fb7cefabfb",
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "reason": "proxy_canonical_key",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "The Reception of the Rev. J. Williams, at Tanna in the South Seas, the Day Before He was Massacred, from Two Specimens",
-      "canonical_key_status": "source_proxy"
-    },
-    {
-      "reason": "missing_required_fields",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "Her Most Gracious Majesty Queen Victoria Receiving the Sacrament at her Coronation",
-      "canonical_key": "art_source:art-institute-of-chicago:1e4e6fb07e5c",
-      "required_field_gaps": [
-        "institution_id",
-        "exhibition_id",
-        "ticket_status"
-      ]
-    },
-    {
-      "reason": "proxy_canonical_key",
-      "event_model": "exhibition_ticket_signal",
-      "source": "Art Institute of Chicago",
-      "title": "Her Most Gracious Majesty Queen Victoria Receiving the Sacrament at her Coronation",
-      "canonical_key_status": "source_proxy"
+      "reason": "source_backlog_pending",
+      "source": "Museum ticket and exhibition calendars",
+      "signal_type": "exhibition_ticket_signal",
+      "activation_gate": "parser stability, ticket status semantics, and timezone handling"
     }
   ],
   "source_backlog": {

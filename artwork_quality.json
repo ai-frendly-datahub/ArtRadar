@@ -1,6 +1,6 @@
 {
   "category": "artwork",
-  "generated_at": "2026-05-13T03:35:36.287065+00:00",
+  "generated_at": "2026-05-14T02:33:53.763989+00:00",
   "scope_note": "ArtRadar separates exhibition, auction, art-fair, and artist-institution signals from broad art news and community feeds. Community feeds are kept as context until canonical artist, institution, or market fields are present.",
   "summary": {
     "total_sources": 5,
@@ -73,7 +73,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 8,
+      "article_count": 6,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
