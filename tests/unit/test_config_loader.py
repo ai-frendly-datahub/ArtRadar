@@ -135,3 +135,8 @@ def test_load_project_artwork_category_config() -> None:
         "Hyperallergic",
         "Artnet News",
     }
+    google_source = next(source for source in cfg.sources if source.name == "Google Arts & Culture")
+    assert (
+        google_source.url
+        == "https://blog.google/company-news/outreach-and-initiatives/arts-culture/rss/"
+    )

@@ -1,6 +1,6 @@
 {
   "category": "artwork",
-  "generated_at": "2026-05-19T13:31:06.354662+00:00",
+  "generated_at": "2026-05-19T22:49:27.235115+00:00",
   "scope_note": "ArtRadar separates exhibition, auction, art-fair, and artist-institution signals from broad art news and community feeds. Community feeds are kept as context until canonical artist, institution, or market fields are present.",
   "summary": {
     "total_sources": 5,
@@ -13,7 +13,7 @@
     "unknown_event_date_sources": 0,
     "not_tracked_sources": 5,
     "skipped_disabled_sources": 0,
-    "collection_error_count": 1,
+    "collection_error_count": 0,
     "auction_result_events": 0,
     "art_fair_participant_events": 0,
     "exhibition_ticket_signal_events": 0,
@@ -48,7 +48,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 0,
+      "article_count": 20,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -73,7 +73,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 6,
+      "article_count": 8,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -98,7 +98,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 0,
+      "article_count": 3,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -123,7 +123,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 0,
+      "article_count": 6,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -148,7 +148,7 @@
       "event_model": "editorial_coverage",
       "freshness_sla_days": null,
       "status": "not_tracked",
-      "article_count": 0,
+      "article_count": 6,
       "event_count": 0,
       "latest_event_at": null,
       "age_days": null,
@@ -181,7 +181,5 @@
     }
   ],
   "source_backlog": {},
-  "errors": [
-    "[Google Arts & Culture] Request failed: 404 Client Error: Not Found for url: https://blog.google/products/arts-culture/rss/"
-  ]
+  "errors": []
 }

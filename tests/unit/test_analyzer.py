@@ -53,6 +53,7 @@ class _ApplyEntityRules(Protocol):
 Article = cast(_ArticleCtor, import_module("artradar.models").Article)
 EntityDefinition = cast(_EntityCtor, import_module("artradar.models").EntityDefinition)
 apply_entity_rules = cast(_ApplyEntityRules, import_module("artradar.analyzer").apply_entity_rules)
+load_category_config = import_module("artradar.config_loader").load_category_config
 
 
 def _make_article(*, title: str, summary: str, source: str = "Example RSS") -> _Article:
@@ -166,3 +167,60 @@ def test_apply_entity_rules_uses_source_name_as_domain_context() -> None:
     analyzed = apply_entity_rules([article], entities)
 
     assert analyzed[0].matched_entities == {"topic": ["미술"]}
+
+
+def test_real_artwork_config_classifies_current_market_and_culture_items() -> None:
+    config = load_category_config("artwork")
+    articles = [
+        _make_article(
+            title="The Black American Artists Who Dazzled Post-War Paris",
+            summary=(
+                "An exhibition in Chicago celebrates the painters, writers, and performers "
+                "who sought freedom in the city of light."
+            ),
+            source="Hyperallergic",
+        ),
+        _make_article(
+            title="Waddington's Spring Sale Spotlights Canadian Masters",
+            summary=(
+                "Canadian & International Fine Art, First Nations Art, and Inuit Art "
+                "masterworks from across mediums, periods, and places."
+            ),
+            source="Artnet News",
+        ),
+        _make_article(
+            title="Exploring Matisse's Wild Palette",
+            summary="Femme au chapeau painting",
+            source="Google Arts & Culture",
+        ),
+        _make_article(
+            title="“Gaza Love” Monument Unveiled in Paterson, NJ",
+            summary="Kyle Goen’s artwork anchors the city’s recently dedicated Gaza Square.",
+            source="Hyperallergic",
+        ),
+        _make_article(
+            title="Identity of Pompeii Victim Revealed in High-Tech Scans",
+            summary="The technology showed the individual was fleeing with a medical case.",
+            source="Artnet News",
+        ),
+        _make_article(
+            title="Christie’s $1.1 Billion Night Signals a Stunning Rebound for the Art Market",
+            summary="What do the numbers say about the marquee S.I. Newhouse and 20th-century sales?",
+            source="Artnet News",
+        ),
+    ]
+
+    analyzed = apply_entity_rules(articles, config.entities)
+
+    assert analyzed[0].matched_entities["Artist"] == ["artists", "painters"]
+    assert analyzed[0].matched_entities["CollectionChange"] == ["exhibition"]
+    assert analyzed[1].matched_entities["MarketSignal"] == ["sale", "fine art"]
+    assert analyzed[1].matched_entities["Artist"] == ["masters"]
+    assert analyzed[2].matched_entities["Medium"] == ["painting"]
+    assert analyzed[3].matched_entities["ArtworkType"] == ["artwork"]
+    assert analyzed[4].matched_entities["CollectionChange"] == ["pompeii"]
+    assert analyzed[5].matched_entities["MarketSignal"] == [
+        "sales",
+        "art market",
+        "christie’s",
+    ]

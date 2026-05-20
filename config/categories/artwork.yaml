@@ -3,7 +3,7 @@ display_name: Artwork Radar
 sources:
 - name: Google Arts & Culture
   type: rss
-  url: https://blog.google/products/arts-culture/rss/
+  url: https://blog.google/company-news/outreach-and-initiatives/arts-culture/rss/
   config:
     event_model: editorial_coverage
 - name: Artsy Editorial
@@ -31,6 +31,8 @@ entities:
   display_name: 작품 매체
   keywords:
   - oil on canvas
+  - painting
+  - paintings
   - watercolor
   - bronze
   - ceramic
@@ -45,6 +47,8 @@ entities:
 - name: ArtworkType
   display_name: 작품 유형
   keywords:
+  - artwork
+  - artworks
   - portrait
   - landscape
   - still life
@@ -55,6 +59,8 @@ entities:
   - drawing
   - print
   - sculpture
+  - artifact
+  - artifacts
   - window
   - installation
 - name: Artist
@@ -63,9 +69,12 @@ entities:
   - designed by
   - made by
   - artist
+  - artists
   - painter
+  - painters
   - sculptor
   - studio
+  - masters
   - attributed to
   - workshop
   - creator
@@ -81,6 +90,13 @@ entities:
   - on view
   - loan
   - archive
+  - exhibition
+  - exhibitions
+  - cultural heritage
+  - archaeology
+  - archaeological
+  - Pompeii
+  - crafts
   - catalogued
   - restored
 - name: Period
@@ -96,3 +112,19 @@ entities:
   - 19th century
   - 20th century
   - impressionist
+- name: MarketSignal
+  display_name: 시장 신호
+  keywords:
+  - auction
+  - sale
+  - sales
+  - fine art
+  - art market
+  - Christie’s
+  - Christie's
+  - art fair
+  - provenance
+  - collector
+  - collectors
+  - gallery
+  - galleries

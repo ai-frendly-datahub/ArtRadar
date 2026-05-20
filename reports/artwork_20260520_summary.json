@@ -1,0 +1,83 @@
+{
+  "date": "2026-05-20",
+  "category": "artwork",
+  "article_count": 26,
+  "source_count": 5,
+  "matched_count": 26,
+  "top_entities": [
+    {
+      "name": "Artist",
+      "count": 23
+    },
+    {
+      "name": "ArtworkType",
+      "count": 16
+    },
+    {
+      "name": "MarketSignal",
+      "count": 14
+    },
+    {
+      "name": "Medium",
+      "count": 13
+    },
+    {
+      "name": "CollectionChange",
+      "count": 10
+    },
+    {
+      "name": "Period",
+      "count": 6
+    }
+  ],
+  "sources": {
+    "Hyperallergic": 6,
+    "Artnet News": 6,
+    "Colossal Art": 3,
+    "Artsy Editorial": 8,
+    "Google Arts & Culture": 3
+  },
+  "generated_at": "2026-05-20T07:49:56.263491+09:00",
+  "ontology": {
+    "repo": "ArtRadar",
+    "category": "art",
+    "ontology_version": "0.1.0",
+    "event_model_ids": [
+      "art.art_fair_participant",
+      "art.artist_institution_entity",
+      "art.auction_result",
+      "art.editorial_coverage",
+      "art.exhibition_ticket_signal"
+    ],
+    "event_model_mappings": {
+      "auction_result": "art.auction_result",
+      "art_fair_participant": "art.art_fair_participant",
+      "exhibition_ticket_signal": "art.exhibition_ticket_signal",
+      "artist_institution_entity": "art.artist_institution_entity",
+      "editorial_coverage": "art.editorial_coverage"
+    },
+    "entity_type_hints": [
+      "art.artist",
+      "art.institution"
+    ],
+    "source_role_ids": [
+      "community_signal",
+      "context_only",
+      "operational_evidence",
+      "primary_evidence"
+    ],
+    "source_role_mappings": {
+      "Sotheby's auction results": "primary_evidence",
+      "Christie's auction results": "primary_evidence",
+      "Art Basel exhibitor lists": "operational_evidence",
+      "Museum ticket and exhibition calendars": "operational_evidence",
+      "Artnet News": "context_only",
+      "r/Art": "community_signal"
+    },
+    "evidence_policy_ids": [
+      "traceable_url_required",
+      "official_confirmation_required",
+      "cross_reference_required"
+    ]
+  }
+}
