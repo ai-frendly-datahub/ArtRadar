@@ -391,25 +391,25 @@ sources:
 - name: The Art Assignment
   type: rss
   url: https://www.youtube.com/feeds/videos.xml?channel_id=UCmQThz1OLYt8mb2PU540LOA
-  enabled: false
+  enabled: true
   language: en
   country: US
   trust_tier: T3_professional
   collection_tier: C1_rss
   content_type: video
-  notes: 'DISABLED 2026-04-23: YouTube RSS endpoint returns 404 from this runner;
-    keep as backlog until a current feed/API path is verified.'
+  notes: 'REACTIVATED 2026-05-20: URL probe returned HTTP 200 with text/xml; YouTube
+    RSS feed is reachable again. Previously DISABLED 2026-04-23 for runner-side 404.'
 - name: Nerdwriter1
   type: rss
   url: https://www.youtube.com/feeds/videos.xml?channel_id=UCJkMlOu7faDgqh4PfzbpLdg
-  enabled: false
+  enabled: true
   language: en
   country: US
   trust_tier: T3_professional
   collection_tier: C1_rss
   content_type: video
-  notes: 'DISABLED 2026-04-23: YouTube RSS endpoint returns 404 from this runner;
-    keep as backlog until a current feed/API path is verified.'
+  notes: 'REACTIVATED 2026-05-20: URL probe returned HTTP 200 with text/xml; YouTube
+    RSS feed is reachable again. Previously DISABLED 2026-04-23 for runner-side 404.'
 - name: Smarthistory
   type: rss
   url: https://www.youtube.com/feeds/videos.xml?channel_id=UC07nFYY2UdQ7pZsMJV9_hNQ
