@@ -3,9 +3,11 @@ from __future__ import annotations
 import os
 import threading
 import time
+from datetime import UTC, datetime, timedelta
 from unittest.mock import Mock, patch
 
 import pytest
+from pybreaker import CircuitBreakerError
 
 from artradar.collector import RateLimiter, collect_sources
 from artradar.exceptions import NetworkError, SourceError
@@ -269,3 +271,125 @@ def test_browser_source_limit_caps_js_sources_for_bounded_smoke() -> None:
 
     browser_sources = mock_browser_collect.call_args.args[0]
     assert [source.name for source in browser_sources] == ["JS Source 1", "JS Source 2"]
+
+
+def test_browser_collection_import_error_is_logged_and_ignored() -> None:
+    source = Source(name="JS Source", type="javascript", url="https://example.com")
+    mock_session = Mock()
+    mock_health_store = Mock()
+    original_import = __import__
+
+    def fake_import(
+        name: str,
+        globals: object | None = None,
+        locals: object | None = None,
+        fromlist: tuple[str, ...] = (),
+        level: int = 0,
+    ) -> object:
+        if name == "artradar.browser_collector" or (
+            level == 1 and name == "browser_collector" and "collect_browser_sources" in fromlist
+        ):
+            raise ImportError("missing browser collector")
+        return original_import(name, globals, locals, fromlist, level)
+
+    with (
+        patch("artradar.collector.CrawlHealthStore", return_value=mock_health_store),
+        patch("artradar.collector._create_session", return_value=mock_session),
+        patch("builtins.__import__", side_effect=fake_import),
+    ):
+        articles, errors = collect_sources(
+            [source],
+            category="art",
+            timeout=5,
+            health_db_path=":memory:",
+        )
+
+    assert articles == []
+    assert errors == []
+
+
+def test_collect_sources_reports_disabled_source_from_health_store() -> None:
+    source = Source(name="Disabled Health", type="rss", url="https://example.com/feed")
+    mock_session = Mock()
+    mock_health_store = Mock()
+    mock_health_store.is_disabled.return_value = True
+
+    with (
+        patch("artradar.collector.CrawlHealthStore", return_value=mock_health_store),
+        patch("artradar.collector._create_session", return_value=mock_session),
+    ):
+        articles, errors = collect_sources(
+            [source],
+            category="art",
+            max_workers=1,
+            health_db_path=":memory:",
+        )
+
+    assert articles == []
+    assert errors == ["Disabled Health: Source disabled (crawl health threshold reached)"]
+    mock_session.close.assert_called_once()
+    mock_health_store.close.assert_called_once()
+
+
+def test_collect_sources_reports_circuit_breaker_open() -> None:
+    source = Source(name="Broken", type="rss", url="https://example.com/feed")
+    breaker = Mock()
+    breaker.call.side_effect = CircuitBreakerError("open")
+    manager = Mock()
+    manager.get_breaker.return_value = breaker
+
+    with patch("artradar.collector.get_circuit_breaker_manager", return_value=manager):
+        articles, errors = collect_sources(
+            [source],
+            category="art",
+            max_workers=1,
+            min_interval_per_host=0.0,
+        )
+
+    assert articles == []
+    assert errors == ["Broken: Circuit breaker open (source unavailable)"]
+
+
+def test_collect_sources_deduplicates_and_filters_stale_articles() -> None:
+    source = Source(name="Feed", type="rss", url="https://example.com/feed")
+    fresh = Article(
+        title="Fresh",
+        link="https://example.com/shared",
+        summary="fresh",
+        published=datetime.now(UTC),
+        source="Feed",
+        category="art",
+    )
+    duplicate = Article(
+        title="Duplicate",
+        link="https://example.com/shared",
+        summary="duplicate",
+        published=datetime.now(UTC),
+        source="Feed",
+        category="art",
+    )
+    stale = Article(
+        title="Stale",
+        link="https://example.com/stale",
+        summary="stale",
+        published=datetime.now(UTC) - timedelta(days=30),
+        source="Feed",
+        category="art",
+    )
+
+    with (
+        patch("artradar.collector._collect_single", return_value=[fresh, duplicate, stale]),
+        patch(
+            "artradar.collector.get_circuit_breaker_manager", return_value=_pass_through_manager()
+        ),
+    ):
+        articles, errors = collect_sources(
+            [source],
+            category="art",
+            max_workers=1,
+            min_interval_per_host=0.0,
+            max_age_days=7,
+        )
+
+    assert errors == []
+    assert [article.title for article in articles] == ["Fresh"]

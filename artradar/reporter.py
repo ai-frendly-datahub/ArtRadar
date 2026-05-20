@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Iterable, Mapping
 from html import escape
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from radar_core.ontology import build_summary_ontology_metadata
 from radar_core.report_utils import (
@@ -21,7 +21,7 @@ def generate_report(
     output_path: Path,
     stats: dict[str, int],
     errors: list[str] | None = None,
-    store=None,
+    store: object | None = None,
     quality_report: Mapping[str, Any] | None = None,
 ) -> Path:
     """Generate HTML report (delegates to radar-core)."""
@@ -52,7 +52,7 @@ def generate_report(
         output_path=output_path,
         stats=stats,
         errors=errors,
-        plugin_charts=plugin_charts if plugin_charts else None,
+        plugin_charts=cast(Any, plugin_charts if plugin_charts else None),
         ontology_metadata=build_summary_ontology_metadata(
             "ArtRadar",
             category_name=category.category_name,
@@ -101,7 +101,7 @@ def _render_art_quality_panel(quality_report: Mapping[str, Any]) -> str:
         ("Review items", summary.get("daily_review_item_count", 0)),
     ]
     cards_html = "\n".join(
-        "<div class=\"art-quality-card\">"
+        '<div class="art-quality-card">'
         f"<span>{escape(label)}</span><strong>{escape(str(value))}</strong>"
         "</div>"
         for label, value in cards
@@ -147,11 +147,9 @@ def _render_quality_events(events: list[Mapping[str, Any]]) -> str:
         )
     return (
         "<h3>Observed Events</h3>"
-        "<table class=\"art-quality-table\"><thead><tr>"
+        '<table class="art-quality-table"><thead><tr>'
         "<th>Model</th><th>Source</th><th>Canonical key</th><th>Status</th><th>Gaps</th>"
-        "</tr></thead><tbody>"
-        + "\n".join(rows)
-        + "</tbody></table>"
+        "</tr></thead><tbody>" + "\n".join(rows) + "</tbody></table>"
     )
 
 
@@ -162,11 +160,9 @@ def _render_quality_review(review_items: list[Mapping[str, Any]]) -> str:
     for item in review_items[:10]:
         label = item.get("source") or item.get("event_model") or item.get("signal_type") or ""
         items.append(
-            "<li>"
-            f"{escape(str(item.get('reason') or 'review'))}: {escape(str(label))}"
-            "</li>"
+            "<li>" f"{escape(str(item.get('reason') or 'review'))}: {escape(str(label))}" "</li>"
         )
-    return "<h3>Daily Review</h3><ul class=\"art-quality-review\">" + "\n".join(items) + "</ul>"
+    return '<h3>Daily Review</h3><ul class="art-quality-review">' + "\n".join(items) + "</ul>"
 
 
 def _mapping(value: object) -> Mapping[str, Any]:

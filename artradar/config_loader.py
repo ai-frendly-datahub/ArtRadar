@@ -247,9 +247,11 @@ def load_notification_config(config_path: Path | None = None) -> NotificationCon
     notifications_dict = cast(dict[str, object], notifications_raw)
     enabled = bool(notifications_dict.get("enabled", False))
     channels_raw = notifications_dict.get("channels", [])
-    channels = [
-        str(channel) for channel in cast(list[object], channels_raw) if isinstance(channel, str)
-    ]
+    channels = (
+        [str(channel) for channel in cast(list[object], channels_raw) if isinstance(channel, str)]
+        if isinstance(channels_raw, list)
+        else []
+    )
 
     email_settings = None
     email_raw = notifications_dict.get("email")

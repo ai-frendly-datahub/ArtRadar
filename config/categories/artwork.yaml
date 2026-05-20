@@ -1,31 +1,37 @@
 category_name: artwork
 display_name: Artwork Radar
 sources:
-- name: Google Arts & Culture
-  type: rss
-  url: https://blog.google/company-news/outreach-and-initiatives/arts-culture/rss/
+- name: Metropolitan Museum
+  type: met_museum
+  url: https://collectionapi.metmuseum.org/public/collection/v1/objects
+  language: en
+  country: US
+  trust_tier: T1_official
+  collection_tier: C3_api
+  content_type: collection
   config:
-    event_model: editorial_coverage
-- name: Artsy Editorial
-  type: rss
-  url: https://www.artsy.net/rss/news
+    event_model: artist_institution_entity
+- name: Art Institute of Chicago
+  type: aic
+  url: https://api.artic.edu/api/v1/artworks
+  language: en
+  country: US
+  trust_tier: T1_official
+  collection_tier: C3_api
+  content_type: collection
   config:
-    event_model: editorial_coverage
-- name: Colossal Art
-  type: rss
-  url: https://www.thisiscolossal.com/feed/
+    event_model: artist_institution_entity
+- name: Smithsonian
+  type: smithsonian
+  url: https://api.si.edu/openaccess/api/v1.0/search
+  language: en
+  country: US
+  trust_tier: T1_official
+  collection_tier: C3_api
+  content_type: collection
   config:
-    event_model: editorial_coverage
-- name: Hyperallergic
-  type: rss
-  url: https://hyperallergic.com/feed/
-  config:
-    event_model: editorial_coverage
-- name: Artnet News
-  type: rss
-  url: https://news.artnet.com/feed
-  config:
-    event_model: editorial_coverage
+    event_model: artist_institution_entity
+  notes: Requires SMITHSONIAN_API_KEY for live collection.
 entities:
 - name: Medium
   display_name: 작품 매체

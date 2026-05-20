@@ -6,7 +6,7 @@
 
 ## 프로젝트 목표
 
-- **데이터 수집**: 미술 뉴스 RSS + Metropolitan Museum / Art Institute of Chicago / Smithsonian 공개 API
+- **데이터 수집**: 미술 뉴스 RSS/JavaScript 소스 + Metropolitan Museum / Art Institute of Chicago / Smithsonian 공개 API
 - **카테고리 분리**: `art`(뉴스/시장/전시)와 `artwork`(개별 작품/소장품 변화) 이원화
 - **시각화**: 날짜별 타임라인 + 날짜 필터 기반 리포트 제공
 - **자동화**: GitHub Actions 일 1회 수집 + GitHub Pages 자동 배포
@@ -62,11 +62,11 @@
 
 - `art`
   - 목적: 미술 뉴스, 전시, 기관, 시장 변화 추적
-  - 소스: RSS 5개 + museum API 3개
+  - 소스: RSS + JavaScript + museum API 혼합
 
 - `artwork`
   - 목적: 개별 작품, 소장품, 매체, 컬렉션 변화 추적
-  - 소스: museum API 3개
+  - 소스: Metropolitan Museum, Art Institute of Chicago, Smithsonian API
 
 ## 기본 경로
 
@@ -105,7 +105,7 @@ ArtRadar/
 ## 참고
 
 - Smithsonian은 기본적으로 API 키가 있어야 정상 수집됩니다.
-- `ArtSelector`는 공식 RSS 피드(`https://www.artselector.com/feed/`) 기반으로 수집합니다.
+- JavaScript 기반 기관/전시 소스는 Playwright 브라우저 수집 경로를 사용합니다.
 - 공개 Pages 반영은 `gh-pages` 브랜치 갱신 후 수 분 정도 지연될 수 있습니다.
 
 <!-- DATAHUB-OPS-AUDIT:START -->

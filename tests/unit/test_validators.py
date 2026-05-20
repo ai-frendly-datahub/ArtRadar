@@ -4,6 +4,9 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
+import pytest
+
+import artradar.common.validators as validators
 from artradar.common.validators import (
     detect_duplicate_articles,
     is_similar_url,
@@ -79,6 +82,18 @@ class TestValidateUrlFormat:
         """Test that invalid URL fails validation."""
         assert validate_url_format("not-a-url") is False
 
+    def test_validate_url_format_handles_parser_exception(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Test that parser exceptions fail closed."""
+
+        def raise_parse_error(url: str) -> object:
+            raise ValueError(f"bad url: {url}")
+
+        monkeypatch.setattr(validators, "urlparse", raise_parse_error)
+
+        assert validate_url_format("https://example.com/article") is False
+
 
 class TestIsSimilarUrl:
     """Test URL similarity detection."""
@@ -115,6 +130,16 @@ class TestIsSimilarUrl:
     def test_is_similar_url_invalid_urls(self) -> None:
         """Test that invalid URLs return False."""
         assert is_similar_url("not-a-url", "also-not-a-url") is False
+
+    def test_is_similar_url_handles_parser_exception(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Test that parser exceptions fail closed."""
+
+        def raise_parse_error(url: str) -> object:
+            raise ValueError(f"bad url: {url}")
+
+        monkeypatch.setattr(validators, "urlparse", raise_parse_error)
+
+        assert is_similar_url("https://example.com/a", "https://example.com/a") is False
 
 
 class TestDetectDuplicateArticles:
@@ -212,6 +237,20 @@ class TestValidateArticle:
         assert is_valid is False
         assert any("title" in error for error in errors)
 
+    def test_validate_article_blank_title(self) -> None:
+        """Test that whitespace-only title reports the empty-title branch."""
+        article = Article(
+            title="   ",
+            link="https://example.com/article",
+            summary="Summary",
+            published=datetime.now(UTC),
+            source="Example",
+            category="news",
+        )
+        is_valid, errors = validate_article(article)
+        assert is_valid is False
+        assert "title is empty" in errors
+
     def test_validate_article_missing_link(self) -> None:
         """Test that article without link fails validation."""
         article = Article(
@@ -253,6 +292,20 @@ class TestValidateArticle:
         is_valid, errors = validate_article(article)
         assert is_valid is False
         assert any("summary" in error for error in errors)
+
+    def test_validate_article_blank_summary(self) -> None:
+        """Test that whitespace-only summary reports the empty-summary branch."""
+        article = Article(
+            title="Valid Article",
+            link="https://example.com/article",
+            summary="   ",
+            published=datetime.now(UTC),
+            source="Example",
+            category="news",
+        )
+        is_valid, errors = validate_article(article)
+        assert is_valid is False
+        assert "summary is empty" in errors
 
     def test_validate_article_missing_source(self) -> None:
         """Test that article without source fails validation."""

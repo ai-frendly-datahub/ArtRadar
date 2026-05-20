@@ -30,7 +30,7 @@ try:
 
     _BROWSER_COLLECTION_AVAILABLE = True
 except ImportError:
-    _core_collect = None  # type: ignore[assignment]
+    _core_collect = None
 
 
 def collect_browser_sources(

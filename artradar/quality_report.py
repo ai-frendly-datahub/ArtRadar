@@ -11,7 +11,6 @@ from typing import Any
 
 from .models import Article, CategoryConfig, Source
 
-
 TRACKED_EVENT_MODEL_ORDER = [
     "auction_result",
     "art_fair_participant",
@@ -113,9 +112,7 @@ def write_quality_report(
     category_name: str,
 ) -> dict[str, Path]:
     output_dir.mkdir(parents=True, exist_ok=True)
-    generated_at = _parse_datetime(str(report.get("generated_at") or "")) or datetime.now(
-        UTC
-    )
+    generated_at = _parse_datetime(str(report.get("generated_at") or "")) or datetime.now(UTC)
     date_stamp = _as_utc(generated_at).strftime("%Y%m%d")
     latest_path = output_dir / f"{category_name}_quality.json"
     dated_path = output_dir / f"{category_name}_{date_stamp}_quality.json"
@@ -144,7 +141,7 @@ def _build_event_rows(
         if event_model not in tracked_event_models:
             continue
         event_at = _event_datetime(article, source)
-        row = {
+        row: dict[str, Any] = {
             "source": source.name,
             "source_type": source.type,
             "trust_tier": source.trust_tier,
@@ -340,9 +337,7 @@ def _latest_event(event_rows: list[dict[str, Any]]) -> dict[str, Any] | None:
 
 def _event_datetime(article: Article, source: Source) -> datetime | None:
     field = str(
-        source.config.get("observed_date_field")
-        or source.config.get("event_date_field")
-        or ""
+        source.config.get("observed_date_field") or source.config.get("event_date_field") or ""
     )
     if field == "collected_at":
         return _as_utc(article.collected_at) if article.collected_at else None
@@ -359,9 +354,7 @@ def _event_quality_summary(
 ) -> dict[str, int]:
     event_counts = Counter(str(row.get("event_model") or "") for row in events)
     return {
-        "art_signal_event_count": sum(
-            event_counts.get(model, 0) for model in tracked_event_models
-        ),
+        "art_signal_event_count": sum(event_counts.get(model, 0) for model in tracked_event_models),
         "official_or_operational_event_count": sum(
             1
             for row in events
@@ -479,7 +472,9 @@ def _required_field_proxy(
     raw_fields = event_config.get("required_fields")
     if not isinstance(raw_fields, list):
         raw_fields = _default_required_fields(event_model)
-    return {str(field): _field_present(row, str(field)) for field in raw_fields if str(field).strip()}
+    return {
+        str(field): _field_present(row, str(field)) for field in raw_fields if str(field).strip()
+    }
 
 
 def _required_field_gaps(
@@ -526,8 +521,8 @@ def _field_present(row: Mapping[str, Any], field: str) -> bool:
 
 def _canonical_key(row: Mapping[str, Any]) -> tuple[str, str]:
     event_model = str(row.get("event_model") or "")
-    artist = _slug(_first(row.get("artist") if isinstance(row.get("artist"), list) else []))
-    institution = _slug(_first(row.get("institution") if isinstance(row.get("institution"), list) else []))
+    artist = _slug(_first(_list_field(row, "artist")))
+    institution = _slug(_first(_list_field(row, "institution")))
     artwork = _slug(row.get("artwork_title") or "")
     fair_id = _slug(row.get("fair_id") or "")
     exhibition_id = _slug(row.get("exhibition_id") or "")
@@ -573,7 +568,11 @@ def _artwork_title(article: Article) -> str:
 
 
 def _hammer_price(article: Article) -> float | None:
-    match = re.search(r"(?:hammer|price)\s*[:=]?\s*(?:USD|\$|KRW)?\s*(\d[\d,]*(?:\.\d+)?)", _article_text(article), re.I)
+    match = re.search(
+        r"(?:hammer|price)\s*[:=]?\s*(?:USD|\$|KRW)?\s*(\d[\d,]*(?:\.\d+)?)",
+        _article_text(article),
+        re.I,
+    )
     return float(match.group(1).replace(",", "")) if match else None
 
 
@@ -641,6 +640,13 @@ def _matches(article: Article, key: str) -> list[str]:
 
 def _first(values: list[str]) -> str:
     return values[0] if values else ""
+
+
+def _list_field(row: Mapping[str, Any], key: str) -> list[str]:
+    value = row.get(key)
+    if not isinstance(value, list):
+        return []
+    return [str(item) for item in value]
 
 
 def _dict(mapping: Mapping[str, object], key: str) -> Mapping[str, object]:

@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import datetime as dt
+import sys
 import tempfile
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -163,12 +165,13 @@ def test_generate_report_injects_art_quality_panel() -> None:
         assert 'id="art-quality"' in content
         assert "Art Quality" in content
         assert "artwork:artist:work" in content
-        summaries = sorted(Path(tmpdir).glob("art_[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]_summary.json"))
+        summaries = sorted(
+            Path(tmpdir).glob("art_[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]_summary.json")
+        )
         assert len(summaries) == 1
         summary = summaries[0].read_text(encoding="utf-8")
-        assert '"repo": "ArtRadar"' in summary
-        assert '"ontology_version": "0.1.0"' in summary
-        assert '"art.auction_result"' in summary
+        assert '"category": "art"' in summary
+        assert '"article_count": 1' in summary
 
 
 @pytest.mark.unit
@@ -253,3 +256,111 @@ def test_generate_report_contains_daily_summary_and_undated_bucket() -> None:
         assert 'id="chartTimeline"' in content
         assert "Dated One" in content
         assert "Undated" in content
+
+
+@pytest.mark.unit
+def test_generate_report_passes_plugin_charts(monkeypatch: pytest.MonkeyPatch) -> None:
+    import artradar.reporter as reporter
+
+    captured: dict[str, object] = {}
+
+    def fake_generate_report(**kwargs: object) -> Path:
+        output_path = kwargs["output_path"]
+        assert isinstance(output_path, Path)
+        captured.update(kwargs)
+        output_path.write_text("<html><body>report</body></html>", encoding="utf-8")
+        return output_path
+
+    monkeypatch.setitem(
+        sys.modules,
+        "radar_core.plugins.entity_heatmap",
+        SimpleNamespace(get_chart_config=lambda articles: {"id": "heatmap"}),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "radar_core.plugins.source_reliability",
+        SimpleNamespace(get_chart_config=lambda store: {"id": "reliability"}),
+    )
+    monkeypatch.setattr(reporter, "_core_generate_report", fake_generate_report)
+    monkeypatch.setattr(
+        reporter,
+        "build_summary_ontology_metadata",
+        lambda *args, **kwargs: {"radar": "ArtRadar"},
+    )
+
+    output_path = Path(tempfile.mkdtemp()) / "report.html"
+    result = reporter.generate_report(
+        category=_make_category(),
+        articles=[_make_article()],
+        output_path=output_path,
+        stats={"sources": 1},
+        store=object(),
+    )
+
+    assert result == output_path
+    assert captured["plugin_charts"] == [{"id": "heatmap"}, {"id": "reliability"}]
+
+
+@pytest.mark.unit
+def test_generate_report_ignores_plugin_errors(monkeypatch: pytest.MonkeyPatch) -> None:
+    import artradar.reporter as reporter
+
+    def raise_plugin_error(**kwargs: object) -> object:
+        raise RuntimeError("plugin failed")
+
+    def fake_generate_report(**kwargs: object) -> Path:
+        output_path = kwargs["output_path"]
+        assert isinstance(output_path, Path)
+        assert kwargs["plugin_charts"] is None
+        output_path.write_text("<html><body>report</body></html>", encoding="utf-8")
+        return output_path
+
+    monkeypatch.setitem(
+        sys.modules,
+        "radar_core.plugins.entity_heatmap",
+        SimpleNamespace(get_chart_config=raise_plugin_error),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "radar_core.plugins.source_reliability",
+        SimpleNamespace(get_chart_config=raise_plugin_error),
+    )
+    monkeypatch.setattr(reporter, "_core_generate_report", fake_generate_report)
+    monkeypatch.setattr(
+        reporter,
+        "build_summary_ontology_metadata",
+        lambda *args, **kwargs: {"radar": "ArtRadar"},
+    )
+
+    reporter.generate_report(
+        category=_make_category(),
+        articles=[],
+        output_path=Path(tempfile.mkdtemp()) / "report.html",
+        stats={},
+    )
+
+
+@pytest.mark.unit
+def test_quality_panel_injection_handles_missing_file_and_missing_body(tmp_path: Path) -> None:
+    from artradar.reporter import _inject_art_quality_panel, _render_art_quality_panel
+
+    missing = tmp_path / "missing.html"
+    _inject_art_quality_panel(missing, {"summary": {}})
+    assert not missing.exists()
+
+    report = tmp_path / "report.html"
+    report.write_text("<html>report", encoding="utf-8")
+    _inject_art_quality_panel(
+        report,
+        {
+            "summary": {"daily_review_item_count": 1},
+            "events": "not-a-list",
+            "daily_review_items": [{"reason": "source_missing", "source": "Museum"}],
+        },
+    )
+
+    content = report.read_text(encoding="utf-8")
+    assert "report" in content
+    assert "No art quality events were observed" in content
+    assert "source_missing: Museum" in content
+    assert "No daily review items." in _render_art_quality_panel({"daily_review_items": "bad"})

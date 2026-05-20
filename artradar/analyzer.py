@@ -69,9 +69,9 @@ def apply_entity_rules(
 ) -> list[Article]:
     """Attach matched entity keywords to each article via simple keyword search."""
     analyzed: list[Article] = []
-    normalized_entities: list[
-        tuple[EntityDefinition, list[tuple[str, re.Pattern[str] | None]]]
-    ] = []
+    normalized_entities: list[tuple[EntityDefinition, list[tuple[str, re.Pattern[str] | None]]]] = (
+        []
+    )
     for entity in entities:
         normalized_keywords: list[tuple[str, re.Pattern[str] | None]] = []
         for keyword in entity.keywords:
@@ -90,9 +90,7 @@ def apply_entity_rules(
 
     for article in articles:
         haystack = "\n".join(
-            part
-            for part in (article.title, article.summary, article.source)
-            if part
+            part for part in (article.title, article.summary, article.source) if part
         )
         haystack_lower = haystack.lower()
         matches: dict[str, list[str]] = {}

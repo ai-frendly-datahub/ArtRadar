@@ -6,6 +6,7 @@ from importlib import import_module
 from pathlib import Path
 from typing import Protocol, cast
 
+import duckdb
 import pytest
 
 StorageError = cast(type[Exception], import_module("artradar.exceptions").StorageError)
@@ -59,6 +60,7 @@ class _RadarStorageCtor(Protocol):
 
 Article = cast(_ArticleCtor, import_module("artradar.models").Article)
 RadarStorage = cast(_RadarStorageCtor, import_module("artradar.storage").RadarStorage)
+storage_module = import_module("artradar.storage")
 
 
 def _make_article(
@@ -96,6 +98,56 @@ def test_upsert_articles_inserts_new_article(tmp_duckdb: Path, sample_article: o
     assert results[0].link == article.link
     assert results[0].title == article.title
     assert results[0].matched_entities == article.matched_entities
+
+
+def test_storage_datetime_and_row_helpers_cover_invalid_entities() -> None:
+    utc_naive = storage_module._utc_naive
+    article_from_row = storage_module._article_from_row
+    aware = datetime(2026, 3, 13, 9, 0, tzinfo=UTC)
+    naive = aware.replace(tzinfo=None)
+
+    assert utc_naive(None) is None
+    assert utc_naive(naive) == naive
+    assert utc_naive(aware) == naive
+
+    row = (
+        "tech",
+        "Source",
+        "Title",
+        "https://example.com",
+        None,
+        naive,
+        naive,
+        '{"Genre": "painting", "Topic": ["review"], "7": ["bad"]}',
+    )
+    article = article_from_row(row)
+    assert article.summary == ""
+    assert article.matched_entities == {"Topic": ["review"], "7": ["bad"]}
+
+    bad_json_row = row[:-1] + ("{bad-json",)
+    assert article_from_row(bad_json_row).matched_entities == {}
+
+
+def test_storage_migration_rolls_back_and_reraises_on_failure() -> None:
+    class FakeConnection:
+        def begin(self) -> None:
+            return None
+
+        def execute(self, query: str) -> None:
+            return None
+
+        def rollback(self) -> None:
+            raise duckdb.Error("rollback failed")
+
+    storage = storage_module.RadarStorage.__new__(storage_module.RadarStorage)
+    storage.conn = FakeConnection()
+    storage._has_unique_constraint = lambda columns: False
+    storage._create_articles_table = lambda table_name: (_ for _ in ()).throw(
+        RuntimeError("migration failed")
+    )
+
+    with pytest.raises(RuntimeError, match="migration failed"):
+        storage_module.RadarStorage._migrate_articles_unique_key_if_needed(storage)
 
 
 def test_upsert_articles_updates_duplicate_link(tmp_duckdb: Path) -> None:
@@ -213,6 +265,84 @@ def test_upsert_on_conflict_updates_existing(tmp_duckdb: Path) -> None:
     assert results[0].summary == "updated"
 
 
+def test_upsert_allows_same_link_in_different_categories(tmp_duckdb: Path) -> None:
+    storage = RadarStorage(tmp_duckdb)
+    shared_link = "https://example.com/shared"
+    tech_article = _make_article(
+        title="Tech copy",
+        link=shared_link,
+        summary="tech",
+        published=datetime.now(UTC),
+        category="tech",
+    )
+    artwork_article = _make_article(
+        title="Artwork copy",
+        link=shared_link,
+        summary="artwork",
+        published=datetime.now(UTC),
+        category="artwork",
+    )
+
+    try:
+        storage.upsert_articles([tech_article, artwork_article])
+        tech_results = storage.recent_articles(category="tech", days=30)
+        artwork_results = storage.recent_articles(category="artwork", days=30)
+    finally:
+        storage.close()
+
+    assert len(tech_results) == 1
+    assert len(artwork_results) == 1
+    assert tech_results[0].title == "Tech copy"
+    assert artwork_results[0].title == "Artwork copy"
+
+
+def test_storage_migrates_legacy_global_link_unique_schema(tmp_duckdb: Path) -> None:
+    legacy = duckdb.connect(str(tmp_duckdb))
+    legacy.execute("CREATE SEQUENCE articles_id_seq START 1")
+    legacy.execute("""
+        CREATE TABLE articles (
+            id BIGINT PRIMARY KEY DEFAULT nextval('articles_id_seq'),
+            category TEXT NOT NULL,
+            source TEXT NOT NULL,
+            title TEXT NOT NULL,
+            link TEXT NOT NULL UNIQUE,
+            summary TEXT,
+            published TIMESTAMP,
+            collected_at TIMESTAMP NOT NULL,
+            entities_json TEXT
+        )
+        """)
+    legacy.execute(
+        """
+        INSERT INTO articles (category, source, title, link, summary, published, collected_at, entities_json)
+        VALUES ('tech', 'Legacy', 'Legacy article', 'https://example.com/shared', 'old', ?, ?, '{}')
+        """,
+        [datetime.now(UTC).replace(tzinfo=None), datetime.now(UTC).replace(tzinfo=None)],
+    )
+    legacy.close()
+
+    storage = RadarStorage(tmp_duckdb)
+    try:
+        storage.upsert_articles(
+            [
+                _make_article(
+                    title="Artwork article",
+                    link="https://example.com/shared",
+                    summary="new category",
+                    published=datetime.now(UTC),
+                    category="artwork",
+                )
+            ]
+        )
+        tech_results = storage.recent_articles(category="tech", days=30)
+        artwork_results = storage.recent_articles(category="artwork", days=30)
+    finally:
+        storage.close()
+
+    assert len(tech_results) == 1
+    assert len(artwork_results) == 1
+
+
 def test_upsert_articles_accepts_empty_iterable(tmp_storage: object) -> None:
     storage = cast(_RadarStorage, tmp_storage)
 
@@ -288,6 +418,33 @@ def test_recent_articles_filters_by_category(tmp_storage: object) -> None:
     assert len(policy_results) == 1
     assert tech_results[0].category == "tech"
     assert policy_results[0].category == "policy"
+
+
+def test_recent_articles_ignores_malformed_entities(tmp_duckdb: Path) -> None:
+    storage = RadarStorage(tmp_duckdb)
+    article = _make_article(
+        title="Bad entities",
+        link="https://example.com/bad-entities",
+        summary="bad json",
+        published=datetime.now(UTC),
+    )
+    try:
+        storage.upsert_articles([article])
+        storage.conn.execute(
+            "UPDATE articles SET entities_json = ? WHERE link = ?",
+            ['{"Genre": "painting", "Topic": ["review"], "7": ["bad"]}', article.link],
+        )
+        results = storage.recent_articles(category="tech", days=30)
+        storage.conn.execute(
+            "UPDATE articles SET entities_json = ? WHERE link = ?",
+            ["{bad-json", article.link],
+        )
+        bad_results = storage.recent_articles(category="tech", days=30)
+    finally:
+        storage.close()
+
+    assert results[0].matched_entities == {"Topic": ["review"], "7": ["bad"]}
+    assert bad_results[0].matched_entities == {}
 
 
 def test_delete_older_than_preserves_recent_articles(tmp_storage: object) -> None:

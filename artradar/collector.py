@@ -5,6 +5,7 @@ import logging
 import os
 import threading
 import time
+from calendar import timegm
 from concurrent.futures import Future, ThreadPoolExecutor
 from datetime import UTC, datetime, timedelta
 from email.utils import parsedate_to_datetime
@@ -688,14 +689,16 @@ def _collect_smithsonian(
             descriptive.get("record_link")
             or f"https://collections.si.edu/search/{row.get('id', '')}"
         )
-        source_name = str(descriptive.get("data_source") or source.name)
+        data_source = str(descriptive.get("data_source") or "").strip()
+        if data_source and data_source != source.name:
+            summary = f"{summary} Data source: {data_source}"
         items.append(
             Article(
                 title=title,
                 link=link,
                 summary=summary,
                 published=_parse_unix_timestamp(row.get("timestamp")),
-                source=source_name,
+                source=source.name,
                 category=category,
             )
         )
@@ -705,10 +708,10 @@ def _collect_smithsonian(
 def _extract_datetime(entry: dict[str, object]) -> datetime | None:
     published_parsed = entry.get("published_parsed")
     if isinstance(published_parsed, struct_time):
-        return datetime.fromtimestamp(time.mktime(published_parsed), tz=UTC)
+        return datetime.fromtimestamp(timegm(published_parsed), tz=UTC)
     updated_parsed = entry.get("updated_parsed")
     if isinstance(updated_parsed, struct_time):
-        return datetime.fromtimestamp(time.mktime(updated_parsed), tz=UTC)
+        return datetime.fromtimestamp(timegm(updated_parsed), tz=UTC)
     for key in ("published", "updated", "date"):
         raw = entry.get(key)
         if raw:

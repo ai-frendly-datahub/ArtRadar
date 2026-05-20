@@ -13,6 +13,10 @@ from artradar.date_storage import (
 )
 
 
+def test_snapshot_database_missing_source_returns_none(tmp_path: Path) -> None:
+    assert snapshot_database(tmp_path / "missing.duckdb") is None
+
+
 def test_snapshot_database_copies_duckdb_to_dated_dir(tmp_path: Path) -> None:
     db_path = tmp_path / "data" / "art_data.duckdb"
     db_path.parent.mkdir(parents=True)
@@ -40,6 +44,20 @@ def test_latest_snapshot_path_returns_newest_matching_database(tmp_path: Path) -
     assert latest_snapshot_path(db_path) == newer
 
 
+def test_latest_snapshot_path_returns_none_without_matching_snapshot(tmp_path: Path) -> None:
+    db_path = tmp_path / "data" / "art_data.duckdb"
+
+    assert latest_snapshot_path(db_path) is None
+
+    invalid = tmp_path / "data" / "snapshots" / "not-a-date"
+    missing_candidate = tmp_path / "data" / "snapshots" / "2026-03-13"
+    invalid.mkdir(parents=True)
+    missing_candidate.mkdir(parents=True)
+    (tmp_path / "data" / "snapshots" / "README.txt").write_text("ignore", encoding="utf-8")
+
+    assert latest_snapshot_path(db_path) is None
+
+
 def test_resolve_read_database_path_prefers_primary_database(tmp_path: Path) -> None:
     db_path = tmp_path / "data" / "art_data.duckdb"
     snapshot = tmp_path / "data" / "snapshots" / "2026-03-13" / "art_data.duckdb"
@@ -60,6 +78,14 @@ def test_resolve_read_database_path_falls_back_to_latest_snapshot(tmp_path: Path
     assert resolve_read_database_path(db_path) == snapshot
 
 
+def test_resolve_read_database_path_returns_missing_primary_when_no_snapshot(
+    tmp_path: Path,
+) -> None:
+    db_path = tmp_path / "data" / "art_data.duckdb"
+
+    assert resolve_read_database_path(db_path) == db_path
+
+
 def test_cleanup_date_directories_removes_old_folders_only(tmp_path: Path) -> None:
     base_dir = tmp_path / "raw"
     (base_dir / "2026-03-01").mkdir(parents=True)
@@ -72,6 +98,16 @@ def test_cleanup_date_directories_removes_old_folders_only(tmp_path: Path) -> No
     assert not (base_dir / "2026-03-01").exists()
     assert (base_dir / "2026-03-12").exists()
     assert (base_dir / "misc").exists()
+
+
+def test_cleanup_date_directories_ignores_missing_or_negative_keep_days(tmp_path: Path) -> None:
+    assert cleanup_date_directories(tmp_path / "missing", keep_days=7) == 0
+
+    base_dir = tmp_path / "raw"
+    (base_dir / "2026-03-01").mkdir(parents=True)
+
+    assert cleanup_date_directories(base_dir, keep_days=-1) == 0
+    assert (base_dir / "2026-03-01").exists()
 
 
 def test_cleanup_dated_reports_supports_both_name_patterns(tmp_path: Path) -> None:
@@ -89,6 +125,21 @@ def test_cleanup_dated_reports_supports_both_name_patterns(tmp_path: Path) -> No
     assert not (report_dir / "2026-03-02.html").exists()
     assert (report_dir / "art_20260312.html").exists()
     assert (report_dir / "index.html").exists()
+
+
+def test_cleanup_dated_reports_ignores_invalid_and_missing_inputs(tmp_path: Path) -> None:
+    assert cleanup_dated_reports(tmp_path / "missing", keep_days=7) == 0
+
+    report_dir = tmp_path / "reports"
+    report_dir.mkdir()
+    (report_dir / "art_20261340.html").write_text("invalid", encoding="utf-8")
+    (report_dir / "2026-13-40.html").write_text("invalid-iso", encoding="utf-8")
+    (report_dir / "notes.txt").write_text("ignore", encoding="utf-8")
+
+    assert cleanup_dated_reports(report_dir, keep_days=-1) == 0
+    assert cleanup_dated_reports(report_dir, keep_days=7, today=date(2026, 3, 13)) == 0
+    assert (report_dir / "art_20261340.html").exists()
+    assert (report_dir / "2026-13-40.html").exists()
 
 
 def test_apply_date_storage_policy_combines_snapshot_and_cleanup(tmp_path: Path) -> None:

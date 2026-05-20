@@ -12,6 +12,10 @@ from .exceptions import StorageError
 from .models import Article
 
 
+def _quote_identifier(identifier: str) -> str:
+    return '"' + identifier.replace('"', '""') + '"'
+
+
 def _utc_naive(dt: datetime | None) -> datetime | None:
     """Convert tz-aware datetime to UTC naive for DuckDB."""
     if dt is None:
@@ -40,25 +44,86 @@ class RadarStorage:
         self.close()
 
     def _ensure_tables(self) -> None:
-        _ = self.conn.execute(
-            """
+        _ = self.conn.execute("""
             CREATE SEQUENCE IF NOT EXISTS articles_id_seq START 1;
-            CREATE TABLE IF NOT EXISTS articles (
+            """)
+
+        if not self._articles_table_exists():
+            self._create_articles_table("articles")
+        else:
+            self._migrate_articles_unique_key_if_needed()
+
+        _ = self.conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_articles_category_time ON articles (category, published, collected_at);"
+        )
+
+    def _articles_table_exists(self) -> bool:
+        row = self.conn.execute("""
+            SELECT COUNT(*)
+            FROM information_schema.tables
+            WHERE table_schema = 'main' AND table_name = 'articles'
+            """).fetchone()
+        return bool(row and row[0])
+
+    def _create_articles_table(self, table_name: str) -> None:
+        quoted_table = _quote_identifier(table_name)
+        _ = self.conn.execute(f"""
+            CREATE TABLE IF NOT EXISTS {quoted_table} (
                 id BIGINT PRIMARY KEY DEFAULT nextval('articles_id_seq'),
                 category TEXT NOT NULL,
                 source TEXT NOT NULL,
                 title TEXT NOT NULL,
-                link TEXT NOT NULL UNIQUE,
+                link TEXT NOT NULL,
                 summary TEXT,
                 published TIMESTAMP,
                 collected_at TIMESTAMP NOT NULL,
-                entities_json TEXT
+                entities_json TEXT,
+                UNIQUE(category, link)
             );
-            """
-        )
-        _ = self.conn.execute(
-            "CREATE INDEX IF NOT EXISTS idx_articles_category_time ON articles (category, published, collected_at);"
-        )
+            """)
+
+    def _migrate_articles_unique_key_if_needed(self) -> None:
+        if self._has_unique_constraint(["category", "link"]):
+            return
+
+        try:
+            _ = self.conn.begin()
+            _ = self.conn.execute("DROP TABLE IF EXISTS articles_migrated")
+            self._create_articles_table("articles_migrated")
+            _ = self.conn.execute("""
+                INSERT INTO articles_migrated (
+                    id, category, source, title, link, summary, published, collected_at, entities_json
+                )
+                SELECT id, category, source, title, link, summary, published, collected_at, entities_json
+                FROM (
+                    SELECT
+                        *,
+                        ROW_NUMBER() OVER (
+                            PARTITION BY category, link
+                            ORDER BY COALESCE(collected_at, published) DESC, id DESC
+                        ) AS rn
+                    FROM articles
+                )
+                WHERE rn = 1
+                """)
+            _ = self.conn.execute("DROP TABLE articles")
+            _ = self.conn.execute("ALTER TABLE articles_migrated RENAME TO articles")
+            _ = self.conn.commit()
+        except Exception:
+            try:
+                _ = self.conn.rollback()
+            except duckdb.Error:
+                pass
+            raise
+
+    def _has_unique_constraint(self, column_names: list[str]) -> bool:
+        rows = self.conn.execute("""
+            SELECT constraint_column_names
+            FROM duckdb_constraints()
+            WHERE table_name = 'articles' AND constraint_type = 'UNIQUE'
+            """).fetchall()
+        expected = list(column_names)
+        return any(list(row[0]) == expected for row in rows if row and isinstance(row[0], list))
 
     def upsert_articles(self, articles: Iterable[Article]) -> None:
         """중복 링크는 덮어쓰고 최신 수집 시각을 기록."""
@@ -87,7 +152,8 @@ class RadarStorage:
                 """
                 INSERT INTO articles (category, source, title, link, summary, published, collected_at, entities_json)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(link) DO UPDATE SET
+                ON CONFLICT(category, link) DO UPDATE SET
+                    source = EXCLUDED.source,
                     title = EXCLUDED.title,
                     summary = EXCLUDED.summary,
                     published = EXCLUDED.published,

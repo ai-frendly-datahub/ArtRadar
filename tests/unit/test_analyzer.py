@@ -3,7 +3,10 @@ from __future__ import annotations
 from collections.abc import Iterable
 from datetime import UTC, datetime
 from importlib import import_module
+from types import SimpleNamespace
 from typing import Protocol, cast
+
+import pytest
 
 
 class _Article(Protocol):
@@ -78,6 +81,55 @@ def test_apply_entity_rules_matches_keywords_in_title_and_summary() -> None:
 
     assert len(analyzed) == 1
     assert analyzed[0].matched_entities == {"topic": ["ai", "cloud"]}
+
+
+def test_korean_analyzer_constructor_loader_fallbacks(monkeypatch: pytest.MonkeyPatch) -> None:
+    analyzer = import_module("artradar.analyzer")
+
+    def raise_missing_module(name: str) -> object:
+        raise ModuleNotFoundError(name)
+
+    monkeypatch.setattr(analyzer, "import_module", raise_missing_module)
+    assert analyzer._load_korean_analyzer_constructor() is None
+
+    monkeypatch.setattr(
+        analyzer,
+        "import_module",
+        lambda name: SimpleNamespace(),
+    )
+    assert analyzer._load_korean_analyzer_constructor() is None
+
+
+def test_apply_entity_rules_uses_korean_analyzer_when_available(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    analyzer = import_module("artradar.analyzer")
+
+    class FakeKoreanAnalyzer:
+        _kiwi = object()
+
+        def match_keyword(self, text: str, keyword: str) -> bool:
+            return keyword == "미술" and "형태소" in text
+
+    monkeypatch.setattr(analyzer, "_KOREAN_ANALYZER_CONSTRUCTOR", FakeKoreanAnalyzer)
+    monkeypatch.setattr(analyzer, "_korean_analyzer", None)
+    monkeypatch.setattr(analyzer, "_korean_analyzer_initialized", False)
+
+    article = _make_article(title="형태소 기반 매칭", summary="미술 용어 분석")
+    entities = [EntityDefinition(name="topic", display_name="Topic", keywords=["미술"])]
+
+    analyzed = apply_entity_rules([article], entities)
+
+    assert analyzed[0].matched_entities == {"topic": ["미술"]}
+
+
+def test_apply_entity_rules_skips_empty_keywords() -> None:
+    article = _make_article(title="AI research", summary="Cloud migration")
+    entities = [EntityDefinition(name="topic", display_name="Topic", keywords=["", "   ", "AI"])]
+
+    analyzed = apply_entity_rules([article], entities)
+
+    assert analyzed[0].matched_entities == {"topic": ["ai"]}
 
 
 def test_apply_entity_rules_with_empty_entities_returns_articles_without_matches() -> None:
