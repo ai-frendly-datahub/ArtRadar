@@ -1,0 +1,41 @@
+{
+  "date": "2026-05-20",
+  "category": "artwork",
+  "article_count": 26,
+  "source_count": 5,
+  "matched_count": 26,
+  "top_entities": [
+    {
+      "name": "Artist",
+      "count": 23
+    },
+    {
+      "name": "ArtworkType",
+      "count": 16
+    },
+    {
+      "name": "MarketSignal",
+      "count": 14
+    },
+    {
+      "name": "Medium",
+      "count": 13
+    },
+    {
+      "name": "CollectionChange",
+      "count": 10
+    },
+    {
+      "name": "Period",
+      "count": 6
+    }
+  ],
+  "sources": {
+    "Hyperallergic": 6,
+    "Artnet News": 6,
+    "Colossal Art": 3,
+    "Artsy Editorial": 8,
+    "Google Arts & Culture": 3
+  },
+  "generated_at": "2026-05-20T12:41:23.527871+09:00"
+}
