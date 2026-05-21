@@ -9,6 +9,7 @@ import pytest
 import artradar.common.validators as validators
 from artradar.common.validators import (
     detect_duplicate_articles,
+    is_error_page_content,
     is_similar_url,
     normalize_title,
     validate_article,
@@ -348,3 +349,33 @@ class TestValidateArticle:
         is_valid, errors = validate_article(article)
         assert is_valid is False
         assert len(errors) >= 5
+
+    def test_validate_article_rejects_browser_error_page(self) -> None:
+        """Test that HTTP/browser error pages are not stored as articles."""
+        article = Article(
+            title="403 Forbidden",
+            link="https://example.com/protected",
+            summary="403 Forbidden nginx",
+            published=datetime.now(UTC),
+            source="Example",
+            category="news",
+        )
+
+        is_valid, errors = validate_article(article)
+
+        assert is_valid is False
+        assert "content appears to be an HTTP/browser error page" in errors
+
+
+class TestErrorPageContent:
+    def test_is_error_page_content_detects_exact_status_title(self) -> None:
+        assert is_error_page_content("404 Not Found", "nginx") is True
+
+    def test_is_error_page_content_allows_article_about_forbidden_subject(self) -> None:
+        assert (
+            is_error_page_content(
+                "A major exhibition on the Forbidden City opens",
+                "Museum curators announced the show today.",
+            )
+            is False
+        )

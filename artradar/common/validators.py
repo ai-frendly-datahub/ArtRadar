@@ -15,6 +15,30 @@ from urllib.parse import urlparse
 
 from artradar.models import Article
 
+_ERROR_PAGE_TITLE_RE = re.compile(
+    r"^(?:"
+    r"400\s+bad\s+request|"
+    r"401\s+unauthori[sz]ed|"
+    r"403\s+forbidden|"
+    r"404\s+not\s+found|"
+    r"408\s+request\s+timeout|"
+    r"429\s+too\s+many\s+requests|"
+    r"500\s+internal\s+server\s+error|"
+    r"502\s+bad\s+gateway|"
+    r"503\s+service\s+unavailable|"
+    r"504\s+gateway\s+timeout|"
+    r"access\s+denied|"
+    r"forbidden|"
+    r"not\s+found"
+    r")$",
+    re.IGNORECASE,
+)
+_ERROR_PAGE_BODY_RE = re.compile(
+    r"\b(?:nginx|cloudflare|access\s+denied|request\s+blocked|captcha|"
+    r"enable\s+javascript|service\s+unavailable|bad\s+gateway)\b",
+    re.IGNORECASE,
+)
+
 
 def normalize_title(title: str) -> str:
     """
@@ -72,6 +96,22 @@ def validate_url_format(url: str) -> bool:
         return bool(parsed.scheme and parsed.netloc)
     except Exception:
         return False
+
+
+def is_error_page_content(title: str, summary: str) -> bool:
+    """Detect browser/server error pages that have a URL but no article content."""
+    normalized_title = re.sub(r"\s+", " ", title or "").strip()
+    normalized_summary = re.sub(r"\s+", " ", summary or "").strip()
+    if not normalized_title:
+        return False
+
+    if _ERROR_PAGE_TITLE_RE.match(normalized_title):
+        return True
+
+    combined = f"{normalized_title}\n{normalized_summary}"
+    return bool(
+        re.search(r"\b(?:403|404|502|503|504)\b", combined) and _ERROR_PAGE_BODY_RE.search(combined)
+    )
 
 
 def is_similar_url(url1: str, url2: str, threshold: float = 0.8) -> bool:
@@ -206,5 +246,9 @@ def validate_article(article: Article) -> tuple[bool, list[str]]:
 
     if not article.category or not isinstance(article.category, str):
         errors.append("category is missing or not a string")
+
+    if isinstance(article.title, str) and isinstance(article.summary, str):
+        if is_error_page_content(article.title, article.summary):
+            errors.append("content appears to be an HTTP/browser error page")
 
     return len(errors) == 0, errors

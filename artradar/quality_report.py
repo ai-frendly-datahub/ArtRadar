@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import hashlib
+import os
 import re
 from collections import Counter
 from collections.abc import Iterable, Mapping
@@ -42,6 +43,10 @@ def build_quality_report(
         tracked_event_models=tracked_event_models,
         event_model_config=event_model_config,
     )
+    unconfigured_sources = _unconfigured_source_rows(
+        articles=articles_list,
+        sources=category.sources,
+    )
     source_rows = [
         _build_source_row(
             source=source,
@@ -69,6 +74,10 @@ def build_quality_report(
         "not_tracked_sources": status_counts.get("not_tracked", 0),
         "skipped_disabled_sources": status_counts.get("skipped_disabled", 0),
         "collection_error_count": len(errors_list),
+        "unconfigured_source_count": len(unconfigured_sources),
+        "unconfigured_article_count": sum(
+            int(row["article_count"]) for row in unconfigured_sources
+        ),
     }
     for event_model in TRACKED_EVENT_MODEL_ORDER:
         summary[f"{event_model}_events"] = event_counts.get(event_model, 0)
@@ -83,6 +92,7 @@ def build_quality_report(
     daily_review_items = _daily_review_items(
         events=events,
         source_rows=source_rows,
+        unconfigured_sources=unconfigured_sources,
         quality_config=quality_config or {},
         tracked_event_models=tracked_event_models,
     )
@@ -98,6 +108,7 @@ def build_quality_report(
         ),
         "summary": summary,
         "sources": source_rows,
+        "unconfigured_sources": unconfigured_sources,
         "events": events,
         "daily_review_items": daily_review_items,
         "source_backlog": (quality_config or {}).get("source_backlog", {}),
@@ -135,7 +146,7 @@ def _build_event_rows(
         source = source_map.get(article.source)
         if source is None:
             continue
-        if not source.enabled:
+        if not _source_runtime_enabled(source):
             continue
         event_model = _source_event_model(source)
         if event_model not in tracked_event_models:
@@ -195,6 +206,13 @@ def _build_source_row(
     source_articles = [article for article in articles if article.source == source.name]
     source_errors = [error for error in errors if error.startswith(f"{source.name}:")]
     event_model = _source_event_model(source)
+    runtime_enabled = _source_runtime_enabled(source)
+    missing_env = _missing_required_env(source)
+    skip_reason = ""
+    if missing_env:
+        skip_reason = f"missing required env: {', '.join(missing_env)}"
+    elif not source.enabled:
+        skip_reason = source.notes or "configured disabled"
     source_event_rows = [
         row
         for row in event_rows
@@ -207,7 +225,7 @@ def _build_source_row(
     sla_days = _source_sla_days(source, event_model, freshness_sla)
     age_days = _age_days(generated_at, latest_event_at) if latest_event_at else None
     status = _source_status(
-        source=source,
+        source_enabled=runtime_enabled,
         event_model=event_model,
         tracked_event_models=tracked_event_models,
         article_count=len(source_articles),
@@ -220,7 +238,10 @@ def _build_source_row(
     return {
         "source": source.name,
         "source_type": source.type,
-        "enabled": source.enabled,
+        "enabled": runtime_enabled,
+        "configured_enabled": source.enabled,
+        "skip_reason": skip_reason,
+        "notes": source.notes,
         "trust_tier": source.trust_tier,
         "content_type": source.content_type,
         "collection_tier": source.collection_tier,
@@ -246,9 +267,55 @@ def _build_source_row(
     }
 
 
+def _unconfigured_source_rows(
+    *,
+    articles: list[Article],
+    sources: list[Source],
+) -> list[dict[str, Any]]:
+    configured_names = {source.name for source in sources}
+    grouped: dict[str, list[Article]] = {}
+    for article in articles:
+        if article.source in configured_names:
+            continue
+        grouped.setdefault(article.source, []).append(article)
+
+    rows: list[dict[str, Any]] = []
+    for source_name, source_articles in grouped.items():
+        latest_article = _latest_article(source_articles)
+        latest_time = _event_datetime_from_article(latest_article)
+        rows.append(
+            {
+                "source": source_name,
+                "article_count": len(source_articles),
+                "latest_event_at": latest_time.isoformat() if latest_time else None,
+                "latest_title": latest_article.title if latest_article else "",
+                "latest_url": latest_article.link if latest_article else "",
+            }
+        )
+
+    return sorted(rows, key=lambda row: (-int(row["article_count"]), str(row["source"])))
+
+
+def _latest_article(articles: list[Article]) -> Article | None:
+    if not articles:
+        return None
+    return max(
+        articles,
+        key=lambda article: _event_datetime_from_article(article)
+        or datetime.min.replace(tzinfo=UTC),
+    )
+
+
+def _event_datetime_from_article(article: Article | None) -> datetime | None:
+    if article is None:
+        return None
+    article_time = article.published or article.collected_at
+    return _as_utc(article_time) if article_time else None
+
+
 def _source_status(
     *,
-    source: Source,
+    source_enabled: bool,
     event_model: str,
     tracked_event_models: set[str],
     article_count: int,
@@ -257,7 +324,7 @@ def _source_status(
     sla_days: float | None,
     age_days: float | None,
 ) -> str:
-    if not source.enabled:
+    if not source_enabled:
         return "skipped_disabled"
     if event_model not in tracked_event_models:
         return "not_tracked"
@@ -281,6 +348,23 @@ def _tracked_event_models(quality: Mapping[str, object]) -> set[str]:
     return set(TRACKED_EVENT_MODELS)
 
 
+def _source_runtime_enabled(source: Source) -> bool:
+    return source.enabled and not _missing_required_env(source)
+
+
+def _missing_required_env(source: Source) -> list[str]:
+    raw_value = source.config.get("required_env") or source.config.get("required_env_vars")
+    if raw_value is None:
+        return []
+    if isinstance(raw_value, str):
+        required = [raw_value]
+    elif isinstance(raw_value, list):
+        required = [str(item) for item in raw_value if str(item).strip()]
+    else:
+        return []
+    return [name for name in required if not os.environ.get(name, "").strip()]
+
+
 def _source_event_model(source: Source) -> str:
     raw = source.config.get("event_model")
     if isinstance(raw, str) and raw.strip():
@@ -294,9 +378,7 @@ def _source_event_model(source: Source) -> str:
         return "art_fair_participant"
     if content_type in {"exhibition", "ticket", "calendar"}:
         return "exhibition_ticket_signal"
-    if content_type in {"collection", "news", "review", "video"} and not trust_tier.startswith(
-        "t4"
-    ):
+    if content_type in {"collection", "news", "review"} and not trust_tier.startswith("t4"):
         return "artist_institution_entity"
     return ""
 
@@ -397,6 +479,7 @@ def _daily_review_items(
     *,
     events: list[dict[str, Any]],
     source_rows: list[dict[str, Any]],
+    unconfigured_sources: list[dict[str, Any]] | None = None,
     quality_config: Mapping[str, object],
     tracked_event_models: set[str],
 ) -> list[dict[str, Any]]:
@@ -440,6 +523,15 @@ def _daily_review_items(
                 }
             )
     event_counts = Counter(str(row.get("event_model") or "") for row in events)
+    for source in unconfigured_sources or []:
+        review.append(
+            {
+                "reason": "unconfigured_source",
+                "source": source.get("source"),
+                "article_count": source.get("article_count"),
+                "latest_event_at": source.get("latest_event_at"),
+            }
+        )
     for event_model in TRACKED_EVENT_MODEL_ORDER:
         if event_model in tracked_event_models and event_counts.get(event_model, 0) == 0:
             review.append({"reason": "missing_event_model", "event_model": event_model})

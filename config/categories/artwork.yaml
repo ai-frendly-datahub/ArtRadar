@@ -1,5 +1,29 @@
 category_name: artwork
 display_name: Artwork Radar
+data_quality:
+  priority: P2
+  primary_motion: collection_intelligence
+  weakest_dimension: canonical_entity_depth
+  quality_outputs:
+    freshness_report: reports/artwork_quality.json
+    dated_freshness_report_pattern: reports/artwork_YYYYMMDD_quality.json
+    tracked_event_models:
+    - artist_institution_entity
+  event_models:
+    artist_institution_entity:
+      date_fields:
+      - metadata_date
+      - collected_at
+      required_fields:
+      - artist_name
+      - institution_name
+      - relationship_type
+  freshness_sla:
+    artist_institution_entity_days: 30
+  quality_gates:
+  - API 소스의 작품/작가/기관 필드를 canonical key로 분리한다
+  - 뉴스/에디토리얼 소스가 artwork 카테고리에 들어오면 미등록 소스로 표시한다
+  - 수집일과 작품 메타데이터 날짜를 별도 필드로 유지한다
 sources:
 - name: Metropolitan Museum
   type: met_museum
@@ -31,6 +55,7 @@ sources:
   content_type: collection
   config:
     event_model: artist_institution_entity
+    required_env: SMITHSONIAN_API_KEY
   notes: Requires SMITHSONIAN_API_KEY for live collection.
 entities:
 - name: Medium

@@ -56,6 +56,20 @@ def test_raw_logger_deduplicates_links_with_run_id(tmp_path: Path) -> None:
     assert [row["link"] for row in rows] == ["https://example.com/a", "https://example.com/b"]
 
 
+def test_raw_logger_deduplicates_links_without_run_id(tmp_path: Path) -> None:
+    logger = RawLogger(tmp_path)
+
+    first_path = logger.log([_article("https://example.com/a")], source_name="Source")
+    second_path = logger.log(
+        [_article("https://example.com/a"), _article("https://example.com/b")],
+        source_name="Source",
+    )
+
+    assert first_path == second_path
+    rows = _read_jsonl(second_path)
+    assert [row["link"] for row in rows] == ["https://example.com/a", "https://example.com/b"]
+
+
 def test_raw_logger_ignores_malformed_existing_jsonl(tmp_path: Path) -> None:
     logger = RawLogger(tmp_path)
     path = logger.log([_article("https://example.com/a")], source_name="Source", run_id="run")

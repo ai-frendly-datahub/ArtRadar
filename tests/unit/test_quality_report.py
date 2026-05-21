@@ -3,6 +3,8 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
+import pytest
+
 from artradar.models import Article, CategoryConfig, Source
 from artradar.quality_report import build_quality_report, write_quality_report
 
@@ -38,6 +40,7 @@ def test_build_quality_report_tracks_art_event_statuses() -> None:
                 url="https://example.com/disabled-auction",
                 content_type="auction",
                 enabled=False,
+                notes="Disabled after repeated timeout.",
             ),
         ],
         entities=[],
@@ -72,6 +75,14 @@ def test_build_quality_report_tracks_art_event_statuses() -> None:
                 category="art",
                 matched_entities={"Artist": ["artist"], "Market": ["auction"]},
             ),
+            Article(
+                title="Article from removed source",
+                link="https://example.com/unknown/1",
+                summary="This source is no longer configured.",
+                published=now - timedelta(hours=1),
+                source="Removed Source",
+                category="art",
+            ),
         ],
         quality_config={
             "data_quality": {
@@ -100,13 +111,18 @@ def test_build_quality_report_tracks_art_event_statuses() -> None:
     assert summary["auction_result_events"] == 1
     assert summary["exhibition_ticket_signal_events"] == 1
     assert summary["art_signal_event_count"] == 2
+    assert summary["unconfigured_source_count"] == 1
+    assert summary["unconfigured_article_count"] == 1
     assert summary["event_required_field_gap_count"] >= 1
     assert summary["daily_review_item_count"] >= 1
     assert report["events"][0]["canonical_key"]
+    assert report["unconfigured_sources"][0]["source"] == "Removed Source"
+    assert any(item["reason"] == "unconfigured_source" for item in report["daily_review_items"])
     assert "required_field_gaps" in report["events"][0]
     rows = {row["source"]: row for row in report["sources"]}
     assert rows["Disabled Auction"]["tracked"] is False
     assert rows["Disabled Auction"]["status"] == "skipped_disabled"
+    assert rows["Disabled Auction"]["skip_reason"] == "Disabled after repeated timeout."
 
 
 def test_write_quality_report_writes_latest_and_dated_files(tmp_path: Path) -> None:
@@ -122,6 +138,47 @@ def test_write_quality_report_writes_latest_and_dated_files(tmp_path: Path) -> N
     assert paths["dated"] == tmp_path / "art_20260413_quality.json"
     assert paths["latest"].exists()
     assert paths["dated"].exists()
+
+
+def test_build_quality_report_skips_source_when_required_env_missing(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("MISSING_API_KEY", raising=False)
+    category = CategoryConfig(
+        category_name="artwork",
+        display_name="Artwork",
+        sources=[
+            Source(
+                name="Smithsonian",
+                type="smithsonian",
+                url="https://example.com",
+                content_type="collection",
+                config={
+                    "event_model": "artist_institution_entity",
+                    "required_env": "MISSING_API_KEY",
+                },
+            )
+        ],
+        entities=[],
+    )
+
+    report = build_quality_report(
+        category=category,
+        articles=[],
+        quality_config={
+            "data_quality": {
+                "quality_outputs": {
+                    "tracked_event_models": ["artist_institution_entity"],
+                }
+            }
+        },
+    )
+
+    row = report["sources"][0]
+    assert row["enabled"] is False
+    assert row["configured_enabled"] is True
+    assert row["status"] == "skipped_disabled"
+    assert row["skip_reason"] == "missing required env: MISSING_API_KEY"
 
 
 def test_quality_report_private_helpers_cover_edge_branches() -> None:
@@ -152,6 +209,10 @@ def test_quality_report_private_helpers_cover_edge_branches() -> None:
             Source("Collection", "rss", "https://example.com", content_type="collection")
         )
         == "artist_institution_entity"
+    )
+    assert (
+        qr._source_event_model(Source("Video", "rss", "https://example.com", content_type="video"))
+        == ""
     )
     assert (
         qr._source_event_model(
@@ -201,7 +262,7 @@ def test_quality_report_private_helpers_cover_edge_branches() -> None:
 
     assert (
         qr._source_status(
-            source=Source("Disabled", "rss", "https://example.com", enabled=False),
+            source_enabled=False,
             event_model="auction_result",
             tracked_event_models={"auction_result"},
             article_count=0,
@@ -214,7 +275,7 @@ def test_quality_report_private_helpers_cover_edge_branches() -> None:
     )
     assert (
         qr._source_status(
-            source=Source("Untracked", "rss", "https://example.com"),
+            source_enabled=True,
             event_model="",
             tracked_event_models={"auction_result"},
             article_count=1,
@@ -227,7 +288,7 @@ def test_quality_report_private_helpers_cover_edge_branches() -> None:
     )
     assert (
         qr._source_status(
-            source=Source("Missing", "rss", "https://example.com"),
+            source_enabled=True,
             event_model="auction_result",
             tracked_event_models={"auction_result"},
             article_count=0,
@@ -240,7 +301,7 @@ def test_quality_report_private_helpers_cover_edge_branches() -> None:
     )
     assert (
         qr._source_status(
-            source=Source("No event", "rss", "https://example.com"),
+            source_enabled=True,
             event_model="auction_result",
             tracked_event_models={"auction_result"},
             article_count=1,
@@ -253,7 +314,7 @@ def test_quality_report_private_helpers_cover_edge_branches() -> None:
     )
     assert (
         qr._source_status(
-            source=Source("Unknown date", "rss", "https://example.com"),
+            source_enabled=True,
             event_model="auction_result",
             tracked_event_models={"auction_result"},
             article_count=1,
@@ -266,7 +327,7 @@ def test_quality_report_private_helpers_cover_edge_branches() -> None:
     )
     assert (
         qr._source_status(
-            source=Source("Stale", "rss", "https://example.com"),
+            source_enabled=True,
             event_model="auction_result",
             tracked_event_models={"auction_result"},
             article_count=1,

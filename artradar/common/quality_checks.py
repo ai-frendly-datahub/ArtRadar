@@ -84,34 +84,66 @@ def check_duplicate_urls(
     *,
     table_name: str,
     url_column: str = "url",
+    group_columns: list[str] | None = None,
     limit: int = 10,
 ) -> None:
     _print_section("Duplicate URL Check")
 
+    group_columns = group_columns or []
+    group_select = [
+        f"{_quote_identifier(column)} AS group_{index}"
+        for index, column in enumerate(group_columns)
+    ]
+    select_clause = ", ".join(
+        [
+            *group_select,
+            f"{_quote_identifier(url_column)} AS url_value",
+            "COUNT(*) AS cnt",
+        ]
+    )
+    group_clause = ", ".join(
+        [*[_quote_identifier(column) for column in group_columns], _quote_identifier(url_column)]
+    )
+    order_clause = ", ".join(
+        [
+            "cnt DESC",
+            *[f"group_{index}" for index, _ in enumerate(group_columns)],
+            "url_value",
+        ]
+    )
     raw_rows = cast(
-        list[tuple[object, object]],
+        list[tuple[object, ...]],
         con.execute(
             f"""
-        SELECT {_quote_identifier(url_column)} AS url_value, COUNT(*) AS cnt
+        SELECT {select_clause}
         FROM {_quote_identifier(table_name)}
-        GROUP BY {_quote_identifier(url_column)}
+        GROUP BY {group_clause}
         HAVING COUNT(*) > 1
-        ORDER BY cnt DESC, url_value
+        ORDER BY {order_clause}
         LIMIT ?
         """,
             [limit],
         ).fetchall(),
     )
-    rows: list[tuple[str | None, int]] = [
-        (None if row[0] is None else str(row[0]), _to_int(row[1])) for row in raw_rows
-    ]
 
-    if not rows:
+    if not raw_rows:
         print("No duplicate URLs found.")
         return
 
-    for url_value, cnt in rows:
-        print(f"  {cnt}x: {url_value}")
+    for row in raw_rows:
+        group_values = [
+            None if value is None else str(value) for value in row[: len(group_columns)]
+        ]
+        url_value = None if row[len(group_columns)] is None else str(row[len(group_columns)])
+        cnt = _to_int(row[len(group_columns) + 1])
+        if group_columns:
+            group_text = ", ".join(
+                f"{column}={value}"
+                for column, value in zip(group_columns, group_values, strict=True)
+            )
+            print(f"  {group_text}, {cnt}x: {url_value}")
+        else:
+            print(f"  {cnt}x: {url_value}")
 
 
 def check_text_lengths(
@@ -236,6 +268,7 @@ def run_all_checks(
     language_column: str = "language",
     allowed_languages: set[str] | None = None,
     url_column: str = "url",
+    duplicate_group_columns: list[str] | None = None,
     date_column: str = "published_at",
 ) -> None:
     total = _to_int(
@@ -244,7 +277,12 @@ def run_all_checks(
     print(f"Total records: {total}")
 
     check_missing_fields(con, table_name=table_name, null_conditions=null_conditions)
-    check_duplicate_urls(con, table_name=table_name, url_column=url_column)
+    check_duplicate_urls(
+        con,
+        table_name=table_name,
+        url_column=url_column,
+        group_columns=duplicate_group_columns,
+    )
     check_text_lengths(con, table_name=table_name, text_columns=text_columns or [])
     check_language_values(
         con,

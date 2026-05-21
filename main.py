@@ -39,6 +39,10 @@ build_quality_report = quality_report_module.build_quality_report
 write_quality_report = quality_report_module.write_quality_report
 
 
+def _crawl_health_db_path(database_path: Path) -> Path:
+    return database_path.parent / "radar_data.duckdb"
+
+
 def _send_notifications(
     *,
     category_name: str,
@@ -129,7 +133,7 @@ def run(
         category=category_cfg.category_name,
         limit_per_source=per_source_limit,
         timeout=timeout,
-        health_db_path=str(settings.database_path),
+        health_db_path=str(_crawl_health_db_path(settings.database_path)),
         max_age_days=max_age_days,
         browser_source_limit=browser_source_limit,
     )

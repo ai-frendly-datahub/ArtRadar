@@ -252,6 +252,7 @@ sources:
 - name: 서울시립미술관
   type: javascript
   url: https://sema.seoul.go.kr/kr/whatson/exhibition/list
+  enabled: false
   config:
     wait_for: .list_wrap
     event_model: exhibition_ticket_signal
@@ -260,6 +261,8 @@ sources:
   trust_tier: T1_official
   collection_tier: C2_javascript
   content_type: exhibition
+  notes: 'DISABLED 2026-05-21: endpoint returned HTTP 500 from this runner during
+    quality repair; keep as official exhibition backlog until access is stable.'
 - name: 아르코미술관
   type: javascript
   url: https://www.arko.or.kr/artcenter/program/exhibit/
@@ -318,6 +321,7 @@ sources:
 - name: 케이옥션
   type: javascript
   url: https://www.k-auction.com/Auction/Major/Result
+  enabled: false
   config:
     wait_for: body
     link_selector: a[href*='/Auction/Major/'], a[href*='/Auction/Online/Result']
@@ -328,6 +332,9 @@ sources:
   trust_tier: T2_institutional
   collection_tier: C2_javascript
   content_type: auction
+  notes: 'DISABLED 2026-05-21: Playwright Page.goto timed out at 20000ms from this
+    runner during quality repair; keep as auction backlog until browser access is
+    stable.'
 - name: r/Art
   type: rss
   url: https://www.reddit.com/r/Art/.rss

@@ -31,19 +31,25 @@ class RawLogger:
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
         existing_links: set[str] = set()
-        if run_id is not None and output_path.exists():
+        if output_path.exists():
             try:
                 with output_path.open("r", encoding="utf-8") as handle:
                     for line in handle:
-                        if line.strip():
+                        if not line.strip():
+                            continue
+                        try:
                             record = json.loads(line)
-                            existing_links.add(record.get("link", ""))
-            except (OSError, json.JSONDecodeError):
+                        except json.JSONDecodeError:
+                            continue
+                        link = record.get("link", "")
+                        if isinstance(link, str) and link:
+                            existing_links.add(link)
+            except OSError:
                 pass
 
         with output_path.open("a", encoding="utf-8") as handle:
             for article in articles:
-                if run_id is not None and article.link in existing_links:
+                if article.link in existing_links:
                     continue
 
                 record = {
@@ -61,7 +67,6 @@ class RawLogger:
                     record["ontology"] = ontology
                 _ = handle.write(json.dumps(record, ensure_ascii=False))
                 _ = handle.write("\n")
-                if run_id is not None:
-                    existing_links.add(article.link)
+                existing_links.add(article.link)
 
         return output_path

@@ -67,6 +67,26 @@ def test_collect_sources_skips_disabled_sources() -> None:
 
 
 @pytest.mark.unit
+def test_collect_sources_skips_missing_required_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    from artradar.collector import collect_sources
+
+    monkeypatch.delenv("MISSING_API_KEY", raising=False)
+    source = Source(
+        name="Keyed API",
+        type="rss",
+        url="https://example.com/feed",
+        config={"required_env": "MISSING_API_KEY"},
+    )
+
+    with patch("artradar.collector._collect_single") as mock_collect:
+        articles, errors = collect_sources([source], category="art")
+
+    assert articles == []
+    assert errors == ["Keyed API: Source skipped (missing required env: MISSING_API_KEY)"]
+    mock_collect.assert_not_called()
+
+
+@pytest.mark.unit
 def test_collect_rss_parses_article() -> None:
     from artradar.collector import _collect_rss
 
@@ -83,6 +103,25 @@ def test_collect_rss_parses_article() -> None:
     assert len(articles) == 1
     assert articles[0].title == "Painting fair opens"
     assert articles[0].source == "Artforum"
+
+
+@pytest.mark.unit
+def test_collect_rss_cleans_html_summary() -> None:
+    from artradar.collector import _collect_rss
+
+    source = Source(name="Artforum", type="rss", url="https://www.artforum.com/feed/")
+    response = SimpleNamespace(content=b"<rss />")
+    parsed = SimpleNamespace(
+        entries=[_feed_entry(summary="<p>A&nbsp;<strong>contemporary</strong> painting fair.</p>")]
+    )
+
+    with (
+        patch("artradar.collector._fetch_url_with_retry", return_value=response),
+        patch("artradar.collector.feedparser.parse", return_value=parsed),
+    ):
+        articles = _collect_rss(source, category="art", limit=10, timeout=15)
+
+    assert articles[0].summary == "A contemporary painting fair."
 
 
 @pytest.mark.unit

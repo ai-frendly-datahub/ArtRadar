@@ -102,6 +102,42 @@ def test_quality_checks_print_expected_findings(
 
 
 @pytest.mark.unit
+def test_check_duplicate_urls_can_scope_by_group(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    con = duckdb.connect(":memory:")
+    try:
+        con.execute("""
+            CREATE TABLE articles (
+                category TEXT,
+                url TEXT
+            )
+            """)
+        con.executemany(
+            "INSERT INTO articles VALUES (?, ?)",
+            [
+                ("art", "https://example.com/a"),
+                ("art", "https://example.com/a"),
+                ("artwork", "https://example.com/a"),
+                ("artwork", "https://example.com/b"),
+            ],
+        )
+
+        quality_checks.check_duplicate_urls(
+            con,
+            table_name="articles",
+            url_column="url",
+            group_columns=["category"],
+        )
+    finally:
+        con.close()
+
+    output = capsys.readouterr().out
+    assert "category=art, 2x: https://example.com/a" in output
+    assert "category=artwork" not in output
+
+
+@pytest.mark.unit
 def test_quality_checks_handle_no_duplicates_no_text_and_allowed_languages(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
@@ -167,6 +203,7 @@ def test_run_all_checks_invokes_all_sections(
         language_column="language",
         allowed_languages={"en", "ko"},
         url_column="url",
+        duplicate_group_columns=None,
         date_column="published_at",
     )
 

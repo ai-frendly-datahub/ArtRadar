@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 import sys
 from pathlib import Path
 from typing import Any
@@ -27,7 +27,7 @@ from artradar.config_loader import (  # noqa: E402
 )
 from artradar.models import Article  # noqa: E402
 from artradar.quality_report import build_quality_report, write_quality_report  # noqa: E402
-from artradar.storage import RadarStorage  # noqa: E402
+from artradar.storage import _article_from_row  # noqa: E402
 
 
 def _project_path(project_root: Path, raw_path: str | Path) -> Path:
@@ -96,6 +96,39 @@ def _dedupe_articles(articles: list[Article]) -> list[Article]:
     return list(deduped.values())
 
 
+def _recent_quality_articles(
+    db_path: Path,
+    *,
+    category_name: str,
+    days: int,
+    limit: int = 2000,
+) -> list[Article]:
+    if not db_path.exists():
+        return []
+
+    since = (datetime.now(UTC) - timedelta(days=days)).replace(tzinfo=None)
+    try:
+        with duckdb.connect(str(db_path), read_only=True) as con:
+            rows = con.execute(
+                """
+                SELECT category, source, title, link, summary, published, collected_at, entities_json
+                FROM articles
+                WHERE category = ?
+                  AND (
+                    COALESCE(published, collected_at) >= ?
+                    OR collected_at >= ?
+                  )
+                ORDER BY collected_at DESC, COALESCE(published, collected_at) DESC
+                LIMIT ?
+                """,
+                [category_name, since, since, limit],
+            ).fetchall()
+    except duckdb.Error:
+        return []
+
+    return [_article_from_row(row) for row in rows]
+
+
 def generate_quality_artifacts(
     project_root: Path = PROJECT_ROOT,
     *,
@@ -115,19 +148,13 @@ def generate_quality_artifacts(
     quality_cfg = load_category_quality_config(category_name, categories_dir=categories_dir)
     lookback_days = _lookback_days(_latest_article_date(db_path, category_cfg.category_name))
 
-    with RadarStorage(db_path) as storage:
-        articles = _dedupe_articles(
-            [
-                *storage.recent_articles(
-                    category_cfg.category_name, days=lookback_days, limit=1000
-                ),
-                *storage.recent_articles_by_collected_at(
-                    category_cfg.category_name,
-                    days=lookback_days,
-                    limit=1000,
-                ),
-            ]
+    articles = _dedupe_articles(
+        _recent_quality_articles(
+            db_path,
+            category_name=category_cfg.category_name,
+            days=lookback_days,
         )
+    )
 
     report = build_quality_report(
         category=category_cfg,
@@ -166,7 +193,12 @@ def main() -> None:
                 "published": "published IS NULL",
             },
         )
-        check_duplicate_urls(con, table_name="articles", url_column="link")
+        check_duplicate_urls(
+            con,
+            table_name="articles",
+            url_column="link",
+            group_columns=["category"],
+        )
         check_text_lengths(con, table_name="articles", text_columns=["title", "summary"])
         check_dates(con, table_name="articles", date_column="published")
 

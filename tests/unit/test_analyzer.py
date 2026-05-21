@@ -132,6 +132,17 @@ def test_apply_entity_rules_skips_empty_keywords() -> None:
     assert analyzed[0].matched_entities == {"topic": ["ai"]}
 
 
+def test_apply_entity_rules_skips_low_signal_ascii_stopwords() -> None:
+    article = _make_article(title="The report", summary="A note by the editor")
+    entities = [
+        EntityDefinition(name="general", display_name="General", keywords=["the", "a", "by"])
+    ]
+
+    analyzed = apply_entity_rules([article], entities)
+
+    assert analyzed[0].matched_entities == {}
+
+
 def test_apply_entity_rules_with_empty_entities_returns_articles_without_matches() -> None:
     article = _make_article(title="No entities", summary="Nothing to match.")
 

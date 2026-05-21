@@ -25,6 +25,7 @@
    ```bash
    pip install -r requirements.txt
    pip install -e .
+   python -m playwright install chromium
    ```
 
 2. 실행:
@@ -41,7 +42,7 @@
 ## GitHub Actions & GitHub Pages
 
 - 워크플로: `.github/workflows/radar-crawler.yml`
-  - 스케줄: 매일 10:00 UTC (KST 19:00)
+  - 스케줄: 매일 00:00 UTC (KST 09:00)
   - `art`와 `artwork`를 순차 수집
   - 배포 디렉터리: `reports/` → `gh-pages` 브랜치
   - DuckDB 경로: `data/art_data.duckdb`

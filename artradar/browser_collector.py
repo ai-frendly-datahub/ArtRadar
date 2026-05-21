@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING, Any
 
 import structlog
 
+from .common.text_cleaning import clean_text
 from .models import Article
 
 if TYPE_CHECKING:
@@ -113,9 +114,9 @@ def collect_browser_sources(
     for article in core_articles:
         local_articles.append(
             Article(
-                title=article.title,
+                title=clean_text(article.title) or article.title,
                 link=article.link,
-                summary=article.summary,
+                summary=clean_text(article.summary),
                 published=article.published,
                 source=article.source,
                 category=article.category or category,

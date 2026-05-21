@@ -21,6 +21,7 @@ from radar_core import AdaptiveThrottler, CrawlHealthStore
 from urllib3.util.retry import Retry
 
 from .exceptions import NetworkError, ParseError, SourceError
+from .common.text_cleaning import clean_text
 from .models import Article, Source
 from .resilience import get_circuit_breaker_manager
 
@@ -189,12 +190,30 @@ def collect_sources(
     browser_source_limit: int | None = None,
 ) -> tuple[list[Article], list[str]]:
     """Fetch items from all configured sources, returning articles and errors."""
-    sources = [source for source in sources if source.enabled]
+    disabled_errors: list[str] = []
+    runtime_sources: list[Source] = []
+    for source in sources:
+        if not source.enabled:
+            continue
+        missing_env = _missing_required_env(source)
+        if missing_env:
+            disabled_errors.append(
+                f"{source.name}: Source skipped (missing required env: {', '.join(missing_env)})"
+            )
+            logger.warning(
+                "source_missing_required_env",
+                source=source.name,
+                required_env=missing_env,
+            )
+            continue
+        runtime_sources.append(source)
+
+    sources = runtime_sources
     if not sources:
-        return [], []
+        return [], disabled_errors
 
     articles: list[Article] = []
-    errors: list[str] = []
+    errors: list[str] = list(disabled_errors)
     manager = get_circuit_breaker_manager()
     workers = _resolve_max_workers(max_workers)
     source_hosts: dict[str, str] = {
@@ -358,6 +377,19 @@ def collect_sources(
     return unique_articles, errors
 
 
+def _missing_required_env(source: Source) -> list[str]:
+    raw_value = source.config.get("required_env") or source.config.get("required_env_vars")
+    if raw_value is None:
+        return []
+    if isinstance(raw_value, str):
+        required = [raw_value]
+    elif isinstance(raw_value, list):
+        required = [str(item) for item in raw_value if str(item).strip()]
+    else:
+        return []
+    return [name for name in required if not os.environ.get(name, "").strip()]
+
+
 def _collect_single(
     source: Source,
     *,
@@ -474,7 +506,7 @@ def _collect_rss(
                 Article(
                     title=title,
                     link=link,
-                    summary=html.unescape(summary.strip()),
+                    summary=clean_text(summary),
                     published=_extract_datetime(entry),
                     source=source.name,
                     category=category,
