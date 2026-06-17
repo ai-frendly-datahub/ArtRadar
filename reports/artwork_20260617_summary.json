@@ -1,0 +1,34 @@
+{
+  "date": "2026-06-17",
+  "category": "artwork",
+  "article_count": 198,
+  "source_count": 2,
+  "matched_count": 70,
+  "top_entities": [
+    {
+      "name": "ArtworkType",
+      "count": 33
+    },
+    {
+      "name": "Medium",
+      "count": 26
+    },
+    {
+      "name": "Artist",
+      "count": 11
+    },
+    {
+      "name": "Period",
+      "count": 7
+    },
+    {
+      "name": "CollectionChange",
+      "count": 6
+    }
+  ],
+  "sources": {
+    "Art Institute of Chicago": 196,
+    "Metropolitan Museum": 2
+  },
+  "generated_at": "2026-06-17T13:14:29.443270+09:00"
+}
