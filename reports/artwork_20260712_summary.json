@@ -1,0 +1,33 @@
+{
+  "date": "2026-07-12",
+  "category": "artwork",
+  "article_count": 200,
+  "source_count": 1,
+  "matched_count": 111,
+  "top_entities": [
+    {
+      "name": "Medium",
+      "count": 63
+    },
+    {
+      "name": "ArtworkType",
+      "count": 42
+    },
+    {
+      "name": "Artist",
+      "count": 19
+    },
+    {
+      "name": "CollectionChange",
+      "count": 17
+    },
+    {
+      "name": "Period",
+      "count": 13
+    }
+  ],
+  "sources": {
+    "Art Institute of Chicago": 200
+  },
+  "generated_at": "2026-07-12T11:50:50.179727+09:00"
+}
