@@ -1,0 +1,62 @@
+{
+  "date": "2026-08-18",
+  "category": "art",
+  "article_count": 200,
+  "source_count": 22,
+  "matched_count": 198,
+  "top_entities": [
+    {
+      "name": "ArtGeneral",
+      "count": 1337
+    },
+    {
+      "name": "Topic",
+      "count": 218
+    },
+    {
+      "name": "Institution",
+      "count": 147
+    },
+    {
+      "name": "Genre",
+      "count": 57
+    },
+    {
+      "name": "Artist",
+      "count": 50
+    },
+    {
+      "name": "Market",
+      "count": 32
+    },
+    {
+      "name": "Period",
+      "count": 31
+    }
+  ],
+  "sources": {
+    "ArtDaily": 46,
+    "Art Institute of Chicago": 32,
+    "Apollo Magazine": 23,
+    "e-flux": 1,
+    "MoMA Magazine": 1,
+    "Tate": 1,
+    "서울옥션": 1,
+    "대림미술관": 1,
+    "국립중앙박물관": 1,
+    "리움미술관": 1,
+    "아르코미술관": 1,
+    "Frieze": 1,
+    "데일리아트": 1,
+    "월간미술": 25,
+    "ARTnews": 7,
+    "r/Art": 27,
+    "Hyperallergic": 8,
+    "Artnet News": 5,
+    "Artforum": 7,
+    "Colossal": 3,
+    "The Art Newspaper": 5,
+    "Artsy": 2
+  },
+  "generated_at": "2026-08-18T10:18:50.315916+09:00"
+}
