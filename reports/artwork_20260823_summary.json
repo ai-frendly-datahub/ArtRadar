@@ -1,0 +1,33 @@
+{
+  "date": "2026-08-23",
+  "category": "artwork",
+  "article_count": 200,
+  "source_count": 1,
+  "matched_count": 158,
+  "top_entities": [
+    {
+      "name": "ArtworkType",
+      "count": 123
+    },
+    {
+      "name": "Medium",
+      "count": 32
+    },
+    {
+      "name": "MarketSignal",
+      "count": 19
+    },
+    {
+      "name": "Artist",
+      "count": 15
+    },
+    {
+      "name": "Period",
+      "count": 8
+    }
+  ],
+  "sources": {
+    "Art Institute of Chicago": 200
+  },
+  "generated_at": "2026-08-23T10:23:12.091678+09:00"
+}
