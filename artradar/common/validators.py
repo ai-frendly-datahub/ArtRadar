@@ -108,6 +108,23 @@ def is_error_page_content(title: str, summary: str) -> bool:
     if _ERROR_PAGE_TITLE_RE.match(normalized_title):
         return True
 
+    title_l = normalized_title.lower()
+    summary_l = normalized_summary.lower()
+    if "just a moment" in title_l and any(
+        token in summary_l
+        for token in ("security verification", "cloudflare", "verify you are human")
+    ):
+        return True
+    if "attention required" in title_l and (
+        "cloudflare" in title_l or "cloudflare" in summary_l or "been blocked" in summary_l
+    ):
+        return True
+    if (
+        "페이지를 찾을 수 없습니다" in normalized_summary
+        or "the page you requested is not here" in summary_l
+    ) and ("오류" in normalized_title or "not found" in title_l or "404" in title_l):
+        return True
+
     combined = f"{normalized_title}\n{normalized_summary}"
     return bool(
         re.search(r"\b(?:403|404|502|503|504)\b", combined) and _ERROR_PAGE_BODY_RE.search(combined)

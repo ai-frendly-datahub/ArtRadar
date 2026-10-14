@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+import logging
 import shutil
+from collections.abc import Callable
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 
 def snapshot_database(
@@ -107,6 +111,52 @@ def cleanup_dated_reports(report_dir: Path, *, keep_days: int, today: date | Non
     return removed
 
 
+def _load_compactor() -> Callable[..., dict[str, object]]:
+    """Return radar-core's DuckDB compactor.
+
+    ArtRadar stores articles in its local ``RadarStorage``, whose ``close()``
+    does not call radar-core compaction. The crawler commits both the live
+    database and the snapshot copy, so the shrink has to happen here.
+    """
+    from radar_core.db_compact import compact_duckdb_file
+
+    return compact_duckdb_file
+
+
+def _compact_database(database_path: Path) -> dict[str, object]:
+    """Shrink ``database_path`` before it is copied or committed.
+
+    Compaction failure must not block the report or the snapshot. The file
+    already on disk is left in place. ``RADAR_DUCKDB_MAX_BYTES`` and
+    ``RADAR_DUCKDB_COMPACT=0`` are read inside ``compact_duckdb_file``.
+    """
+    bytes_now = database_path.stat().st_size if database_path.exists() else 0
+    fallback: dict[str, object] = {
+        "compacted": False,
+        "reason": "skipped",
+        "bytes": bytes_now,
+        "bytes_before": bytes_now,
+        "rows_deleted": 0,
+    }
+    try:
+        compact_duckdb_file = _load_compactor()
+    except ImportError as exc:
+        logger.warning("duckdb_compact_unavailable path=%s error=%s", database_path, exc)
+        fallback["reason"] = "unavailable"
+        return fallback
+    try:
+        result = compact_duckdb_file(database_path)
+    except Exception as exc:
+        logger.warning("duckdb_compact_failed path=%s error=%s", database_path, exc)
+        fallback["reason"] = "failed"
+        fallback["bytes"] = database_path.stat().st_size if database_path.exists() else 0
+        return fallback
+    if isinstance(result, dict):
+        return result
+    fallback["reason"] = "invalid_result"
+    return fallback
+
+
 def apply_date_storage_policy(
     *,
     database_path: Path,
@@ -116,6 +166,8 @@ def apply_date_storage_policy(
     keep_report_days: int,
     snapshot_db: bool,
 ) -> dict[str, object]:
+    # Compact first so the snapshot is a copy of the file that will be committed.
+    compact = _compact_database(database_path)
     snapshot_path = snapshot_database(database_path) if snapshot_db else None
     raw_removed = cleanup_date_directories(raw_data_dir, keep_days=keep_raw_days)
     report_removed = cleanup_dated_reports(report_dir, keep_days=keep_report_days)
@@ -123,4 +175,9 @@ def apply_date_storage_policy(
         "snapshot_path": str(snapshot_path) if snapshot_path is not None else None,
         "raw_removed": raw_removed,
         "report_removed": report_removed,
+        "db_bytes": compact.get("bytes"),
+        "db_bytes_before": compact.get("bytes_before"),
+        "db_compacted": compact.get("compacted"),
+        "db_rows_deleted": compact.get("rows_deleted"),
+        "db_reason": compact.get("reason"),
     }
