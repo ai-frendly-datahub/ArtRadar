@@ -371,6 +371,31 @@ class TestErrorPageContent:
     def test_is_error_page_content_detects_exact_status_title(self) -> None:
         assert is_error_page_content("404 Not Found", "nginx") is True
 
+    def test_is_error_page_content_detects_cloudflare_interstitial(self) -> None:
+        assert (
+            is_error_page_content(
+                "Attention Required! | Cloudflare",
+                "Sorry, you have been blocked",
+            )
+            is True
+        )
+        assert (
+            is_error_page_content(
+                "Just a moment...",
+                "Performing security verification",
+            )
+            is True
+        )
+
+    def test_is_error_page_content_detects_missing_site_page(self) -> None:
+        assert (
+            is_error_page_content(
+                "오류 : 리움미술관",
+                "요청하신 페이지를 찾을 수 없습니다",
+            )
+            is True
+        )
+
     def test_is_error_page_content_allows_article_about_forbidden_subject(self) -> None:
         assert (
             is_error_page_content(

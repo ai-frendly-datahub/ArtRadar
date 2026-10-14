@@ -234,6 +234,13 @@ def run(
     snapshot_path = date_storage.get("snapshot_path")
     if isinstance(snapshot_path, str) and snapshot_path:
         print(f"[Radar] Snapshot saved at {snapshot_path}")
+    print(
+        "[Radar] DuckDB compact "
+        f"reason={date_storage.get('db_reason')} "
+        f"bytes_before={date_storage.get('db_bytes_before')} "
+        f"bytes={date_storage.get('db_bytes')} "
+        f"rows_deleted={date_storage.get('db_rows_deleted')}"
+    )
     if errors:
         print(f"[Radar] {len(errors)} source(s) had issues. See report for details.")
 

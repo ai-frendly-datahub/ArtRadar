@@ -238,7 +238,7 @@ def collect_sources(
         js_sources = js_sources[:browser_source_limit]
 
     def _collect_for_source(source: Source) -> tuple[list[Article], list[str]]:
-        if health_store.is_disabled(source.name):
+        if health_store.is_disabled(source.name) and not _bypasses_crawl_health(source):
             logger.warning(
                 "source_disabled",
                 source=source.name,
@@ -517,6 +517,19 @@ def _collect_rss(
         raise ParseError(f"Failed to parse feed from {source.name}: {exc}") from exc
 
 
+def _bypasses_crawl_health(source: Source) -> bool:
+    """Honor the same flag the browser collector uses for latched failures."""
+    config = getattr(source, "config", None)
+    if not isinstance(config, dict):
+        return False
+    value = config.get("bypass_crawl_health")
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "y", "on"}
+    return False
+
+
 def _collect_met_museum(
     source: Source,
     *,
@@ -525,17 +538,21 @@ def _collect_met_museum(
     timeout: int,
     session: requests.Session | None = None,
 ) -> list[Article]:
-    search_url = _replace_path(source.url, "/public/collection/v1/search")
+    # /search has returned HTTP 410 Gone since 2026-10. Objects updated since
+    # metadataDate is the public replacement and still lists object IDs.
+    objects_url = _replace_path(source.url, "/public/collection/v1/objects")
+    metadata_date = (datetime.now(UTC) - timedelta(days=30)).date().isoformat()
     try:
         search_response = _fetch_url_with_retry(
-            search_url,
+            objects_url,
             timeout,
-            params={"q": "art", "hasImages": True},
+            params={"metadataDate": metadata_date},
             session=session,
             source_name=source.name,
         )
         search_data = search_response.json()
-        object_ids = list(search_data.get("objectIDs") or [])[:limit]
+        object_ids = list(search_data.get("objectIDs") or [])
+        object_ids = object_ids[-limit:] if limit > 0 else []
     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as exc:
         raise NetworkError(f"Network error fetching {source.name}: {exc}") from exc
     except requests.exceptions.RequestException as exc:

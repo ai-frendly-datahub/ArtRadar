@@ -44,6 +44,42 @@ def test_collect_met_museum_parses_response() -> None:
 
 
 @pytest.mark.unit
+def test_collect_met_museum_queries_objects_by_metadata_date() -> None:
+    from artradar.collector import _collect_met_museum
+
+    source = Source(
+        name="Metropolitan Museum",
+        type="met_museum",
+        url="https://collectionapi.metmuseum.org/public/collection/v1/objects",
+    )
+    search_response = SimpleNamespace(json=lambda: {"objectIDs": [10, 20, 30]})
+    object_response = SimpleNamespace(
+        json=lambda: {
+            "title": "Recent object",
+            "artistDisplayName": "Artist",
+            "objectDate": "2024",
+            "medium": "Ink",
+            "objectURL": "https://www.metmuseum.org/art/collection/search/30",
+            "metadataDate": "2026-10-01T00:00:00.000Z",
+        }
+    )
+
+    with patch(
+        "artradar.collector._fetch_url_with_retry", side_effect=[search_response, object_response]
+    ) as fetch:
+        articles = _collect_met_museum(source, category="art", limit=1, timeout=15)
+
+    first_url = fetch.call_args_list[0].args[0]
+    first_params = fetch.call_args_list[0].kwargs["params"]
+    assert first_url.endswith("/public/collection/v1/objects")
+    assert "search" not in first_url
+    assert "metadataDate" in first_params
+    assert "q" not in first_params
+    assert articles[0].title == "Recent object"
+    assert fetch.call_args_list[1].args[0].endswith("/30")
+
+
+@pytest.mark.unit
 def test_collect_met_museum_skips_bad_detail_records() -> None:
     from artradar.collector import _collect_met_museum
 
@@ -323,7 +359,11 @@ def test_collect_sources_dispatches_api_types(monkeypatch: pytest.MonkeyPatch) -
         patch("artradar.collector._collect_aic", return_value=[]),
         patch("artradar.collector._collect_smithsonian", return_value=[]),
     ):
-        articles, errors = collect_sources(sources, category="art")
+        articles, errors = collect_sources(
+            sources,
+            category="art",
+            health_db_path=":memory:",
+        )
 
     assert articles == []
     assert errors == []

@@ -106,7 +106,9 @@ sources:
   type: javascript
   url: https://www.d-art.co.kr/news/articleList.html?sc_section_code=S1N1
   config:
-    wait_for: .list-block
+    wait_for: h2.titles a
+    link_selector: h2.titles a[href*='articleView.html']
+    detail_limit: 0
     event_model: editorial_coverage
   language: ko
   country: KR
@@ -116,9 +118,12 @@ sources:
 - name: 네오룩
   type: javascript
   url: https://neolook.com/archives/review
+  enabled: false
   config:
     wait_for: .entry-list
     event_model: editorial_coverage
+  notes: 'DISABLED 2026-10-14: listing returns HTTP 403 from nginx. Left disabled
+    rather than trying to pass the block.'
   language: ko
   country: KR
   trust_tier: T3_professional
@@ -187,9 +192,12 @@ sources:
 - name: Frieze
   type: javascript
   url: https://www.frieze.com/
+  enabled: false
   config:
     wait_for: article
     event_model: art_fair_participant
+  notes: 'DISABLED 2026-10-14: homepage returns a Cloudflare "Attention Required"
+    interstitial. Not attempting to pass that check.'
   language: en
   country: UK
   trust_tier: T2_institutional
@@ -221,6 +229,10 @@ sources:
   config:
     event_date_field: collected_at
     event_model: exhibition_ticket_signal
+    bypass_crawl_health: true
+  notes: 'Search endpoint has returned HTTP 410 since 2026-10-02 and crawl health
+    latched the source off. Collection now uses objects?metadataDate. The health
+    bypass lets the corrected request run.'
   language: en
   country: US
   trust_tier: T1_official
@@ -265,10 +277,14 @@ sources:
     quality repair; keep as official exhibition backlog until access is stable.'
 - name: 아르코미술관
   type: javascript
-  url: https://www.arko.or.kr/artcenter/program/exhibit/
+  url: https://www.arko.or.kr/artcenter/
   config:
-    wait_for: .list_area
+    wait_for: a[href*='/artcenter/board/view/506']
+    link_selector: a[href*='/artcenter/board/view/506']
+    detail_limit: 0
     event_model: exhibition_ticket_signal
+  notes: 'The old /artcenter/program/exhibit/ path redirects to the art center
+    home. Exhibition posts use board view 506.'
   language: ko
   country: KR
   trust_tier: T1_official
@@ -276,10 +292,14 @@ sources:
   content_type: exhibition
 - name: 리움미술관
   type: javascript
-  url: https://www.leeumhoam.org/exhibition
+  url: https://www.leeumhoam.org/leeum/exhibition
   config:
-    wait_for: .exhibition-list
+    wait_for: header
+    link_selector: a[href*='/leeum/exhibition/']
+    detail_limit: 0
     event_model: exhibition_ticket_signal
+  notes: '/exhibition returns the site 404 page. Current exhibitions are listed
+    at /leeum/exhibition.'
   language: ko
   country: KR
   trust_tier: T1_official
@@ -289,7 +309,9 @@ sources:
   type: javascript
   url: https://www.museum.go.kr/MUSEUM/main/index.do
   config:
-    wait_for: .main-content
+    wait_for: a[href*='exhiSpThemId=']
+    link_selector: a[href*='exhiSpThemId=']
+    detail_limit: 0
     event_model: exhibition_ticket_signal
   language: ko
   country: KR
@@ -309,10 +331,12 @@ sources:
   content_type: exhibition
 - name: 서울옥션
   type: javascript
-  url: https://www.seoulauction.com/main/auction
+  url: https://www.seoulauction.com/auction-list/progress
   config:
-    wait_for: .auction_list
+    wait_for: body
     event_model: auction_result
+  notes: '/main/auction returned HTTP 404 on 2026-10-14. In-progress auctions are
+    listed at /auction-list/progress. Lot rows are still rendered in the browser.'
   language: ko
   country: KR
   trust_tier: T2_institutional
@@ -398,25 +422,25 @@ sources:
 - name: The Art Assignment
   type: rss
   url: https://www.youtube.com/feeds/videos.xml?channel_id=UCmQThz1OLYt8mb2PU540LOA
-  enabled: true
+  enabled: false
   language: en
   country: US
   trust_tier: T3_professional
   collection_tier: C1_rss
   content_type: video
-  notes: 'REACTIVATED 2026-05-20: URL probe returned HTTP 200 with text/xml; YouTube
-    RSS feed is reachable again. Previously DISABLED 2026-04-23 for runner-side 404.'
+  notes: 'DISABLED 2026-10-14: configured YouTube RSS returns HTTP 404 again.
+    Previously reactivated on 2026-05-20, then latched off by crawl health.'
 - name: Nerdwriter1
   type: rss
   url: https://www.youtube.com/feeds/videos.xml?channel_id=UCJkMlOu7faDgqh4PfzbpLdg
-  enabled: true
+  enabled: false
   language: en
   country: US
   trust_tier: T3_professional
   collection_tier: C1_rss
   content_type: video
-  notes: 'REACTIVATED 2026-05-20: URL probe returned HTTP 200 with text/xml; YouTube
-    RSS feed is reachable again. Previously DISABLED 2026-04-23 for runner-side 404.'
+  notes: 'DISABLED 2026-10-14: configured YouTube RSS returns HTTP 404 again.
+    Previously reactivated on 2026-05-20, then latched off by crawl health.'
 - name: Smarthistory
   type: rss
   url: https://www.youtube.com/feeds/videos.xml?channel_id=UC07nFYY2UdQ7pZsMJV9_hNQ
@@ -433,6 +457,8 @@ sources:
   url: https://www.tate.org.uk/whats-on
   config:
     wait_for: .card--event
+    link_selector: a[href*='/whats-on/tate-']
+    detail_limit: 0
     event_model: editorial_coverage
   language: en
   country: UK
@@ -442,9 +468,12 @@ sources:
 - name: MoMA Magazine
   type: javascript
   url: https://www.moma.org/magazine/
+  enabled: false
   config:
     wait_for: article
     event_model: editorial_coverage
+  notes: 'DISABLED 2026-10-14: magazine page returns a Cloudflare "Just a moment"
+    interstitial. Not attempting to pass that check.'
   language: en
   country: US
   trust_tier: T1_official
@@ -455,7 +484,11 @@ sources:
   url: https://www.e-flux.com/announcements/
   config:
     wait_for: .featured-projects__cell--announcements
+    timeout: 45000
+    navigation_retries: 2
     event_model: editorial_coverage
+  notes: '2026-10-13 goto timed out at 15000ms. Keep the longer timeout; announcement
+    cards are image links without usable titles, so the page is still one item.'
   language: en
   country: US
   trust_tier: T2_institutional

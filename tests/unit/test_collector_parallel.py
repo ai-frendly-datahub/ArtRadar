@@ -327,6 +327,41 @@ def test_collect_sources_reports_disabled_source_from_health_store() -> None:
 
     assert articles == []
     assert errors == ["Disabled Health: Source disabled (crawl health threshold reached)"]
+
+
+def test_collect_sources_runs_health_disabled_source_when_bypass_is_set() -> None:
+    source = Source(
+        name="Metropolitan Museum",
+        type="rss",
+        url="https://example.com/feed",
+        config={"bypass_crawl_health": True},
+    )
+    article = Article(
+        title="Kept",
+        link="https://example.com/kept",
+        summary="kept",
+        published=datetime.now(UTC),
+        source=source.name,
+        category="art",
+    )
+    mock_session = Mock()
+    mock_health_store = Mock()
+    mock_health_store.is_disabled.return_value = True
+
+    with (
+        patch("artradar.collector.CrawlHealthStore", return_value=mock_health_store),
+        patch("artradar.collector._create_session", return_value=mock_session),
+        patch("artradar.collector._collect_single", return_value=[article]),
+    ):
+        articles, errors = collect_sources(
+            [source],
+            category="art",
+            max_workers=1,
+            health_db_path=":memory:",
+        )
+
+    assert errors == []
+    assert [item.link for item in articles] == ["https://example.com/kept"]
     mock_session.close.assert_called_once()
     mock_health_store.close.assert_called_once()
 
