@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-27",
+  "category": "artwork",
+  "article_count": 200,
+  "source_count": 2,
+  "matched_count": 99,
+  "top_entities": [
+    {
+      "name": "Medium",
+      "count": 54
+    },
+    {
+      "name": "ArtworkType",
+      "count": 46
+    },
+    {
+      "name": "Artist",
+      "count": 14
+    },
+    {
+      "name": "Period",
+      "count": 10
+    },
+    {
+      "name": "CollectionChange",
+      "count": 2
+    },
+    {
+      "name": "MarketSignal",
+      "count": 1
+    }
+  ],
+  "sources": {
+    "Art Institute of Chicago": 150,
+    "Metropolitan Museum": 50
+  },
+  "generated_at": "2026-10-27T12:59:20.471010+09:00"
+}
