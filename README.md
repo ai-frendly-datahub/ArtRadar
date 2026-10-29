@@ -50,7 +50,7 @@
 - 설정 방법:
   1) 저장소 Settings → Pages에서 `gh-pages` 브랜치를 활성화
   2) Actions가 `contents`, `pages`, `id-token` 권한을 가지는지 확인
-  3) Smithsonian 수집이 필요하면 `SMITHSONIAN_API_KEY`를 repository secret/env로 설정
+  3) Smithsonian 수집이 필요하면 Settings → Secrets and variables → Actions에 `SMITHSONIAN_API_KEY` 시크릿을 등록합니다. 수집 워크플로의 `Run ArtRadar categories` 단계가 `${{ secrets.SMITHSONIAN_API_KEY }}`를 같은 이름의 환경 변수로 전달합니다. 시크릿이 없거나 비어 있으면 Smithsonian 소스만 건너뛰고(`source_missing_required_env` 경고) 나머지 소스 수집은 계속됩니다.
 
 ## 동작 방식
 

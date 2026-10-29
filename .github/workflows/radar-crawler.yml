@@ -46,6 +46,8 @@ jobs:
       - name: Install Playwright browsers
         run: python -m playwright install --with-deps chromium
       - name: Run ArtRadar categories
+        env:
+          SMITHSONIAN_API_KEY: ${{ secrets.SMITHSONIAN_API_KEY }}
         run: |
           python main.py --category art --recent-days 7 --keep-days 90 --keep-raw-days 180 --keep-report-days 90 --max-age-days 14 --timeout 45 --snapshot-db --generate-report
           python main.py --category artwork --recent-days 30 --keep-days 180 --keep-raw-days 180 --keep-report-days 90 --max-age-days 30 --timeout 45 --snapshot-db --generate-report
