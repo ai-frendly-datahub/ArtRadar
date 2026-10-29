@@ -383,3 +383,36 @@ def test_collect_single_wraps_unexpected_dispatch_error() -> None:
             _ = _collect_single(source, category="art", limit=1, timeout=15)
 
     assert "Dispatch error" in str(exc_info.value)
+
+
+@pytest.mark.unit
+def test_crawler_workflow_maps_smithsonian_secret_to_run_step() -> None:
+    """수집 단계가 시크릿 이름만 환경 변수로 연결하는지 확인한다(값은 읽지 않는다)."""
+    from pathlib import Path
+
+    workflow = Path(".github/workflows/radar-crawler.yml").read_text(encoding="utf-8")
+    step = workflow.split("- name: Run ArtRadar categories", 1)[1].split("- name:", 1)[0]
+    assert "SMITHSONIAN_API_KEY: ${{ secrets.SMITHSONIAN_API_KEY }}" in step
+
+
+@pytest.mark.unit
+def test_collect_sources_skips_smithsonian_when_secret_is_empty(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """등록되지 않은 시크릿은 빈 문자열로 전달된다. 그 경우에도 호출 없이 건너뛴다."""
+    from artradar.collector import collect_sources
+
+    monkeypatch.setenv("SMITHSONIAN_API_KEY", "")
+    source = Source(
+        name="Smithsonian",
+        type="smithsonian",
+        url="https://api.si.edu/openaccess/api/v1.0/search",
+        config={"required_env": "SMITHSONIAN_API_KEY"},
+    )
+
+    with patch("artradar.collector._collect_single") as mock_collect:
+        articles, errors = collect_sources([source], category="artwork")
+
+    assert articles == []
+    assert errors == ["Smithsonian: Source skipped (missing required env: SMITHSONIAN_API_KEY)"]
+    mock_collect.assert_not_called()
